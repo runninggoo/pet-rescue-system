@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据统计 - 宠物救助收养系统</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+        }
+        .container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #409EFF;
+            margin: 10px 0;
+        }
+        .stat-label {
+            color: #909399;
+            font-size: 14px;
+        }
+        .data-table {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        }
+        .table-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #303133;
+        }
+        .filter-container {
+            margin-bottom: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        }
+        .el-date-editor, .el-select {
+            width: 200px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h2>数据统计中心</h2>
+            <p style="color: #909399; margin-top: 10px;">宠物救助与领养数据统计</p>
+        </div>
+
+        <!-- 筛选条件 -->
+        <div class="filter-container">
+            <el-form :inline="true" :model="filterForm">
+                <el-form-item label="时间范围">
+                    <el-date-picker
+                        v-model="filterForm.dateRange"
+                        type="daterange"
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        value-format="yyyy-MM-dd">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="handleSearch">查询</el-button>
+                    <el-button @click="handleReset">重置</el-button>
+                </el-form-item>
+            </el-form>
+        </div>
+
+        <!-- 概览卡片 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">总救助数量</div>
+                <div class="stat-number">{{ stats.totalRescued }}</div>
+                <div style="color: #67C23A;">累计救助宠物数量</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">总领养数量</div>
+                <div class="stat-number">{{ stats.totalAdopted }}</div>
+                <div style="color: #409EFF;">已找到温暖的家</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">领养成功率</div>
+                <div class="stat-number">{{ stats.adoptionRate }}%</div>
+                <div style="color: #E6A23C;">救助宠物领养比例</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">回访完成率</div>
+                <div class="stat-number">{{ stats.followUpRate }}%</div>
+                <div style="color: #F56C6C;">领养后回访完成度</div>
+            </div>
+        </div>
+
+        <!-- 详细数据表格 -->
+        <div class="data-table">
+            <div class="table-title">宠物状态分布</div>
+            <el-table :data="petStatusData" style="width: 100%" border>
+                <el-table-column prop="status" label="状态" align="center"></el-table-column>
+                <el-table-column prop="count" label="数量" align="center"></el-table-column>
+                <el-table-column prop="percentage" label="占比" align="center">
+                    <template slot-scope="scope">
+                        {{ scope.row.percentage }}%
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+
+        <div class="data-table">
+            <div class="table-title">月度领养趋势</div>
+            <el-table :data="monthlyTrendData" style="width: 100%" border>
+                <el-table-column prop="month" label="月份" align="center"></el-table-column>
+                <el-table-column prop="rescued" label="救助数量" align="center"></el-table-column>
+                <el-table-column prop="adopted" label="领养数量" align="center"></el-table-column>
+                <el-table-column prop="rate" label="领养成功率" align="center">
+                    <template slot-scope="scope">
+                        {{ scope.row.rate }}%
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+
+        <div class="data-table">
+            <div class="table-title">品种分布统计</div>
+            <el-table :data="breedData" style="width: 100%" border>
+                <el-table-column prop="breed" label="品种"></el-table-column>
+                <el-table-column prop="count" label="数量" align="center"></el-table-column>
+                <el-table-column prop="percentage" label="占比" align="center">
+                    <template slot-scope="scope">
+                        {{ scope.row.percentage }}%
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+
+        <div class="data-table">
+            <div class="table-title">机构统计</div>
+            <el-table :data="institutionData" style="width: 100%" border>
+                <el-table-column prop="name" label="机构名称"></el-table-column>
+                <el-table-column prop="totalPets" label="宠物总数" align="center"></el-table-column>
+                <el-table-column prop="adoptedPets" label="已领养数" align="center"></el-table-column>
+                <el-table-column prop="adoptionRate" label="领养率" align="center">
+                    <template slot-scope="scope">
+                        {{ scope.row.adoptionRate }}%
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/axios@0.27.2/dist/axios.min.js"></script>
+    <script>
+        // 配置Axios
+        axios.defaults.baseURL = '/api';
+        axios.interceptors.request.use(config => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+            return config;
+        });
+
+        new Vue({
+            el: '#app',
+            data: {
+                filterForm: {
+                    dateRange: []
+                },
+                stats: {
+                    totalRescued: 0,
+                    totalAdopted: 0,
+                    adoptionRate: 0,
+                    followUpRate: 0
+                },
+                petStatusData: [],
+                monthlyTrendData: [],
+                breedData: [],
+                institutionData: []
+            },
+            mounted() {
+                this.loadAllStats();
+            },
+            methods: {
+                async loadAllStats() {
+                    try {
+                        // 并行加载所有统计数据
+                        const [rescueCountRes, adoptionRateRes, statusDistRes, followUpRes] = await Promise.all([
+                            axios.get('/api/stats/rescue-count'),
+                            axios.get('/api/stats/adoption-rate'),
+                            axios.get('/api/stats/pet-status-distribution'),
+                            axios.get('/api/stats/follow-up-rate')
+                        ]);
+
+                        // 更新概览数据
+                        if (rescueCountRes.data.code === 200) {
+                            this.stats.totalRescued = rescueCountRes.data.data.stats.totalCount || 0;
+                        }
+                        if (adoptionRateRes.data.code === 200) {
+                            const stats = adoptionRateRes.data.data.stats;
+                            this.stats.totalAdopted = stats.adoptedPets || 0;
+                            this.stats.adoptionRate = stats.adoptionRate || 0;
+                        }
+                        if (followUpRes.data.code === 200) {
+                            this.stats.followUpRate = followUpRes.data.data.stats.followUpRate || 0;
+                        }
+
+                        // 处理表格数据
+                        this.processPetStatusData(statusDistRes.data.data.stats);
+                        this.processMonthlyTrendData(adoptionRateRes.data.data.stats);
+                        this.processBreedData(rescueCountRes.data.data.stats);
+                        this.processInstitutionData();
+
+                    } catch (error) {
+                        this.$message.error('加载统计数据失败：' + error.message);
+                    }
+                },
+
+                processPetStatusData(stats) {
+                    if (!stats || !stats.distribution) {
+                        this.petStatusData = [
+                            { status: '待领养', count: 0, percentage: 0 },
+                            { status: '已领养', count: 0, percentage: 0 },
+                            { status: '下架', count: 0, percentage: 0 }
+                        ];
+                        return;
+                    }
+
+                    this.petStatusData = stats.distribution.map(item => ({
+                        status: item.status,
+                        count: item.count,
+                        percentage: item.percentage
+                    }));
+                },
+
+                processMonthlyTrendData(stats) {
+                    // 模拟月度数据
+                    this.monthlyTrendData = [
+                        { month: '2024-01', rescued: 3, adopted: 2, rate: 66.7 },
+                        { month: '2024-02', rescued: 2, adopted: 1, rate: 50.0 },
+                        { month: '2024-03', rescued: 4, adopted: 3, rate: 75.0 },
+                        { month: '2024-04', rescued: 3, adopted: 2, rate: 66.7 },
+                        { month: '2024-05', rescued: 5, adopted: 4, rate: 80.0 }
+                    ];
+                },
+
+                processBreedData(stats) {
+                    if (!stats || !stats.breedStats) {
+                        this.breedData = [];
+                        return;
+                    }
+
+                    const total = stats.totalCount || 1;
+                    this.breedData = stats.breedStats.map(item => ({
+                        breed: item.breed || '未知',
+                        count: item.count,
+                        percentage: Math.round((item.count * 100.0 / total) * 10) / 10.0
+                    }));
+                },
+
+                processInstitutionData() {
+                    // 模拟机构数据
+                    this.institutionData = [
+                        { name: '爱心宠物救助中心', totalPets: 15, adoptedPets: 10, adoptionRate: 66.7 },
+                        { name: '小动物保护协会', totalPets: 12, adoptedPets: 8, adoptionRate: 66.7 },
+                        { name: '流浪宠物救助站', totalPets: 8, adoptedPets: 6, adoptionRate: 75.0 }
+                    ];
+                },
+
+                handleSearch() {
+                    this.loadAllStats();
+                },
+
+                handleReset() {
+                    this.filterForm = {
+                        dateRange: []
+                    };
+                    this.loadAllStats();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

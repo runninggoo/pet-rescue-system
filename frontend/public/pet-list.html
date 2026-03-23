@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宠物救助收养系统 - 宠物列表</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .pet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .pet-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        .pet-card:hover {
+            transform: translateY(-5px);
+        }
+        .pet-image {
+            width: 100%;
+            height: 200px;
+            background-color: #f0f2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #909399;
+        }
+        .pet-info {
+            padding: 15px;
+        }
+        .pet-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #303133;
+            margin-bottom: 10px;
+        }
+        .pet-breed, .pet-age {
+            color: #606266;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        .pet-status {
+            margin-top: 10px;
+        }
+        .el-pagination {
+            text-align: center;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="header">
+            <h2>🐾 待领养宠物列表</h2>
+            <div>
+                <el-input v-model="searchKeyword" placeholder="搜索宠物名称" style="width: 250px;" @keyup.enter.native="handleSearch"></el-input>
+                <el-button type="primary" @click="handleSearch" style="margin-left: 10px;">搜索</el-button>
+                <el-button @click="handleReset">重置</el-button>
+            </div>
+        </div>
+
+        <div class="pet-grid" v-loading="loading">
+            <div class="pet-card" v-for="pet in pets" :key="pet.id">
+                <div class="pet-image" @click="handlePetDetail(pet.id)">
+                    <img v-if="pet.imageUrl" :src="pet.imageUrl" style="width: 100%; height: 100%; object-fit: cover;">
+                    <span v-else>暂无图片</span>
+                </div>
+                <div class="pet-info">
+                    <div class="pet-name" @click="handlePetDetail(pet.id)">{{ pet.name }}</div>
+                    <div class="pet-breed">品种：{{ pet.breed }}</div>
+                    <div class="pet-age">年龄：{{ pet.age }}个月</div>
+                    <div class="pet-status">
+                        <el-tag :type="pet.status === 0 ? 'success' : 'info'" size="small">
+                            {{ pet.status === 0 ? '待领养' : '已领养' }}
+                        </el-tag>
+                        <el-button type="text" style="float: right;" @click="handlePetDetail(pet.id)">查看详情</el-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <el-pagination
+            @current-change="handlePageChange"
+            :current-page="currentPage"
+            :page-size="pageSize"
+            layout="total, prev, pager, next"
+            :total="total">
+        </el-pagination>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/axios@0.27.2/dist/axios.min.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                pets: [],
+                loading: false,
+                searchKeyword: '',
+                currentPage: 1,
+                pageSize: 12,
+                total: 0
+            },
+            mounted() {
+                this.loadPets();
+            },
+            methods: {
+                loadPets() {
+                    this.loading = true;
+                    const params = {
+                        page: this.currentPage,
+                        pageSize: this.pageSize,
+                        keyword: this.searchKeyword
+                    };
+                    axios.get('/api/pet/list', { params: params })
+                        .then(response => {
+                            this.loading = false;
+                            const data = response.data;
+                            if (data.code === 200) {
+                                this.pets = data.data.pets;
+                                this.total = data.data.total || this.pets.length;
+                            } else {
+                                this.$message.error(data.message);
+                            }
+                        })
+                        .catch(error => {
+                            this.loading = false;
+                            this.$message.error('加载宠物列表失败：' + error.message);
+                        });
+                },
+                handleSearch() {
+                    this.currentPage = 1;
+                    this.loadPets();
+                },
+                handleReset() {
+                    this.searchKeyword = '';
+                    this.currentPage = 1;
+                    this.loadPets();
+                },
+                handlePageChange(page) {
+                    this.currentPage = page;
+                    this.loadPets();
+                },
+                handlePetDetail(petId) {
+                    window.location.href = 'pet-detail.html?id=' + petId;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

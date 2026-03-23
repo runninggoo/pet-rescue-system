@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(java:*)",
+      "Bash(cd:*)",
+      "Bash(unzip -p \"C:/Users/33169/Desktop/计算机/毕业设计/报告/宠物救助收养系统需求规格说明书.docx\" word/document.xml)",
+      "Bash(xargs grep:*)",
+      "Bash(dir)"
+    ]
+  }
+}

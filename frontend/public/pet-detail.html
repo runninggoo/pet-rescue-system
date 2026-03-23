@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宠物救助收养系统 - 宠物详情</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .pet-detail-card {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        }
+        .pet-image-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .pet-main-image {
+            width: 100%;
+            max-width: 400px;
+            height: 400px;
+            background-color: #f0f2f5;
+            border-radius: 8px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #909399;
+        }
+        .pet-info-section {
+            margin-bottom: 30px;
+        }
+        .info-item {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .info-label {
+            width: 100px;
+            font-weight: bold;
+            color: #606266;
+        }
+        .info-value {
+            flex: 1;
+            color: #303133;
+        }
+        .action-section {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .el-button {
+            margin: 0 10px;
+        }
+        .adoption-form {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .form-item {
+            margin-bottom: 15px;
+        }
+        .el-textarea {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="container">
+        <el-button type="text" @click="handleBack" style="margin-bottom: 20px;">
+            <i class="el-icon-arrow-left"></i> 返回列表
+        </el-button>
+
+        <div class="pet-detail-card" v-loading="loading">
+            <div class="pet-image-section">
+                <div class="pet-main-image">
+                    <img v-if="pet.imageUrl" :src="pet.imageUrl" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                    <span v-else>暂无图片</span>
+                </div>
+            </div>
+
+            <div class="pet-info-section">
+                <h2 style="text-align: center; margin-bottom: 30px;">{{ pet.name }} - 详细信息</h2>
+
+                <div class="info-item">
+                    <span class="info-label">品种：</span>
+                    <span class="info-value">{{ pet.breed }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">年龄：</span>
+                    <span class="info-value">{{ pet.age }}个月</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">性别：</span>
+                    <span class="info-value">
+                        <el-tag :type="pet.gender === 1 ? 'primary' : pet.gender === 2 ? 'danger' : 'info'" size="small">
+                            {{ pet.gender === 1 ? '公' : pet.gender === 2 ? '母' : '未知' }}
+                        </el-tag>
+                    </span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">体重：</span>
+                    <span class="info-value">{{ pet.weight || '暂无数据' }} kg</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">毛色：</span>
+                    <span class="info-value">{{ pet.color || '暂无数据' }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">健康状况：</span>
+                    <span class="info-value">{{ pet.healthStatus }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">性格特征：</span>
+                    <span class="info-value">{{ pet.personality || '暂无描述' }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">救助日期：</span>
+                    <span class="info-value">{{ formatDate(pet.rescueDate) }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">救助地点：</span>
+                    <span class="info-value">{{ pet.rescueLocation }}</span>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-label">状态：</span>
+                    <span class="info-value">
+                        <el-tag :type="pet.status === 0 ? 'success' : 'info'" size="medium">
+                            {{ pet.status === 0 ? '待领养' : '已领养' }}
+                        </el-tag>
+                    </span>
+                </div>
+
+                <div class="info-item" v-if="pet.description">
+                    <span class="info-label">详细描述：</span>
+                    <span class="info-value">{{ pet.description }}</span>
+                </div>
+            </div>
+
+            <div class="action-section" v-if="isLoggedIn && pet.status === 0">
+                <el-button type="primary" size="large" @click="handleAdopt">申请领养</el-button>
+                <el-button size="large" @click="handleFavorite">收藏宠物</el-button>
+
+                <div v-if="showAdoptionForm" class="adoption-form">
+                    <h3 style="margin-bottom: 20px;">领养申请表</h3>
+                    <el-form :model="adoptionForm" :rules="rules" ref="adoptionForm">
+                        <div class="form-item">
+                            <div class="info-label">养宠经验：</div>
+                            <el-input type="textarea" v-model="adoptionForm.experience"
+                                      placeholder="请描述您的养宠经验（如养过什么宠物、多长时间等）"></el-input>
+                        </div>
+
+                        <div class="form-item">
+                            <div class="info-label">居住条件：</div>
+                            <el-input type="textarea" v-model="adoptionForm.livingConditions"
+                                      placeholder="请描述您的居住环境（如房屋类型、面积、是否有院子等）"></el-input>
+                        </div>
+
+                        <div class="form-item">
+                            <div class="info-label">工作状况：</div>
+                            <el-input v-model="adoptionForm.workStatus"
+                                      placeholder="请描述您的工作状况（如工作时间、稳定性等）"></el-input>
+                        </div>
+
+                        <div class="form-item">
+                            <div class="info-label">家庭成员意见：</div>
+                            <el-input type="textarea" v-model="adoptionForm.familyMembers"
+                                      placeholder="请说明家庭成员对领养宠物的意见"></el-input>
+                        </div>
+
+                        <div class="form-item">
+                            <el-checkbox v-model="adoptionForm.agreement">
+                                我已阅读并同意《领养协议》中的所有条款
+                            </el-checkbox>
+                        </div>
+
+                        <div class="form-item" style="text-align: center; margin-top: 30px;">
+                            <el-button type="primary" @click="submitAdoption" :loading="submitting"
+                                       :disabled="!adoptionForm.agreement">
+                                提交申请
+                            </el-button>
+                            <el-button @click="cancelAdoption">取消</el-button>
+                        </div>
+                    </el-form>
+                </div>
+            </div>
+
+            <div class="action-section" v-if="!isLoggedIn">
+                <el-alert title="请先登录后再申请领养" type="warning" show-icon></el-alert>
+                <el-button type="primary" style="margin-top: 20px;" @click="handleLogin">立即登录</el-button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/axios@0.27.2/dist/axios.min.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                pet: {},
+                loading: false,
+                isLoggedIn: false,
+                showAdoptionForm: false,
+                submitting: false,
+                adoptionForm: {
+                    experience: '',
+                    livingConditions: '',
+                    workStatus: '',
+                    familyMembers: '',
+                    agreement: false
+                },
+                rules: {
+                    experience: [{ required: true, message: '请填写养宠经验', trigger: 'blur' }],
+                    livingConditions: [{ required: true, message: '请描述居住条件', trigger: 'blur' }],
+                    workStatus: [{ required: true, message: '请描述工作状况', trigger: 'blur' }],
+                    familyMembers: [{ required: true, message: '请说明家庭成员意见', trigger: 'blur' }]
+                }
+            },
+            mounted() {
+                this.checkLoginStatus();
+                this.loadPetDetail();
+            },
+            methods: {
+                checkLoginStatus() {
+                    const token = localStorage.getItem('token');
+                    const user = localStorage.getItem('user');
+                    if (token && user) {
+                        this.isLoggedIn = true;
+                    }
+                },
+                loadPetDetail() {
+                    const petId = this.getUrlParameter('id');
+                    if (!petId) {
+                        this.$message.error('宠物ID不存在');
+                        window.location.href = 'pet-list.html';
+                        return;
+                    }
+
+                    this.loading = true;
+                    axios.get('/api/pet/detail/' + petId)
+                        .then(response => {
+                            this.loading = false;
+                            const data = response.data;
+                            if (data.code === 200) {
+                                this.pet = data.data.pet;
+                            } else {
+                                this.$message.error(data.message);
+                                window.location.href = 'pet-list.html';
+                            }
+                        })
+                        .catch(error => {
+                            this.loading = false;
+                            this.$message.error('加载宠物详情失败：' + error.message);
+                            window.location.href = 'pet-list.html';
+                        });
+                },
+                handleBack() {
+                    window.location.href = 'pet-list.html';
+                },
+                handleLogin() {
+                    window.location.href = 'login.html?redirect=' + encodeURIComponent(window.location.href);
+                },
+                handleAdopt() {
+                    this.showAdoptionForm = true;
+                },
+                handleFavorite() {
+                    this.$message.info('收藏功能开发中...');
+                },
+                submitAdoption() {
+                    this.$refs.adoptionForm.validate(valid => {
+                        if (valid) {
+                            this.submitting = true;
+                            const petId = this.getUrlParameter('id');
+                            const user = JSON.parse(localStorage.getItem('user'));
+
+                            const application = {
+                                petId: petId,
+                                applicantId: user.id,
+                                experience: this.adoptionForm.experience,
+                                livingConditions: this.adoptionForm.livingConditions,
+                                workStatus: this.adoptionForm.workStatus,
+                                familyMembers: this.adoptionForm.familyMembers
+                            };
+
+                            axios.post('/api/adoption/apply', application)
+                                .then(response => {
+                                    this.submitting = false;
+                                    const data = response.data;
+                                    if (data.code === 200) {
+                                        this.$message.success('申请提交成功！请等待管理员审核');
+                                        this.showAdoptionForm = false;
+                                        this.pet.status = 0; // 状态保持待领养，等待审核
+                                    } else {
+                                        this.$message.error(data.message);
+                                    }
+                                })
+                                .catch(error => {
+                                    this.submitting = false;
+                                    this.$message.error('提交申请失败：' + error.message);
+                                });
+                        }
+                    });
+                },
+                cancelAdoption() {
+                    this.showAdoptionForm = false;
+                    this.adoptionForm = {
+                        experience: '',
+                        livingConditions: '',
+                        workStatus: '',
+                        familyMembers: '',
+                        agreement: false
+                    };
+                },
+                formatDate(date) {
+                    if (!date) return '';
+                    const d = new Date(date);
+                    return d.getFullYear() + '-' + (d.getMonth() + 1).toString().padStart(2, '0') + '-' + d.getDate().toString().padStart(2, '0');
+                },
+                getUrlParameter(name) {
+                    const url = window.location.search;
+                    const params = new URLSearchParams(url);
+                    return params.get(name);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

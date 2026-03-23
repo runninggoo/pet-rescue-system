@@ -1,0 +1,89 @@
+# 忽略IDE配置文件
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# 忽略编译输出
+target/
+build/
+out/
+*.class
+
+# 忽略依赖目录
+node_modules/
+frontend/node_modules/
+
+# 忽略配置文件（包含敏感信息）
+application.yml
+application.properties
+*.log
+
+# 忽略数据库文件
+*.sql
+*.db
+
+# 忽略系统文件
+.DS_Store
+Thumbs.db
+
+# 忽略临时文件
+*.tmp
+*.temp
+*.swp
+*~
+
+# 忽略上传的文件（如果有）
+upload/
+uploads/
+
+# 忽略测试输出
+test-output/
+reports/
+
+# 忽略Maven本地仓库
+.mvn/
+.mvn/*
+
+# 忽略前端构建输出
+frontend/dist/
+frontend/build/
+
+# 忽略环境变量文件
+.env
+.env.local
+
+# 忽略IDEA工作空间配置
+.idea/workspace.xml
+.idea/tasks.xml
+
+# 忽略JAR包（大文件）
+*.jar
+
+# 忽略压缩文件
+*.zip
+*.rar
+*.7z
+
+# 忽略PDF文档（大文件）
+*.pdf
+*.caj
+
+# 忽略Word文档
+*.docx
+*.doc
+
+# 忽略图片（大文件，可选择性上传）
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.ico
+
+# 保留这些重要文件
+!pom.xml
+!README.md
+!RUNNING_GUIDE.md
+!TESTING_GUIDE.md

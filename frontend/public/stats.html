@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据统计 - 宠物救助收养系统</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f5f7fa;
+            font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+        }
+        .container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        }
+        .chart-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        }
+        .chart-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #303133;
+        }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+        }
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #409EFF;
+            margin: 10px 0;
+        }
+        .stat-label {
+            color: #909399;
+            font-size: 14px;
+        }
+        .filter-container {
+            margin-bottom: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        }
+        .el-date-editor, .el-select {
+            width: 200px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h2>数据统计中心</h2>
+            <p style="color: #909399; margin-top: 10px;">宠物救助与领养数据统计</p>
+        </div>
+
+        <!-- 筛选条件 -->
+        <div class="filter-container">
+            <el-form :inline="true" :model="filterForm">
+                <el-form-item label="时间范围">
+                    <el-date-picker
+                        v-model="filterForm.dateRange"
+                        type="daterange"
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        value-format="yyyy-MM-dd">
+                    </el-date-picker>
+                </el-form-item>
+                <el-form-item>
+                    <el-select v-model="filterForm.exportType" placeholder="导出类型" clearable>
+                        <el-option label="Excel" value="excel"></el-option>
+                        <el-option label="PDF" value="pdf"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="handleSearch">查询</el-button>
+                    <el-button @click="handleReset">重置</el-button>
+                    <el-button type="success" @click="handleExport" :loading="exportLoading">导出</el-button>
+                </el-form-item>
+            </el-form>
+        </div>
+
+        <!-- 概览卡片 -->
+        <div class="stats-overview">
+            <div class="stat-card">
+                <div class="stat-label">总救助数量</div>
+                <div class="stat-number">{{ overview.totalRescued }}</div>
+                <div style="color: #67C23A;">累计救助宠物数量</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">总领养数量</div>
+                <div class="stat-number">{{ overview.totalAdopted }}</div>
+                <div style="color: #409EFF;">已找到温暖的家</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">领养成功率</div>
+                <div class="stat-number">{{ overview.adoptionRate }}%</div>
+                <div style="color: #E6A23C;">救助宠物领养比例</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">回访完成率</div>
+                <div class="stat-number">{{ overview.followUpRate }}%</div>
+                <div style="color: #F56C6C;">领养后回访完成度</div>
+            </div>
+        </div>
+
+        <!-- 统计图表 -->
+        <div class="chart-card">
+            <div class="chart-title">救助数量趋势（最近12个月）</div>
+            <div id="rescueTrendChart" class="chart-container"></div>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-title">宠物状态分布</div>
+            <div id="petStatusChart" class="chart-container"></div>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-title">品种分布统计</div>
+            <div id="breedChart" class="chart-container"></div>
+        </div>
+
+        <div class="chart-card">
+            <div class="chart-title">月度领养成功率</div>
+            <div id="adoptionRateChart" class="chart-container"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/axios@0.27.2/dist/axios.min.js"></script>
+    <script>
+        // 配置Axios
+        axios.defaults.baseURL = '/api';
+        axios.interceptors.request.use(config => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+            return config;
+        });
+
+        new Vue({
+            el: '#app',
+            data: {
+                filterForm: {
+                    dateRange: [],
+                    exportType: ''
+                },
+                exportLoading: false,
+                overview: {
+                    totalRescued: 0,
+                    totalAdopted: 0,
+                    adoptionRate: 0,
+                    followUpRate: 0
+                },
+                charts: {}
+            },
+            mounted() {
+                this.initCharts();
+                this.loadAllStats();
+            },
+            methods: {
+                initCharts() {
+                    // 初始化所有图表
+                    this.charts.rescueTrend = echarts.init(document.getElementById('rescueTrendChart'));
+                    this.charts.petStatus = echarts.init(document.getElementById('petStatusChart'));
+                    this.charts.breed = echarts.init(document.getElementById('breedChart'));
+                    this.charts.adoptionRate = echarts.init(document.getElementById('adoptionRateChart'));
+                },
+
+                async loadAllStats() {
+                    try {
+                        // 并行加载所有统计数据
+                        const [rescueCountRes, adoptionRateRes, statusDistRes, followUpRes] = await Promise.all([
+                            axios.get('/api/stats/rescue-count'),
+                            axios.get('/api/stats/adoption-rate'),
+                            axios.get('/api/stats/pet-status-distribution'),
+                            axios.get('/api/stats/follow-up-rate')
+                        ]);
+
+                        // 更新概览数据
+                        if (rescueCountRes.data.code === 200) {
+                            this.overview.totalRescued = rescueCountRes.data.data.stats.totalCount || 0;
+                        }
+                        if (adoptionRateRes.data.code === 200) {
+                            const stats = adoptionRateRes.data.data.stats;
+                            this.overview.totalAdopted = stats.adoptedPets || 0;
+                            this.overview.adoptionRate = stats.adoptionRate || 0;
+                        }
+                        if (followUpRes.data.code === 200) {
+                            this.overview.followUpRate = followUpRes.data.data.stats.followUpRate || 0;
+                        }
+
+                        // 渲染图表
+                        this.renderRescueTrendChart(rescueCountRes.data.data.stats);
+                        this.renderPetStatusChart(statusDistRes.data.data.stats);
+                        this.renderBreedChart(rescueCountRes.data.data.stats);
+                        this.renderAdoptionRateChart(adoptionRateRes.data.data.stats);
+
+                    } catch (error) {
+                        this.$message.error('加载统计数据失败：' + error.message);
+                    }
+                },
+
+                renderRescueTrendChart(stats) {
+                    if (!stats || !stats.monthlyStats) return;
+
+                    const option = {
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'shadow'
+                            }
+                        },
+                        grid: {
+                            left: '3%',
+                            right: '4%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        xAxis: {
+                            type: 'category',
+                            data: stats.monthlyStats.map(item => item.month),
+                            axisLabel: {
+                                rotate: 45
+                            }
+                        },
+                        yAxis: {
+                            type: 'value'
+                        },
+                        series: [{
+                            name: '救助数量',
+                            type: 'bar',
+                            data: stats.monthlyStats.map(item => item.count),
+                            itemStyle: {
+                                color: '#409EFF'
+                            },
+                            emphasis: {
+                                itemStyle: {
+                                    color: '#337ecc'
+                                }
+                            }
+                        }]
+                    };
+
+                    this.charts.rescueTrend.setOption(option);
+                },
+
+                renderPetStatusChart(stats) {
+                    if (!stats || !stats.distribution) return;
+
+                    const option = {
+                        tooltip: {
+                            trigger: 'item',
+                            formatter: '{a} <br/>{b}: {c} ({d}%)'
+                        },
+                        legend: {
+                            orient: 'vertical',
+                            left: 'left'
+                        },
+                        series: [{
+                            name: '宠物状态',
+                            type: 'pie',
+                            radius: '50%',
+                            data: stats.distribution.map(item => ({
+                                name: item.status,
+                                value: item.count
+                            })),
+                            emphasis: {
+                                itemStyle: {
+                                    shadowBlur: 10,
+                                    shadowOffsetX: 0,
+                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                }
+                            }
+                        }]
+                    };
+
+                    this.charts.petStatus.setOption(option);
+                },
+
+                renderBreedChart(stats) {
+                    if (!stats || !stats.breedStats) return;
+
+                    const topBreeds = stats.breedStats.slice(0, 10); // 显示前10个品种
+                    const option = {
+                        tooltip: {
+                            trigger: 'axis',
+                            axisPointer: {
+                                type: 'shadow'
+                            }
+                        },
+                        grid: {
+                            left: '3%',
+                            right: '4%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        xAxis: {
+                            type: 'value'
+                        },
+                        yAxis: {
+                            type: 'category',
+                            data: topBreeds.map(item => item.breed),
+                            axisLabel: {
+                                interval: 0,
+                                rotate: 30
+                            }
+                        },
+                        series: [{
+                            name: '宠物数量',
+                            type: 'bar',
+                            data: topBreeds.map(item => item.count),
+                            itemStyle: {
+                                color: '#67C23A'
+                            }
+                        }]
+                    };
+
+                    this.charts.breed.setOption(option);
+                },
+
+                renderAdoptionRateChart(stats) {
+                    if (!stats || !stats.timeStats) return;
+
+                    const option = {
+                        tooltip: {
+                            trigger: 'axis',
+                            formatter: '{b}: {c}%'
+                        },
+                        grid: {
+                            left: '3%',
+                            right: '4%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        xAxis: {
+                            type: 'category',
+                            data: stats.timeStats.map(item => item.month),
+                            axisLabel: {
+                                rotate: 45
+                            }
+                        },
+                        yAxis: {
+                            type: 'value',
+                            axisLabel: {
+                                formatter: '{value}%'
+                            }
+                        },
+                        series: [{
+                            name: '领养成功率',
+                            type: 'line',
+                            data: stats.timeStats.map(item => item.rate),
+                            smooth: true,
+                            itemStyle: {
+                                color: '#E6A23C'
+                            },
+                            lineStyle: {
+                                color: '#E6A23C',
+                                width: 3
+                            },
+                            areaStyle: {
+                                color: {
+                                    type: 'linear',
+                                    x: 0,
+                                    y: 0,
+                                    x2: 0,
+                                    y2: 1,
+                                    colorStops: [{
+                                        offset: 0, color: 'rgba(230, 162, 60, 0.3)'
+                                    }, {
+                                        offset: 1, color: 'rgba(230, 162, 60, 0.05)'
+                                    }]
+                                }
+                            }
+                        }]
+                    };
+
+                    this.charts.adoptionRate.setOption(option);
+                },
+
+                handleSearch() {
+                    this.loadAllStats();
+                },
+
+                handleReset() {
+                    this.filterForm = {
+                        dateRange: [],
+                        exportType: ''
+                    };
+                    this.loadAllStats();
+                },
+
+                async handleExport() {
+                    if (!this.filterForm.exportType) {
+                        this.$message.warning('请选择导出类型');
+                        return;
+                    }
+
+                    this.exportLoading = true;
+                    try {
+                        const params = {
+                            exportType: this.filterForm.exportType,
+                            dateRange: this.filterForm.dateRange ?
+                                `${this.filterForm.dateRange[0]}至${this.filterForm.dateRange[1]}` : ''
+                        };
+
+                        const response = await axios.post('/api/stats/export', params);
+                        if (response.data.code === 200) {
+                            this.$message.success(response.data.message);
+                        } else {
+                            this.$message.error(response.data.message);
+                        }
+                    } catch (error) {
+                        this.$message.error('导出失败：' + error.message);
+                    } finally {
+                        this.exportLoading = false;
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
