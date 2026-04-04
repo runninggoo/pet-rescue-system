@@ -1,6 +1,7 @@
 package com.pet.rescue.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -87,6 +88,19 @@ public class Pet extends BaseEntity {
     @TableField("expected_adoption_time")
     private Integer expectedAdoptionTime;
 
+    /**
+     * 宠物大类类型：CATS/DOGS/SMALL_ANIMALS/BIRDS/OTHER（关联pet_category一级分类）
+     */
+    @TableField("category_type")
+    private String categoryType;
+
+    /**
+     * 逻辑删除标志：0-未删除，1-已删除
+     */
+    @TableField("deleted")
+    @TableLogic
+    private Integer deleted;
+
     // 扩展字段（不映射到数据库）
     @TableField(exist = false)
     private String institutionName; // 机构名称
@@ -96,4 +110,78 @@ public class Pet extends BaseEntity {
 
     @TableField(exist = false)
     private String shelterName; // 推荐救助所名称
+
+    // Lombok @Data 应该自动生成以下方法，但为确保兼容性手动添加
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getBreed() { return breed; }
+    public void setBreed(String breed) { this.breed = breed; }
+
+    public Integer getAge() { return age; }
+    public void setAge(Integer age) { this.age = age; }
+
+    public Integer getGender() { return gender; }
+    public void setGender(Integer gender) { this.gender = gender; }
+
+    public BigDecimal getWeight() { return weight; }
+    public void setWeight(BigDecimal weight) { this.weight = weight; }
+
+    public String getColor() { return color; }
+    public void setColor(String color) { this.color = color; }
+
+    public String getHealthStatus() { return healthStatus; }
+    public void setHealthStatus(String healthStatus) { this.healthStatus = healthStatus; }
+
+    public String getPersonality() { return personality; }
+    public void setPersonality(String personality) { this.personality = personality; }
+
+    public Date getRescueDate() { return rescueDate; }
+    public void setRescueDate(Date rescueDate) { this.rescueDate = rescueDate; }
+
+    public String getRescueLocation() { return rescueLocation; }
+    public void setRescueLocation(String rescueLocation) { this.rescueLocation = rescueLocation; }
+
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+
+    public Integer getStatus() { return status; }
+    public void setStatus(Integer status) { this.status = status; }
+
+    public Long getInstitutionId() { return institutionId; }
+    public void setInstitutionId(Long institutionId) { this.institutionId = institutionId; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public Double getRescueLon() { return rescueLon; }
+    public void setRescueLon(Double rescueLon) { this.rescueLon = rescueLon; }
+
+    public Double getRescueLat() { return rescueLat; }
+    public void setRescueLat(Double rescueLat) { this.rescueLat = rescueLat; }
+
+    public Long getRecommendedShelterId() { return recommendedShelterId; }
+    public void setRecommendedShelterId(Long recommendedShelterId) { this.recommendedShelterId = recommendedShelterId; }
+
+    public Integer getUrgencyLevel() { return urgencyLevel; }
+    public void setUrgencyLevel(Integer urgencyLevel) { this.urgencyLevel = urgencyLevel; }
+
+    public Integer getExpectedAdoptionTime() { return expectedAdoptionTime; }
+    public void setExpectedAdoptionTime(Integer expectedAdoptionTime) { this.expectedAdoptionTime = expectedAdoptionTime; }
+
+    public String getCategoryType() { return categoryType; }
+    public void setCategoryType(String categoryType) { this.categoryType = categoryType; }
+
+    public Integer getDeleted() { return deleted; }
+    public void setDeleted(Integer deleted) { this.deleted = deleted; }
+
+    public String getInstitutionName() { return institutionName; }
+    public void setInstitutionName(String institutionName) { this.institutionName = institutionName; }
+
+    public Double getDistanceToShelter() { return distanceToShelter; }
+    public void setDistanceToShelter(Double distanceToShelter) { this.distanceToShelter = distanceToShelter; }
+
+    public String getShelterName() { return shelterName; }
+    public void setShelterName(String shelterName) { this.shelterName = shelterName; }
 }

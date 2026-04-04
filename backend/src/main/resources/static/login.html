@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>登录 - 宠物救助收养系统</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        :root {
+            --primary: #409EFF;
+            --primary-dark: #337ecc;
+            --success: #67C23A;
+            --danger: #F56C6C;
+            --bg-gradient-start: #667eea;
+            --bg-gradient-end: #764ba2;
+            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px 36px;
+            box-shadow: var(--card-shadow);
+            animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .login-logo .icon {
+            font-size: 52px;
+            margin-bottom: 8px;
+            display: inline-block;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .login-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #303133;
+            margin: 0;
+        }
+
+        .login-subtitle {
+            font-size: 13px;
+            color: #909399;
+            margin-top: 4px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-item-animated {
+            transition: var(--transition);
+        }
+
+        .form-item-animated:focus-within {
+            transform: scale(1.01);
+        }
+
+        .form-item-animated.is-error .el-input__inner {
+            border-color: var(--danger);
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        .el-form-item {
+            margin-bottom: 20px;
+        }
+
+        .el-input .el-input__inner {
+            border-radius: 10px;
+            height: 44px;
+            font-size: 15px;
+            border: 1.5px solid #DCDFE6;
+            transition: var(--transition);
+        }
+
+        .el-input .el-input__inner:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(64, 158, 255, 0.15);
+        }
+
+        .el-input .el-input__prefix .el-input__icon {
+            font-size: 16px;
+            line-height: 44px;
+        }
+
+        .login-btn {
+            width: 100%;
+            height: 46px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            transition: var(--transition);
+            cursor: pointer;
+            letter-spacing: 2px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(64, 158, 255, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn.is-loading {
+            opacity: 0.8;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .role-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .role-chip {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+            border: 1.5px solid #DCDFE6;
+            color: #606266;
+            transition: var(--transition);
+            user-select: none;
+        }
+
+        .role-chip:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .role-chip.active {
+            border-color: var(--primary);
+            background: rgba(64, 158, 255, 0.1);
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .role-chip .role-desc {
+            font-size: 11px;
+            color: #C0C4CC;
+            display: block;
+            margin-top: 1px;
+        }
+
+        .role-chip.active .role-desc {
+            color: var(--primary);
+        }
+
+        .error-tip {
+            font-size: 12px;
+            color: var(--danger);
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .quick-fill {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #F0F2F5;
+        }
+
+        .quick-fill-label {
+            font-size: 12px;
+            color: #909399;
+            margin-bottom: 8px;
+        }
+
+        .quick-accounts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .quick-account {
+            padding: 3px 10px;
+            background: #F5F7FA;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #606266;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+
+        .quick-account:hover {
+            background: rgba(64, 158, 255, 0.08);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .footer-hint {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 480px) {
+            .login-wrapper { padding: 16px; }
+            .login-card {
+                padding: 28px 20px;
+                border-radius: 12px;
+            }
+            .login-logo .icon { font-size: 44px; }
+            .login-title { font-size: 19px; }
+            .role-chip { padding: 5px 10px; font-size: 12px; }
+            .quick-account { padding: 3px 8px; font-size: 11px; }
+        }
+
+        /* 平板适配 */
+        @media (min-width: 481px) and (max-width: 768px) {
+            .login-wrapper { max-width: 380px; }
+        }
+
+        /* 加载动画 */
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-paw {
+            font-size: 64px;
+            animation: pawBounce 1s infinite;
+        }
+
+        @keyframes pawBounce {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.2) rotate(10deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 加载动画 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-paw">🐾</div>
+    </div>
+
+    <div class="login-wrapper" id="app">
+        <div class="login-card">
+            <div class="login-logo">
+                <div class="icon">🐶</div>
+                <h1 class="login-title">宠物救助收养系统</h1>
+                <p class="login-subtitle">Pet Rescue & Adoption System</p>
+            </div>
+
+            <!-- 角色快速选择 -->
+            <div class="role-selector" id="roleSelector">
+                <div class="role-chip active" data-role="admin" onclick="selectRole(this)">
+                    管理员
+                    <span class="role-desc">全部权限</span>
+                </div>
+                <div class="role-chip" data-role="adopter" onclick="selectRole(this)">
+                    领养人
+                    <span class="role-desc">申请领养</span>
+                </div>
+                <div class="role-chip" data-role="institution_admin" onclick="selectRole(this)">
+                    机构管理员
+                    <span class="role-desc">管理救助站</span>
+                </div>
+                <div class="role-chip" data-role="volunteer" onclick="selectRole(this)">
+                    志愿者
+                    <span class="role-desc">协助救助</span>
+                </div>
+            </div>
+
+            <el-form :model="loginForm" :rules="loginRules" ref="loginFormRef" :show-message="true" @submit.native.prevent>
+                <el-form-item prop="phone" class="form-item-animated" :class="{'is-error': phoneError}">
+                    <el-input
+                        v-model="loginForm.phone"
+                        placeholder="请输入手机号"
+                        prefix-icon="el-icon-mobile"
+                        clearable
+                        maxlength="11"
+                        @input="onPhoneInput"
+                        @blur="validatePhone">
+                        <template #prefix><span style="font-size:16px">📱</span></template>
+                    </el-input>
+                </el-form-item>
+
+                <el-form-item prop="password" class="form-item-animated" :class="{'is-error': passwordError}">
+                    <el-input
+                        v-model="loginForm.password"
+                        :type="showPassword ? 'text' : 'password'"
+                        placeholder="请输入密码"
+                        prefix-icon="el-icon-lock"
+                        @keyup.enter.native="handleLogin">
+                        <template #prefix><span style="font-size:16px">🔒</span></template>
+                        <template #suffix>
+                            <span @click="showPassword = !showPassword" style="cursor:pointer;font-size:16px;user-select:none">
+                                {{ showPassword ? '🙈' : '👁️' }}
+                            </span>
+                        </template>
+                    </el-input>
+                </el-form-item>
+
+                <!-- 错误提示 -->
+                <div v-if="errorMsg" class="error-tip">
+                    <span>⚠️</span> {{ errorMsg }}
+                </div>
+
+                <el-form-item style="margin-bottom: 0; margin-top: 8px;">
+                    <el-button
+                        type="primary"
+                        class="login-btn"
+                        :class="{'is-loading': loading}"
+                        :loading="loading"
+                        @click="handleLogin"
+                        :disabled="loading">
+                        {{ loading ? '登录中...' : '登 录' }}
+                    </el-button>
+                </el-form-item>
+            </el-form>
+
+            <!-- 快速填充测试账号 -->
+            <div class="quick-fill">
+                <div class="quick-fill-label">快速填充测试账号（密码均为 123456）</div>
+                <div class="quick-accounts">
+                    <span class="quick-account" onclick="fillAccount('13800000000','123456')">管理员</span>
+                    <span class="quick-account" onclick="fillAccount('13900000001','123456')">领养人</span>
+                    <span class="quick-account" onclick="fillAccount('13700000001','123456')">机构管理员</span>
+                    <span class="quick-account" onclick="fillAccount('13600000001','123456')">志愿者</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-hint">
+        © 2026 上海大学 · 宠物救助收养系统
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/axios@0.27.2/dist/axios.min.js"></script>
+    <script>
+        // 隐藏加载动画
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const overlay = document.getElementById('loadingOverlay');
+                if (overlay) overlay.classList.add('hidden');
+            }, 500);
+        });
+
+        // 角色选择
+        function selectRole(el) {
+            document.querySelectorAll('.role-chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            const role = el.dataset.role;
+            const accounts = {
+                admin: ['13800000000', '123456'],
+                adopter: ['13900000001', '123456'],
+                institution_admin: ['13700000001', '123456'],
+                volunteer: ['13600000001', 'password']
+            };
+            if (accounts[role]) {
+                vm.loginForm.phone = accounts[role][0];
+                vm.loginForm.password = accounts[role][1];
+            }
+        }
+
+        // 快速填充账号
+        function fillAccount(phone, password) {
+            vm.loginForm.phone = phone;
+            vm.loginForm.password = password;
+            vm.errorMsg = '';
+        }
+
+        const vm = new Vue({
+            el: '#app',
+            data: {
+                loginForm: {
+                    phone: '',
+                    password: ''
+                },
+                loginRules: {
+                    phone: [
+                        { required: true, message: '请输入手机号', trigger: 'blur' },
+                        { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号格式', trigger: 'blur' }
+                    ],
+                    password: [
+                        { required: true, message: '请输入密码', trigger: 'blur' },
+                        { min: 6, message: '密码至少6位', trigger: 'blur' }
+                    ]
+                },
+                loading: false,
+                showPassword: false,
+                errorMsg: '',
+                phoneError: false,
+                passwordError: false
+            },
+            mounted() {
+                // 初始化时隐藏加载动画
+                setTimeout(() => {
+                    const overlay = document.getElementById('loadingOverlay');
+                    if (overlay) overlay.classList.add('hidden');
+                }, 300);
+            },
+            methods: {
+                onPhoneInput() {
+                    this.errorMsg = '';
+                    this.phoneError = false;
+                },
+
+                validatePhone() {
+                    const phone = this.loginForm.phone;
+                    if (!phone) return;
+                    if (!/^1[3-9]\d{9}$/.test(phone)) {
+                        this.phoneError = true;
+                        setTimeout(() => { this.phoneError = false; }, 2000);
+                    }
+                },
+
+                handleLogin() {
+                    this.errorMsg = '';
+                    this.$refs.loginFormRef.validate(async (valid) => {
+                        if (!valid) {
+                            this.errorMsg = '请检查输入格式';
+                            return;
+                        }
+
+                        this.loading = true;
+                        try {
+                            const response = await axios.post('/auth/login', {
+                                phone: this.loginForm.phone,
+                                password: this.loginForm.password
+                            });
+
+                            if (response.data.code === 200) {
+                                const token = response.data.data.token;
+                                const user = response.data.data.user;
+
+                                localStorage.setItem('token', token);
+                                localStorage.setItem('user', JSON.stringify(user));
+
+                                this.$message.success('登录成功！正在跳转...');
+                                setTimeout(() => {
+                                    window.location.href = 'pet-list.html';
+                                }, 800);
+                            } else {
+                                this.errorMsg = response.data.message || '登录失败，手机号或密码错误';
+                                this.passwordError = true;
+                                setTimeout(() => { this.passwordError = false; }, 2000);
+                            }
+                        } catch (error) {
+                            this.errorMsg = '网络错误，请检查网络连接后重试';
+                        } finally {
+                            this.loading = false;
+                        }
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>

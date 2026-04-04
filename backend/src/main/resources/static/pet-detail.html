@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>宠物详情 - 宠物救助收养系统</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.15.13/lib/theme-chalk/index.css">
+    <style>
+        :root {
+            --primary-color: #409eff;
+            --success-color: #67c23a;
+            --warning-color: #e6a23c;
+            --danger-color: #f56c6c;
+            --info-color: #909399;
+            --title-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+        }
+
+        @keyframes cardEnter {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeSlideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .app-header {
+            background: var(--title-bg);
+            padding: 20px 30px;
+            border-radius: var(--border-radius);
+            margin-bottom: 24px;
+            box-shadow: var(--card-shadow);
+            animation: fadeSlideDown 0.5s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-4px);
+        }
+
+        .header-title {
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .header-nav {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.25);
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 24px;
+            animation: cardEnter 0.6s ease;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Card Base */
+        .card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--hover-shadow);
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        /* Image Gallery */
+        .image-gallery {
+            position: relative;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            background: #f5f5f5;
+            min-height: 350px;
+        }
+
+        .pet-image {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            height: 350px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            color: #999;
+        }
+
+        .image-placeholder i {
+            font-size: 80px;
+            margin-bottom: 16px;
+            color: #ccc;
+        }
+
+        .image-placeholder span {
+            font-size: 16px;
+        }
+
+        /* Status Badges */
+        .badge-container {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .status-badge.available {
+            background: linear-gradient(135deg, #67c23a 0%, #5daf34 100%);
+        }
+
+        .status-badge.pending {
+            background: linear-gradient(135deg, #e6a23c 0%, #ebb563 100%);
+        }
+
+        .status-badge.adopted {
+            background: linear-gradient(135deg, #909399 0%, #a6a9ad 100%);
+        }
+
+        .status-badge.urgent {
+            background: linear-gradient(135deg, #f56c6c 0%, #f78989 100%);
+            animation: pulse 2s infinite;
+        }
+
+        /* Info Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .info-item {
+            padding: 16px;
+            background: #f9fafb;
+            border-radius: 8px;
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .info-item:hover {
+            background: #f0f2f5;
+            transform: translateY(-2px);
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Description Section */
+        .description-section {
+            margin-top: 24px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .description-text {
+            padding: 16px;
+            background: #f9fafb;
+            border-radius: 8px;
+            color: #666;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+
+        /* Health Summary */
+        .health-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 480px) {
+            .health-summary {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .health-stat {
+            padding: 14px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .health-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+        }
+
+        .health-stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Sidebar Actions */
+        .action-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Adoption Button */
+        .adopt-btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #67c23a 0%, #5daf34 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .adopt-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(103, 194, 58, 0.4);
+        }
+
+        .adopt-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Secondary Buttons */
+        .secondary-btn {
+            width: 100%;
+            padding: 14px;
+            font-size: 14px;
+            background: white;
+            border: 2px solid var(--primary-color);
+            border-radius: 10px;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .secondary-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .secondary-btn.warning {
+            border-color: var(--warning-color);
+            color: var(--warning-color);
+        }
+
+        .secondary-btn.warning:hover {
+            background: var(--warning-color);
+            color: white;
+        }
+
+        /* Shelter Card */
+        .shelter-card {
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .shelter-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .shelter-card-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 6px;
+        }
+
+        .shelter-card-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .shelter-card-info {
+            font-size: 13px;
+            opacity: 0.9;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        /* Login Prompt */
+        .login-prompt {
+            text-align: center;
+            padding: 40px 20px;
+            background: #f9fafb;
+            border-radius: 10px;
+        }
+
+        .login-prompt-icon {
+            font-size: 48px;
+            color: #ccc;
+            margin-bottom: 16px;
+        }
+
+        .login-prompt-text {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .login-prompt-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .login-prompt-btn:hover {
+            background: #3a8ee6;
+            transform: translateY(-2px);
+        }
+
+        /* Adoption Form Dialog */
+        .adoption-form {
+            padding: 10px 0;
+        }
+
+        .form-tips {
+            background: #f0f9ff;
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .form-tips-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .agreement-section {
+            margin-top: 20px;
+            padding: 16px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .agreement-text {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+            margin-top: 10px;
+        }
+
+        /* Skeleton Loading */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 8px;
+        }
+
+        .skeleton-image {
+            width: 100%;
+            height: 350px;
+            border-radius: var(--border-radius);
+        }
+
+        .skeleton-text {
+            height: 20px;
+            margin-bottom: 12px;
+        }
+
+        .skeleton-text.short {
+            width: 60%;
+        }
+
+        .skeleton-text.medium {
+            width: 80%;
+        }
+
+        /* Error State */
+        .error-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .error-icon {
+            font-size: 64px;
+            color: var(--danger-color);
+            margin-bottom: 20px;
+        }
+
+        .error-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .error-message {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 24px;
+        }
+
+        .retry-btn {
+            padding: 12px 24px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .retry-btn:hover {
+            background: #3a8ee6;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-header {
+                padding: 16px 20px;
+            }
+
+            .header-title {
+                font-size: 18px;
+            }
+
+            .nav-link {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+
+            .app-container {
+                padding: 12px;
+            }
+
+            .card-body {
+                padding: 16px;
+            }
+
+            .pet-image,
+            .image-placeholder {
+                height: 280px;
+            }
+
+            .action-section .card-body {
+                padding: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-nav {
+                display: none;
+            }
+
+            .mobile-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: white;
+                padding: 8px 0;
+                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+                z-index: 100;
+            }
+
+            .mobile-nav-item {
+                flex: 1;
+                text-align: center;
+                padding: 8px;
+                color: #666;
+                text-decoration: none;
+                font-size: 11px;
+            }
+
+            .mobile-nav-item.active {
+                color: var(--primary-color);
+            }
+
+            .mobile-nav-item i {
+                display: block;
+                font-size: 20px;
+                margin-bottom: 4px;
+            }
+
+            .app-container {
+                padding-bottom: 70px;
+            }
+        }
+
+        /* Element UI Overrides */
+        .el-form-item__label {
+            font-weight: 500;
+        }
+
+        .el-dialog__header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .el-dialog__title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .el-dialog__body {
+            padding: 24px;
+        }
+
+        .el-checkbox__label {
+            font-size: 14px;
+        }
+
+        /* Success Animation */
+        .success-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeSlideDown 0.5s ease;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #67c23a 0%, #5daf34 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .success-icon i {
+            font-size: 40px;
+            color: white;
+        }
+
+        .success-text {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .success-subtext {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            color: #ddd;
+            margin-bottom: 16px;
+        }
+
+        .empty-text {
+            font-size: 14px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div class="app-container" v-if="!loading && !error">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-left">
+                    <button class="back-btn" @click="goBack">
+                        <i class="el-icon-arrow-left"></i>
+                        返回
+                    </button>
+                    <h1 class="header-title">宠物详情</h1>
+                </div>
+                <nav class="header-nav">
+                    <a href="login.html" class="nav-link" v-if="!isLoggedIn">登录</a>
+                    <a href="pet-list.html" class="nav-link">宠物列表</a>
+                    <a href="health-record.html" class="nav-link">健康档案</a>
+                    <a href="volunteer-task.html" class="nav-link">任务管理</a>
+                    <a href="stats.html" class="nav-link">数据统计</a>
+                </nav>
+            </header>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Left Column: Image & Info -->
+                <div class="left-column">
+                    <!-- Image Gallery Card -->
+                    <div class="card" style="animation-delay: 0.1s;">
+                        <div class="image-gallery">
+                            <img v-if="pet.imageUrl" :src="pet.imageUrl" class="pet-image" :alt="pet.name">
+                            <div v-else class="image-placeholder">
+                                <i class="el-icon-picture-outline"></i>
+                                <span>暂无图片</span>
+                            </div>
+                            <div class="badge-container">
+                                <span class="status-badge available" v-if="pet.status === 0">待领养</span>
+                                <span class="status-badge pending" v-else-if="pet.status === 1">审核中</span>
+                                <span class="status-badge adopted" v-else-if="pet.status === 2">已领养</span>
+                                <span class="status-badge urgent" v-if="pet.urgent">紧急</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Basic Info Card -->
+                    <div class="card" style="animation-delay: 0.2s; margin-top: 20px;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="el-icon-info"></i>
+                                基本信息
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <div class="info-label">名字</div>
+                                    <div class="info-value">{{ pet.name || '-' }}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">品种</div>
+                                    <div class="info-value">{{ pet.breed || '-' }}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">年龄</div>
+                                    <div class="info-value">{{ pet.age || '-' }}岁</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">性别</div>
+                                    <div class="info-value">{{ formatGender(pet.gender) }}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">体重</div>
+                                    <div class="info-value">{{ pet.weight ? pet.weight + 'kg' : '-' }}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">毛色</div>
+                                    <div class="info-value">{{ pet.color || '-' }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Health Info Card -->
+                    <div class="card" style="animation-delay: 0.3s; margin-top: 20px;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="el-icon-first-aid-kit"></i>
+                                健康信息
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <div class="info-label">健康状态</div>
+                                    <div class="info-value">
+                                        <el-tag :type="getHealthStatusType(pet.healthStatus)" size="small">
+                                            {{ formatHealthStatus(pet.healthStatus) }}
+                                        </el-tag>
+                                    </div>
+                                </div>
+                                <div class="info-item" style="grid-column: span 2;">
+                                    <div class="info-label">性格特点</div>
+                                    <div class="info-value">{{ pet.personality || '暂无' }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rescue Info Card -->
+                    <div class="card" style="animation-delay: 0.4s; margin-top: 20px;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="el-icon-location-information"></i>
+                                救助信息
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <div class="info-label">救助日期</div>
+                                    <div class="info-value">{{ formatDate(pet.rescueDate) }}</div>
+                                </div>
+                                <div class="info-item" style="grid-column: span 2;">
+                                    <div class="info-label">发现地点</div>
+                                    <div class="info-value">{{ pet.rescueLocation || '-' }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description Card -->
+                    <div class="card" style="animation-delay: 0.5s; margin-top: 20px;">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="el-icon-document"></i>
+                                详细描述
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="description-text">
+                                {{ pet.description || '暂无详细描述' }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Health Records Summary Card -->
+                    <div class="card" style="animation-delay: 0.6s; margin-top: 20px;" v-if="isLoggedIn && pet.status === 0">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="el-icon-postcard"></i>
+                                健康档案
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="health-summary" v-if="healthStats.total > 0">
+                                <div class="health-stat">
+                                    <div class="health-stat-value">{{ healthStats.total }}</div>
+                                    <div class="health-stat-label">总记录数</div>
+                                </div>
+                                <div class="health-stat">
+                                    <div class="health-stat-value">{{ healthStats.vaccines }}</div>
+                                    <div class="health-stat-label">疫苗记录</div>
+                                </div>
+                                <div class="health-stat">
+                                    <div class="health-stat-value">{{ healthStats.lastCheckup || '-' }}</div>
+                                    <div class="health-stat-label">最近体检</div>
+                                </div>
+                            </div>
+                            <div class="empty-state" v-else>
+                                <i class="el-icon-folder-opened empty-icon"></i>
+                                <div class="empty-text">暂无健康档案记录</div>
+                            </div>
+                            <el-button type="primary" plain style="margin-top: 16px; width: 100%;" 
+                                       @click="viewHealthRecords" v-if="isLoggedIn">
+                                <i class="el-icon-view"></i>
+                                查看健康档案
+                            </el-button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Actions -->
+                <div class="right-column">
+                    <div class="action-section">
+                        <!-- Logged In View -->
+                        <template v-if="isLoggedIn">
+                            <!-- Adoption Form Button -->
+                            <div class="card" style="animation-delay: 0.2s;" v-if="pet.status === 0">
+                                <div class="card-body">
+                                    <el-button type="primary" class="adopt-btn" @click="showAdoptionForm">
+                                        <i class="el-icon-edit-outline"></i>
+                                        申请领养
+                                    </el-button>
+                                </div>
+                            </div>
+
+                            <!-- Already Adopted -->
+                            <div class="card" style="animation-delay: 0.2s;" v-else>
+                                <div class="card-body">
+                                    <div class="login-prompt">
+                                        <i class="el-icon-circle-check login-prompt-icon" style="color: var(--success-color);"></i>
+                                        <p class="login-prompt-text">
+                                            这只宠物{{ pet.status === 1 ? '正在审核中' : '已被领养' }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Shelter Card -->
+                            <div class="card" style="animation-delay: 0.3s;" v-if="shelterInfo" @click="goToShelter">
+                                <div class="card-body">
+                                    <div class="shelter-card">
+                                        <div class="shelter-card-label">推荐救助站</div>
+                                        <div class="shelter-card-name">{{ shelterInfo.name }}</div>
+                                        <div class="shelter-card-info">
+                                            <span><i class="el-icon-location"></i> {{ shelterInfo.address }}</span>
+                                            <span><i class="el-icon-phone"></i> {{ shelterInfo.phone }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Secondary Actions -->
+                            <div class="card" style="animation-delay: 0.4s;">
+                                <div class="card-body">
+                                    <el-button class="secondary-btn warning" @click="favoritePet" style="margin-bottom: 12px;">
+                                        <i class="el-icon-star-off"></i>
+                                        收藏宠物
+                                    </el-button>
+                                    <el-button class="secondary-btn" @click="goToShelterRecommendation">
+                                        <i class="el-icon-office-building"></i>
+                                        查看救助站
+                                    </el-button>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Not Logged In View -->
+                        <div class="card" style="animation-delay: 0.2s;" v-else>
+                            <div class="card-body">
+                                <div class="login-prompt">
+                                    <i class="el-icon-user login-prompt-icon"></i>
+                                    <p class="login-prompt-text">
+                                        登录后可申请领养此宠物<br>
+                                        查看更多健康档案信息
+                                    </p>
+                                    <a href="login.html" class="login-prompt-btn">
+                                        <i class="el-icon-right"></i>
+                                        立即登录
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div class="app-container" v-if="loading">
+            <div class="card" style="margin-bottom: 20px;">
+                <div class="card-body">
+                    <div class="skeleton skeleton-image"></div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="skeleton skeleton-text short"></div>
+                    <div class="skeleton skeleton-text medium"></div>
+                    <div class="skeleton skeleton-text"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div class="app-container" v-if="error">
+            <div class="card">
+                <div class="card-body">
+                    <div class="error-state">
+                        <i class="el-icon-warning error-icon"></i>
+                        <div class="error-title">加载失败</div>
+                        <div class="error-message">{{ errorMessage }}</div>
+                        <button class="retry-btn" @click="loadPetDetail">
+                            <i class="el-icon-refresh"></i>
+                            重新加载
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Overlay -->
+        <div class="success-overlay" v-if="showSuccess">
+            <div class="success-icon">
+                <i class="el-icon-check"></i>
+            </div>
+            <div class="success-text">提交成功！</div>
+            <div class="success-subtext">正在跳转至领养申请列表...</div>
+        </div>
+
+        <!-- Adoption Form Dialog -->
+        <el-dialog title="领养申请" :visible.sync="adoptionDialogVisible" width="600px" :close-on-click-modal="false">
+            <div class="adoption-form">
+                <div class="form-tips">
+                    <div class="form-tips-title">
+                        <i class="el-icon-info"></i>
+                        申请须知
+                    </div>
+                    <ul style="margin: 0; padding-left: 20px;">
+                        <li>请认真填写以下信息，我们将尽快审核您的申请</li>
+                        <li>审核结果将通过系统消息通知您</li>
+                        <li>请确保所填信息真实有效</li>
+                    </ul>
+                </div>
+
+                <el-form :model="adoptionForm" :rules="adoptionRules" ref="adoptionFormRef" label-width="100px">
+                    <el-form-item label="养宠经验" prop="experience">
+                        <el-select v-model="adoptionForm.experience" placeholder="请选择养宠经验" style="width: 100%;">
+                            <el-option label="无经验" value="无经验"></el-option>
+                            <el-option label="1年以下" value="1年以下"></el-option>
+                            <el-option label="1-3年" value="1-3年"></el-option>
+                            <el-option label="3-5年" value="3-5年"></el-option>
+                            <el-option label="5年以上" value="5年以上"></el-option>
+                        </el-select>
+                    </el-form-item>
+
+                    <el-form-item label="居住条件" prop="livingConditions">
+                        <el-select v-model="adoptionForm.livingConditions" placeholder="请选择居住条件" style="width: 100%;">
+                            <el-option label="自有住房" value="自有住房"></el-option>
+                            <el-option label="租房-整租" value="租房-整租"></el-option>
+                            <el-option label="租房-合租" value="租房-合租"></el-option>
+                            <el-option label="宿舍" value="宿舍"></el-option>
+                            <el-option label="其他" value="其他"></el-option>
+                        </el-select>
+                    </el-form-item>
+
+                    <el-form-item label="工作状况" prop="workStatus">
+                        <el-select v-model="adoptionForm.workStatus" placeholder="请选择工作状况" style="width: 100%;">
+                            <el-option label="全职工作" value="全职工作"></el-option>
+                            <el-option label="兼职工作" value="兼职工作"></el-option>
+                            <el-option label="自由职业" value="自由职业"></el-option>
+                            <el-option label="学生" value="学生"></el-option>
+                            <el-option label="退休" value="退休"></el-option>
+                            <el-option label="待业" value="待业"></el-option>
+                        </el-select>
+                    </el-form-item>
+
+                    <el-form-item label="家庭成员" prop="familyMembers">
+                        <el-input v-model="adoptionForm.familyMembers" placeholder="请输入家庭成员情况"></el-input>
+                    </el-form-item>
+
+                    <el-form-item label="申请理由" prop="reason">
+                        <el-input type="textarea" v-model="adoptionForm.reason" 
+                                  :rows="4" placeholder="请输入申请领养的理由（选填）"></el-input>
+                    </el-form-item>
+
+                    <div class="agreement-section">
+                        <el-checkbox v-model="adoptionForm.agreement">
+                            我已阅读并同意
+                            <el-link type="primary" :underline="false">《领养协议》</el-link>
+                            和
+                            <el-link type="primary" :underline="false">《养宠承诺书》</el-link>
+                        </el-checkbox>
+                    </div>
+                </el-form>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="adoptionDialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="submitAdoption" :loading="submitting">
+                    提交申请
+                </el-button>
+            </span>
+        </el-dialog>
+
+        <!-- Mobile Navigation -->
+        <nav class="mobile-nav" v-if="!loading && !error">
+            <a href="pet-list.html" class="mobile-nav-item active">
+                <i class="el-icon-house"></i>
+                首页
+            </a>
+            <a href="health-record.html" class="mobile-nav-item">
+                <i class="el-icon-document"></i>
+                档案
+            </a>
+            <a href="volunteer-task.html" class="mobile-nav-item">
+                <i class="el-icon-coordinate"></i>
+                任务
+            </a>
+            <a href="stats.html" class="mobile-nav-item">
+                <i class="el-icon-data-analysis"></i>
+                统计
+            </a>
+        </nav>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui@2.15.13/lib/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    petId: null,
+                    pet: {},
+                    shelterInfo: null,
+                    healthStats: {
+                        total: 0,
+                        vaccines: 0,
+                        lastCheckup: '-'
+                    },
+                    loading: true,
+                    error: false,
+                    errorMessage: '',
+                    isLoggedIn: false,
+                    adoptionDialogVisible: false,
+                    submitting: false,
+                    showSuccess: false,
+                    adoptionForm: {
+                        petId: '',
+                        experience: '',
+                        livingConditions: '',
+                        workStatus: '',
+                        familyMembers: '',
+                        reason: '',
+                        agreement: false
+                    },
+                    adoptionRules: {
+                        experience: [
+                            { required: true, message: '请选择养宠经验', trigger: 'change' }
+                        ],
+                        livingConditions: [
+                            { required: true, message: '请选择居住条件', trigger: 'change' }
+                        ],
+                        workStatus: [
+                            { required: true, message: '请选择工作状况', trigger: 'change' }
+                        ],
+                        familyMembers: [
+                            { required: true, message: '请输入家庭成员情况', trigger: 'blur' }
+                        ]
+                    }
+                };
+            },
+            created() {
+                this.initAxios();
+                this.checkLoginStatus();
+                this.getPetIdFromUrl();
+                if (this.petId) {
+                    this.loadPetDetail();
+                }
+            },
+            methods: {
+                initAxios() {
+                    const token = localStorage.getItem('token');
+                    
+                    axios.interceptors.request.use(
+                        config => {
+                            if (token) {
+                                config.headers.Authorization = `Bearer ${token}`;
+                            }
+                            return config;
+                        },
+                        error => {
+                            return Promise.reject(error);
+                        }
+                    );
+
+                    axios.interceptors.response.use(
+                        response => response,
+                        error => {
+                            if (error.response && error.response.status === 401) {
+                                localStorage.removeItem('token');
+                                localStorage.removeItem('user');
+                                this.$message.error('登录已过期，请重新登录');
+                                setTimeout(() => {
+                                    window.location.href = 'login.html';
+                                }, 1500);
+                            }
+                            return Promise.reject(error);
+                        }
+                    );
+                },
+                checkLoginStatus() {
+                    const token = localStorage.getItem('token');
+                    this.isLoggedIn = !!token;
+                },
+                getPetIdFromUrl() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    this.petId = urlParams.get('id') || this.getIdFromPath();
+                },
+                getIdFromPath() {
+                    const path = window.location.pathname;
+                    const match = path.match(/\/pet-detail\.html/);
+                    if (match) {
+                        const params = new URLSearchParams(window.location.search);
+                        return params.get('id');
+                    }
+                    return null;
+                },
+                async loadPetDetail() {
+                    if (!this.petId) {
+                        this.error = true;
+                        this.errorMessage = '未提供宠物ID';
+                        this.loading = false;
+                        return;
+                    }
+
+                    this.loading = true;
+                    this.error = false;
+
+                    try {
+                        const response = await axios.get(`/api/pet/detail/${this.petId}`);
+                        if (response.data.code === 200 || response.data.code === 0) {
+                            this.pet = response.data.data || response.data.result || {};
+                            
+                            // Load shelter info if available
+                            if (this.pet.shelterId) {
+                                this.loadShelterInfo(this.pet.shelterId);
+                            }
+                            
+                            // Load health stats if logged in
+                            if (this.isLoggedIn) {
+                                this.loadHealthStats();
+                            }
+                        } else {
+                            throw new Error(response.data.message || '加载失败');
+                        }
+                    } catch (error) {
+                        console.error('Load pet detail error:', error);
+                        this.error = true;
+                        if (error.response && error.response.status === 401) {
+                            this.errorMessage = '请先登录';
+                        } else {
+                            this.errorMessage = error.response?.data?.message || error.message || '加载宠物详情失败';
+                        }
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                async loadShelterInfo(shelterId) {
+                    try {
+                        const response = await axios.get(`/api/shelter/${shelterId}`);
+                        if (response.data.code === 200 || response.data.code === 0) {
+                            this.shelterInfo = response.data.data || response.data.result || {};
+                        }
+                    } catch (error) {
+                        console.error('Load shelter info error:', error);
+                    }
+                },
+                async loadHealthStats() {
+                    try {
+                        const response = await axios.get(`/api/health-record/pet/${this.petId}`);
+                        if (response.data.code === 200 || response.data.code === 0) {
+                            const records = response.data.data || response.data.result || [];
+                            this.healthStats.total = records.length;
+                            
+                            const vaccineRecords = records.filter(r => r.type === '疫苗');
+                            this.healthStats.vaccines = vaccineRecords.length;
+                            
+                            if (records.length > 0) {
+                                const sorted = [...records].sort((a, b) => 
+                                    new Date(b.recordDate || b.createTime) - new Date(a.recordDate || a.createTime)
+                                );
+                                const lastRecord = sorted[0];
+                                if (lastRecord) {
+                                    const date = new Date(lastRecord.recordDate || lastRecord.createTime);
+                                    this.healthStats.lastCheckup = `${date.getMonth() + 1}/${date.getDate()}`;
+                                }
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Load health stats error:', error);
+                        // Silently fail for health stats
+                    }
+                },
+                formatGender(gender) {
+                    const genderMap = {
+                        'M': '公',
+                        'F': '母',
+                        'male': '公',
+                        'female': '母',
+                        '0': '公',
+                        '1': '母'
+                    };
+                    return genderMap[gender] || gender || '-';
+                },
+                formatHealthStatus(status) {
+                    const statusMap = {
+                        'healthy': '健康',
+                        'good': '良好',
+                        'fair': '一般',
+                        'sick': '生病',
+                        'recovering': '康复中'
+                    };
+                    return statusMap[status] || status || '-';
+                },
+                getHealthStatusType(status) {
+                    const typeMap = {
+                        'healthy': 'success',
+                        'good': 'success',
+                        'fair': 'warning',
+                        'sick': 'danger',
+                        'recovering': 'warning'
+                    };
+                    return typeMap[status] || 'info';
+                },
+                formatDate(dateStr) {
+                    if (!dateStr) return '-';
+                    const date = new Date(dateStr);
+                    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+                },
+                showAdoptionForm() {
+                    if (!this.isLoggedIn) {
+                        this.$message.warning('请先登录');
+                        setTimeout(() => {
+                            window.location.href = 'login.html';
+                        }, 1000);
+                        return;
+                    }
+                    this.adoptionForm.petId = this.petId;
+                    this.adoptionDialogVisible = true;
+                },
+                submitAdoption() {
+                    this.$refs.adoptionFormRef.validate(async (valid) => {
+                        if (!valid) {
+                            return false;
+                        }
+                        
+                        if (!this.adoptionForm.agreement) {
+                            this.$message.warning('请阅读并同意领养协议');
+                            return;
+                        }
+
+                        this.submitting = true;
+
+                        try {
+                            const submitData = {
+                                petId: parseInt(this.petForm.petId) || this.adoptionForm.petId,
+                                experience: this.adoptionForm.experience,
+                                livingConditions: this.adoptionForm.livingConditions,
+                                workStatus: this.adoptionForm.workStatus,
+                                familyMembers: this.adoptionForm.familyMembers,
+                                reason: this.adoptionForm.reason
+                            };
+
+                            const response = await axios.post('/api/adoption/apply', submitData);
+                            
+                            if (response.data.code === 200 || response.data.code === 0) {
+                                this.adoptionDialogVisible = false;
+                                this.showSuccess = true;
+                                this.$message.success('申请提交成功！');
+                                
+                                setTimeout(() => {
+                                    window.location.href = 'adoption-list.html';
+                                }, 2000);
+                            } else {
+                                throw new Error(response.data.message || '提交失败');
+                            }
+                        } catch (error) {
+                            console.error('Submit adoption error:', error);
+                            this.$message.error(error.response?.data?.message || error.message || '提交申请失败');
+                        } finally {
+                            this.submitting = false;
+                        }
+                    });
+                },
+                favoritePet() {
+                    this.$message.info('功能开发中');
+                },
+                goBack() {
+                    window.location.href = 'pet-list.html';
+                },
+                goToShelter() {
+                    if (this.shelterInfo) {
+                        window.location.href = `shelter-recommendation.html?id=${this.shelterInfo.id}`;
+                    } else {
+                        window.location.href = 'shelter-recommendation.html';
+                    }
+                },
+                goToShelterRecommendation() {
+                    window.location.href = 'shelter-recommendation.html';
+                },
+                viewHealthRecords() {
+                    window.location.href = `health-record.html?petId=${this.petId}`;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

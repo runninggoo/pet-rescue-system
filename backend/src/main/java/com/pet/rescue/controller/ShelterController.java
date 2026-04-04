@@ -17,7 +17,7 @@ import java.util.Map;
  * 实现上海地区救助所的智能化管理
  */
 @RestController
-@RequestMapping("/api/shelter")
+@RequestMapping("/shelter")
 public class ShelterController {
 
     private final ShelterService shelterService;

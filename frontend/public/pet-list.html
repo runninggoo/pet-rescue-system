@@ -2,170 +2,1073 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>宠物救助收养系统 - 宠物列表</title>
-    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>宠物列表 - 宠物救助收养系统</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.15.13/lib/theme-chalk/index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #E07A5F;
+            --primary-dark: #c96a50;
+            --primary-light: #f0a28a;
+            --sage: #81B29A;
+            --sage-light: #a8cdb8;
+            --amber: #F4A261;
+            --warm-white: #FDF6F0;
+            --warm-cream: #FAEEE7;
+            --warm-gray: #f0ebe7;
+            --text-dark: #3D405B;
+            --text-muted: #8A8EA0;
+            --card-shadow: 0 4px 20px rgba(224, 122, 95, 0.1);
+            --card-shadow-hover: 0 12px 32px rgba(224, 122, 95, 0.18);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius: 16px;
+            --radius-sm: 10px;
+        }
+
+        * { box-sizing: border-box; }
+        *:focus { outline: none; }
+        *:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
         body {
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f7fa;
+            margin: 0; padding: 0;
+            background-color: var(--warm-white);
+            font-family: "Nunito", "PingFang SC", "Microsoft YaHei", sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+            color: var(--text-dark);
         }
-        .header {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24'%3E%3Cpath fill='%23E07A5F' fill-opacity='0.03' d='M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 0;
         }
-        .pet-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--warm-gray); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px 20px; }
+
+        /* ========== 头部横幅 ========== */
+        .header-banner {
+            background: linear-gradient(135deg, #E07A5F 0%, #c96a50 40%, #F4A261 100%);
+            border-radius: var(--radius); padding: 32px 36px; margin-bottom: 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            position: relative; overflow: hidden; box-shadow: 0 8px 32px rgba(224, 122, 95, 0.25);
+            animation: fadeSlideDown 0.5s ease;
         }
+        @keyframes fadeSlideDown {
+            from { opacity: 0; transform: translateY(-16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .header-banner::before {
+            content: ''; position: absolute; top: -30px; right: -30px;
+            width: 180px; height: 180px; background: rgba(255,255,255,0.06); border-radius: 50%;
+        }
+        .banner-left { position: relative; z-index: 1; }
+        .banner-emoji { font-size: 40px; margin-bottom: 8px; display: inline-block; animation: gentleBounce 3s ease-in-out infinite; }
+        @keyframes gentleBounce {
+            0%, 100% { transform: translateY(0) rotate(-3deg); }
+            50% { transform: translateY(-6px) rotate(3deg); }
+        }
+        .banner-title { font-size: 26px; font-weight: 800; color: white; margin: 0 0 4px; letter-spacing: -0.5px; }
+        .banner-subtitle { font-size: 14px; color: rgba(255,255,255,0.8); margin: 0; }
+        .banner-right { position: relative; z-index: 1; display: flex; gap: 12px; align-items: center; }
+        .banner-stat { text-align: center; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); padding: 10px 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); }
+        .banner-stat-num { font-size: 24px; font-weight: 800; color: white; display: block; line-height: 1; }
+        .banner-stat-label { font-size: 11px; color: rgba(255,255,255,0.75); margin-top: 3px; display: block; }
+        .banner-link { color: white; text-decoration: none; font-size: 14px; padding: 8px 16px; border-radius: 8px; border: 1.5px solid rgba(255,255,255,0.5); transition: var(--transition); background: rgba(255,255,255,0.1); backdrop-filter: blur(4px); }
+        .banner-link:hover { background: rgba(255,255,255,0.25); border-color: white; }
+
+        /* ========== 筛选区域 ========== */
+        .filter-section {
+            background: white; padding: 20px 24px; border-radius: var(--radius); margin-bottom: 20px;
+            box-shadow: var(--card-shadow); animation: fadeSlideDown 0.5s ease 0.1s both;
+            border: 1px solid rgba(224, 122, 95, 0.06);
+        }
+        .filter-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+        .filter-row .el-select, .filter-row .el-input { min-width: 150px; }
+        .search-input { min-width: 220px !important; }
+        .filter-actions { margin-top: 12px; display: flex; gap: 8px; align-items: center; }
+
+        /* Element UI 暖色覆盖 */
+        .el-input__inner { border-radius: var(--radius-sm) !important; border-color: var(--warm-gray) !important; font-family: inherit !important; transition: border-color 0.2s !important; }
+        .el-input__inner:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(224, 122, 95, 0.1) !important; }
+        .el-button--primary { background: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; font-family: inherit !important; font-weight: 600 !important; }
+        .el-button--primary:hover { background: var(--primary-dark) !important; border-color: var(--primary-dark) !important; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(224, 122, 95, 0.3); }
+        .el-button { border-radius: var(--radius-sm) !important; font-family: inherit !important; }
+
+        /* ========== 统计卡片 ========== */
+        .stats-bar {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 20px;
+            animation: fadeSlideDown 0.5s ease 0.15s both;
+        }
+        .stat-card { background: white; padding: 18px 20px; border-radius: var(--radius); box-shadow: var(--card-shadow); display: flex; align-items: center; gap: 14px; border: 1px solid rgba(224, 122, 95, 0.06); transition: var(--transition); }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: var(--card-shadow-hover); }
+        .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+        .stat-icon.all { background: linear-gradient(135deg, #E07A5F, #F4A261); }
+        .stat-icon.waiting { background: linear-gradient(135deg, #81B29A, #a8cdb8); }
+        .stat-icon.adopted { background: linear-gradient(135deg, #F4A261, #e8b87a); }
+        .stat-icon.urgent { background: linear-gradient(135deg, #E07A5F, #c96a50); }
+        .stat-info { min-width: 0; }
+        .stat-num { font-size: 28px; font-weight: 800; color: var(--text-dark); line-height: 1; }
+        .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+        /* ========== 宠物卡片网格 ========== */
+        .pet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .pet-card {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
+            background: white; border-radius: var(--radius); overflow: hidden;
+            box-shadow: var(--card-shadow); border: 1px solid rgba(224, 122, 95, 0.06);
+            transition: var(--transition); cursor: pointer;
+            animation: cardEnter 0.5s ease both;
         }
-        .pet-card:hover {
-            transform: translateY(-5px);
+        .pet-card:hover { transform: translateY(-4px) scale(1.01); box-shadow: var(--card-shadow-hover); }
+        @keyframes cardEnter {
+            from { opacity: 0; transform: translateY(20px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
-        .pet-image {
-            width: 100%;
-            height: 200px;
-            background-color: #f0f2f5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #909399;
+        .pet-card:nth-child(1) { animation-delay: 0.04s; }
+        .pet-card:nth-child(2) { animation-delay: 0.08s; }
+        .pet-card:nth-child(3) { animation-delay: 0.12s; }
+        .pet-card:nth-child(4) { animation-delay: 0.16s; }
+        .pet-card:nth-child(5) { animation-delay: 0.2s; }
+        .pet-card:nth-child(6) { animation-delay: 0.24s; }
+        .pet-card:nth-child(n+7) { animation-delay: 0.28s; }
+
+        .pet-image { width: 100%; height: 200px; background: linear-gradient(135deg, #FAEEE7 0%, #E8D5C4 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        .pet-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+        .pet-card:hover .pet-image img { transform: scale(1.06); }
+        .pet-image .placeholder { font-size: 52px; opacity: 0.5; }
+        .corner-badges { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; justify-content: space-between; align-items: flex-start; z-index: 2; pointer-events: none; }
+        .status-badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .status-0 { background: linear-gradient(135deg, #81B29A, #6a9b82); }
+        .status-1 { background: linear-gradient(135deg, #F4A261, #e0933e); }
+        .urgency-badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .urgency-1 { background: linear-gradient(135deg, #F4A261, #e0933e); }
+        .urgency-2 { background: linear-gradient(135deg, #E07A5F, #c96a50); animation: urgentPulse 2s infinite; }
+        @keyframes urgentPulse {
+            0%, 100% { box-shadow: 0 2px 8px rgba(224, 122, 95, 0.3); }
+            50% { box-shadow: 0 2px 16px rgba(224, 122, 95, 0.6); }
         }
-        .pet-info {
-            padding: 15px;
+        .pet-info { padding: 14px 16px; }
+        .pet-name { font-size: 17px; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+        .pet-meta { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+        .meta-tag { background: var(--warm-cream); color: var(--text-muted); padding: 2px 9px; border-radius: 6px; font-size: 12px; transition: var(--transition); }
+        .meta-tag.gender-male { color: #6a9b82; background: #e8f5ee; }
+        .meta-tag.gender-female { color: var(--primary); background: #fce8e2; }
+        .meta-tag.gender-unknown { color: var(--text-muted); background: var(--warm-cream); }
+        .pet-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+        .admin-actions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.2s; }
+        .pet-card:hover .admin-actions { opacity: 1; }
+
+        /* ========== 骨架屏 ========== */
+        .skeleton-card { background: white; border-radius: var(--radius); overflow: hidden; box-shadow: var(--card-shadow); border: 1px solid rgba(224, 122, 95, 0.06); }
+        .skeleton-image { height: 200px; background: linear-gradient(90deg, #f0ebe7 25%, #FAEEE7 50%, #f0ebe7 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .skeleton-info { padding: 15px; }
+        .skeleton-line { height: 14px; background: linear-gradient(90deg, #f0ebe7 25%, #FAEEE7 50%, #f0ebe7 75%); background-size: 200% 100%; border-radius: 4px; margin-bottom: 8px; animation: shimmer 1.5s infinite; }
+
+        /* ========== 分页 ========== */
+        .pagination-wrap { display: flex; justify-content: center; margin-top: 28px; }
+        .el-pagination { font-family: inherit !important; }
+        .el-pagination button { border-radius: var(--radius-sm) !important; }
+        .el-pagination li { border-radius: var(--radius-sm) !important; }
+        .el-pager li.active { background: var(--primary) !important; color: white !important; }
+
+        /* ========== 品种管理弹窗（原生覆盖层） ========== */
+        .cat-overlay {
+            position: fixed; inset: 0; z-index: 2000;
+            background: rgba(61, 64, 91, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+            animation: fadeIn 0.2s ease;
         }
-        .pet-name {
-            font-size: 18px;
-            font-weight: bold;
-            color: #303133;
-            margin-bottom: 10px;
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .cat-panel {
+            background: white; border-radius: var(--radius);
+            width: 700px; max-width: 95vw; max-height: 85vh;
+            display: flex; flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            animation: slideUp 0.25s ease;
         }
-        .pet-breed, .pet-age {
-            color: #606266;
-            margin-bottom: 5px;
-            font-size: 14px;
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .cat-panel-header {
+            padding: 20px 24px; border-bottom: 2px solid var(--warm-cream);
+            display: flex; align-items: center; justify-content: space-between;
+            flex-shrink: 0;
         }
-        .pet-status {
-            margin-top: 10px;
+        .cat-panel-header h3 { margin: 0; font-size: 18px; font-weight: 700; color: var(--text-dark); }
+        .cat-panel-close { font-size: 22px; color: var(--text-muted); cursor: pointer; padding: 4px; line-height: 1; transition: color 0.15s; }
+        .cat-panel-close:hover { color: var(--primary); }
+        .cat-panel-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
+        .cat-management { display: flex; gap: 20px; }
+        .cat-left { width: 200px; flex-shrink: 0; border-right: 1px solid var(--warm-gray); padding-right: 20px; }
+        .cat-right { flex: 1; min-width: 0; }
+        .cat-panel-title { font-size: 13px; font-weight: 700; color: var(--text-dark); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; border-bottom: 2px solid var(--warm-cream); }
+        .add-form { background: var(--warm-cream); border-radius: var(--radius-sm); padding: 10px; margin-bottom: 10px; }
+        .cat-list { max-height: 280px; overflow-y: auto; }
+        .cat-item { display: flex; align-items: center; padding: 8px 10px; border-radius: var(--radius-sm); cursor: pointer; transition: background 0.15s; gap: 6px; margin-bottom: 2px; }
+        .cat-item:hover { background: var(--warm-cream); }
+        .cat-item.active { background: rgba(224, 122, 95, 0.12); font-weight: 600; }
+        .cat-item-icon { font-size: 16px; flex-shrink: 0; }
+        .cat-item-name { flex: 1; font-size: 13px; color: var(--text-dark); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .cat-item-count { font-size: 11px; color: var(--text-muted); flex-shrink: 0; }
+        .cat-item-actions { display: none; gap: 4px; flex-shrink: 0; }
+        .cat-item:hover .cat-item-actions { display: flex; }
+        .cat-item-actions i { font-size: 13px; cursor: pointer; color: var(--text-muted); padding: 2px; }
+        .cat-item-actions i:hover { color: var(--primary); }
+        .breed-list { max-height: 300px; overflow-y: auto; }
+        .breed-item { display: flex; align-items: center; justify-content: space-between; padding: 7px 10px; border-radius: var(--radius-sm); transition: background 0.15s; margin-bottom: 2px; }
+        .breed-item:hover { background: var(--warm-cream); }
+        .breed-name { font-size: 13px; color: var(--text-dark); }
+        .breed-actions { display: none; }
+        .breed-item:hover .breed-actions { display: flex; gap: 4px; }
+        .breed-empty { text-align: center; color: var(--text-muted); font-size: 13px; padding: 40px 0; }
+        .inline-edit { display: flex; gap: 4px; margin-top: 6px; }
+
+        /* ========== 移动端适配 ========== */
+        @media (max-width: 768px) {
+            .container { padding: 14px; }
+            .header-banner { padding: 20px; flex-direction: column; align-items: flex-start; gap: 16px; }
+            .banner-title { font-size: 20px; }
+            .banner-right { width: 100%; justify-content: space-between; flex-wrap: wrap; }
+            .stats-bar { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .stat-card { padding: 14px; gap: 10px; }
+            .stat-num { font-size: 22px; }
+            .pet-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .pet-image { height: 150px; }
+            .filter-row { flex-direction: column; align-items: stretch; }
+            .filter-row .el-select, .filter-row .el-input, .search-input { width: 100% !important; min-width: unset !important; }
+            .cat-management { flex-direction: column; }
+            .cat-left { width: 100%; border-right: none; border-bottom: 1px solid var(--warm-gray); padding-right: 0; padding-bottom: 12px; margin-bottom: 12px; }
+            .cat-list { max-height: 160px; }
+            .cat-panel { width: 95vw; }
         }
-        .el-pagination {
-            text-align: center;
-            margin-top: 30px;
+
+        @media (max-width: 480px) {
+            .pet-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div id="app">
-        <div class="header">
-            <h2>🐾 待领养宠物列表</h2>
-            <div>
-                <el-input v-model="searchKeyword" placeholder="搜索宠物名称" style="width: 250px;" @keyup.enter.native="handleSearch"></el-input>
-                <el-button type="primary" @click="handleSearch" style="margin-left: 10px;">搜索</el-button>
-                <el-button @click="handleReset">重置</el-button>
+<div id="app">
+    <!-- 头部横幅 -->
+    <div class="header-banner">
+        <div class="banner-left">
+            <div class="banner-emoji">🐾</div>
+            <h1 class="banner-title">宠物列表</h1>
+            <p class="banner-subtitle">发现身边待领养的可爱生命</p>
+        </div>
+        <div class="banner-right">
+            <div class="banner-stat">
+                <span class="banner-stat-num">{{ total }}</span>
+                <span class="banner-stat-label">待领养</span>
+            </div>
+            <div class="banner-stat">
+                <span class="banner-stat-num" style="color: rgba(255,255,255,0.5);">{{ statusStats[1] || 0 }}</span>
+                <span class="banner-stat-label">已领养</span>
+            </div>
+            <!-- 角色化导航 -->
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <a href="profile.html" class="banner-link">个人中心</a>
+                <span style="color:rgba(255,255,255,0.4)">|</span>
+                <a v-if="currentRole === 'admin'" href="user-management.html" class="banner-link">用户管理</a>
+                <span v-if="currentRole === 'admin'" style="color:rgba(255,255,255,0.4)">|</span>
+                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="adoption-list.html" class="banner-link">领养审核</a>
+                <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'" style="color:rgba(255,255,255,0.4)">|</span>
+                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="stats.html" class="banner-link">数据统计</a>
+                <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'" style="color:rgba(255,255,255,0.4)">|</span>
+                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="health-record.html" class="banner-link">健康档案</a>
+                <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'" style="color:rgba(255,255,255,0.4)">|</span>
+                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin' || currentRole === 'volunteer'" href="volunteer-task.html" class="banner-link">任务管理</a>
+                <span v-if="currentRole === 'admin' || currentRole === 'institution_admin' || currentRole === 'volunteer'" style="color:rgba(255,255,255,0.4)">|</span>
+                <a href="shelter-recommendation.html" class="banner-link">救助站</a>
+                <span style="color:rgba(255,255,255,0.4)">|</span>
+                <span @click="logout" class="banner-link" style="cursor:pointer;">退出登录</span>
+                <span style="margin-left:4px;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:700;"
+                      :style="'background:' + (currentRole==='admin'?'rgba(254,240,238,0.9)':currentRole==='institution_admin'?'rgba(227,242,253,0.9)':currentRole==='volunteer'?'rgba(255,248,225,0.9)':currentRole==='adopter'?'rgba(232,245,233,0.9)':'rgba(243,229,245,0.9)') + ';color:' + (currentRole==='admin'?'#c96a50':currentRole==='institution_admin'?'#1565c0':currentRole==='volunteer'?'#f57f17':currentRole==='adopter'?'#2e7d32':'#7b1fa2')">
+                    {{ getRoleName(currentRole) }}
+                </span>
+            </div>
+            <el-button v-if="currentRole === 'admin'" type="warning" size="small" icon="el-icon-plus"
+                style="border-radius: 8px; font-weight: 600; background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.5); color: white;"
+                @click="openAddDialog">
+                新增宠物
+            </el-button>
+            <el-button v-if="currentRole === 'admin'" type="info" size="small" icon="el-icon-collection"
+                style="border-radius: 8px; font-weight: 600; background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.9);"
+                @click="openCatDialog">
+                品种管理
+            </el-button>
+        </div>
+    </div>
+
+    <!-- 筛选区域 -->
+    <div class="filter-section">
+        <div class="filter-row">
+            <el-input v-model="filters.keyword" placeholder="搜索宠物名称或品种" class="search-input" clearable size="small" @keyup.enter.native="handleSearch">
+                <i slot="prefix" class="el-input__icon el-icon-search"></i>
+            </el-input>
+            <el-select v-model="filters.categoryType" placeholder="宠物类型" clearable size="small" @change="onCategoryTypeChange">
+                <el-option v-for="cat in categoryList" :key="cat.id" :label="cat.name" :value="cat.type"></el-option>
+            </el-select>
+            <el-select v-model="filters.breed" placeholder="选择品种" clearable size="small" :disabled="!filters.categoryType" @change="handleSearch">
+                <el-option v-for="sub in breedChildren" :key="sub.id" :label="sub.name" :value="sub.name"></el-option>
+            </el-select>
+            <el-select v-model="filters.urgencyLevel" placeholder="紧急程度" clearable size="small" @change="handleSearch">
+                <el-option label="全部紧急程度" value=""></el-option>
+                <el-option :label="'一般'" :value="0"><span style="color: #81B29A;">一般</span></el-option>
+                <el-option :label="'紧急'" :value="1"><span style="color: #F4A261;">紧急</span></el-option>
+                <el-option :label="'非常紧急'" :value="2"><span style="color: #E07A5F;">非常紧急</span></el-option>
+            </el-select>
+            <el-select v-model="filters.gender" placeholder="性别" clearable size="small" @change="handleSearch">
+                <el-option label="全部" value=""></el-option>
+                <el-option label="♂ 公" :value="1"></el-option>
+                <el-option label="♀ 母" :value="2"></el-option>
+                <el-option label="未知" :value="0"></el-option>
+            </el-select>
+        </div>
+        <div class="filter-actions">
+            <el-button type="primary" icon="el-icon-search" size="small" @click="handleSearch">搜索</el-button>
+            <el-button size="small" @click="handleReset">重置</el-button>
+            <el-button v-if="hasActiveFilters" type="text" size="small" style="color: var(--primary);" @click="handleReset">清除筛选</el-button>
+            <span style="margin-left:auto; font-size:12px; color:var(--text-muted);">共找到 <strong style="color:var(--primary);">{{ total }}</strong> 只待领养宠物</span>
+        </div>
+        <div v-if="hasActiveFilters" class="filter-tag">
+            <el-tag v-if="filters.categoryType" closable size="small" style="margin-right:6px; border-color:var(--warm-gray);" @close="filters.categoryType=''; filters.breed=''; breedChildren=[]; handleSearch()">类型: {{ getCategoryName(filters.categoryType) }}</el-tag>
+            <el-tag v-if="filters.breed" closable size="small" type="info" style="margin-right: 6px; border-color: var(--warm-gray);" @close="filters.breed = ''; handleSearch()">品种: {{ filters.breed }}</el-tag>
+            <el-tag v-if="filters.gender !== '' && filters.gender !== null" closable size="small" type="info" style="margin-right: 6px; border-color: var(--warm-gray);" @close="filters.gender = ''; handleSearch()">性别: {{ filters.gender == 1 ? '公' : filters.gender == 2 ? '母' : '未知' }}</el-tag>
+        </div>
+    </div>
+
+    <!-- 统计卡片 -->
+    <div class="stats-bar">
+        <div class="stat-card">
+            <div class="stat-icon all">🐾</div>
+            <div class="stat-info">
+                <div class="stat-num">{{ total }}</div>
+                <div class="stat-label">待领养宠物</div>
             </div>
         </div>
+        <div class="stat-card">
+            <div class="stat-icon waiting">🐱</div>
+            <div class="stat-info">
+                <div class="stat-num">{{ categoryStats['CATS'] || 0 }}</div>
+                <div class="stat-label">猫咪</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon waiting">🐶</div>
+            <div class="stat-info">
+                <div class="stat-num">{{ categoryStats['DOGS'] || 0 }}</div>
+                <div class="stat-label">狗狗</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon urgent">⚠️</div>
+            <div class="stat-info">
+                <div class="stat-num">{{ urgentCount }}</div>
+                <div class="stat-label">紧急救助</div>
+            </div>
+        </div>
+    </div>
 
-        <div class="pet-grid" v-loading="loading">
-            <div class="pet-card" v-for="pet in pets" :key="pet.id">
-                <div class="pet-image" @click="handlePetDetail(pet.id)">
-                    <img v-if="pet.imageUrl" :src="pet.imageUrl" style="width: 100%; height: 100%; object-fit: cover;">
-                    <span v-else>暂无图片</span>
+    <!-- 宠物网格 -->
+    <div v-if="loading" class="pet-grid">
+        <div v-for="n in pageSize" :key="n" class="skeleton-card">
+            <div class="skeleton-image"></div>
+            <div class="skeleton-info">
+                <div class="skeleton-line" style="width:60%;height:18px;margin-bottom:12px;"></div>
+                <div class="skeleton-line" style="width:80%;"></div>
+                <div class="skeleton-line" style="width:50%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div v-else-if="pets.length === 0 && hasSearched" class="pet-grid">
+        <div style="grid-column:1/-1;text-align:center;padding:60px 0;color:var(--text-muted);">
+            <div style="font-size:48px;margin-bottom:12px;">🔍</div>
+            <div style="font-size:16px;font-weight:600;">未找到符合条件的宠物</div>
+            <div style="font-size:13px;margin-top:6px;">试试调整筛选条件</div>
+        </div>
+    </div>
+
+    <div v-else class="pet-grid">
+        <div v-for="(pet, index) in pets" :key="pet.id" class="pet-card" @click="handlePetDetail(pet.id)">
+            <div class="pet-image">
+                <img v-if="pet.imageUrl" :src="pet.imageUrl" @error="handleImgError" :alt="pet.name">
+                <span v-else class="placeholder">🐾</span>
+                <div class="corner-badges">
+                    <span class="status-badge" :class="'status-' + (pet.status || 0)">
+                        {{ pet.status === 0 ? '待领养' : '已领养' }}
+                    </span>
+                    <span v-if="pet.urgencyLevel >= 2" class="urgency-badge urgency-2">紧急</span>
+                    <span v-else-if="pet.urgencyLevel >= 1" class="urgency-badge urgency-1">需关注</span>
                 </div>
-                <div class="pet-info">
-                    <div class="pet-name" @click="handlePetDetail(pet.id)">{{ pet.name }}</div>
-                    <div class="pet-breed">品种：{{ pet.breed }}</div>
-                    <div class="pet-age">年龄：{{ pet.age }}个月</div>
-                    <div class="pet-status">
-                        <el-tag :type="pet.status === 0 ? 'success' : 'info'" size="small">
-                            {{ pet.status === 0 ? '待领养' : '已领养' }}
-                        </el-tag>
-                        <el-button type="text" style="float: right;" @click="handlePetDetail(pet.id)">查看详情</el-button>
+            </div>
+            <div class="pet-info">
+                <div class="pet-name">
+                    {{ pet.name }}
+                    <div class="admin-actions" @click.stop>
+                        <el-button type="text" icon="el-icon-edit" size="mini" style="color:var(--amber);" @click="openEditDialog(pet)">编辑</el-button>
+                        <el-button type="text" icon="el-icon-delete" size="mini" style="color:var(--primary);" @click="confirmDelete(pet)">删除</el-button>
                     </div>
                 </div>
+                <div class="pet-meta">
+                    <span class="meta-tag" :class="'gender-' + (pet.gender === 1 ? 'male' : pet.gender === 2 ? 'female' : 'unknown')">
+                        {{ pet.gender === 1 ? '♂ 公' : pet.gender === 2 ? '♀ 母' : '? 未知' }}
+                    </span>
+                    <span v-if="pet.breed" class="meta-tag">{{ pet.breed }}</span>
+                    <span v-if="pet.age" class="meta-tag">{{ pet.age }}月</span>
+                    <span v-if="pet.weight" class="meta-tag">{{ pet.weight }}kg</span>
+                </div>
+                <div class="pet-tags">
+                    <el-tag v-if="pet.healthStatus" size="mini" :type="pet.healthStatus === '良好' ? 'success' : pet.healthStatus === '伤病中' ? 'danger' : 'warning'" style="border-radius:6px;">
+                        {{ pet.healthStatus }}
+                    </el-tag>
+                    <el-tag v-if="pet.personality" size="mini" type="info" style="border-radius:6px;">{{ pet.personality }}</el-tag>
+                </div>
             </div>
         </div>
+    </div>
 
+    <!-- 分页 -->
+    <div v-if="total > pageSize" class="pagination-wrap">
         <el-pagination
             @current-change="handlePageChange"
             :current-page="currentPage"
             :page-size="pageSize"
-            layout="total, prev, pager, next"
-            :total="total">
+            layout="prev, pager, next, total, jumper"
+            :total="total"
+            :pager-count="5">
         </el-pagination>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
-    <script src="https://unpkg.com/axios@0.27.2/dist/axios.min.js"></script>
-    <script>
-        new Vue({
-            el: '#app',
-            data: {
-                pets: [],
-                loading: false,
-                searchKeyword: '',
-                currentPage: 1,
-                pageSize: 12,
-                total: 0
+    <!-- 管理员：新增/编辑宠物弹窗 -->
+    <el-dialog
+        :title="dialogMode === 'add' ? '新增宠物' : '编辑宠物信息'"
+        :visible.sync="showPetDialog"
+        width="580px"
+        :close-on-click-modal="false"
+        center>
+        <el-form :model="petForm" :rules="petRules" ref="petFormRef" label-width="90px" size="small">
+        <el-form-item label="宠物名称" prop="name">
+            <el-input v-model="petForm.name" placeholder="如：小黄、小黑" maxlength="20" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="宠物类型" prop="categoryType">
+            <el-select v-model="petForm.categoryType" placeholder="选择类型" clearable style="width:100%" @change="onFormCategoryChange">
+                <el-option v-for="cat in categoryList" :key="cat.id" :label="cat.name" :value="cat.type"></el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="品种" prop="breed">
+            <el-select v-model="petForm.breed" placeholder="先选择类型再选品种" clearable style="width:100%" :disabled="!petForm.categoryType">
+                <el-option v-for="sub in formBreedChildren" :key="sub.id" :label="sub.name" :value="sub.name"></el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="性别" prop="gender">
+            <el-radio-group v-model="petForm.gender">
+                <el-radio :label="1">♂ 公</el-radio>
+                <el-radio :label="2">♀ 母</el-radio>
+                <el-radio :label="0">未知</el-radio>
+            </el-radio-group>
+        </el-form-item>
+        <el-row :gutter="12">
+            <el-col :span="12"><el-form-item label="年龄(月)"><el-input-number v-model="petForm.age" :min="0" :max="240" controls-position="right" style="width:100%"></el-input-number></el-form-item></el-col>
+            <el-col :span="12"><el-form-item label="体重(kg)"><el-input-number v-model="petForm.weight" :min="0" :max="200" :precision="1" controls-position="right" style="width:100%"></el-input-number></el-form-item></el-col>
+        </el-row>
+        <el-form-item label="颜色"><el-input v-model="petForm.color" placeholder="如：黄色、黑白相间" maxlength="20" clearable></el-input></el-form-item>
+        <el-form-item label="健康状况">
+            <el-select v-model="petForm.healthStatus" placeholder="请选择" clearable style="width:100%">
+                <el-option label="良好" value="良好"></el-option>
+                <el-option label="一般" value="一般"></el-option>
+                <el-option label="需特殊护理" value="需特殊护理"></el-option>
+                <el-option label="伤病中" value="伤病中"></el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="性格特点"><el-input v-model="petForm.personality" placeholder="如：活泼、亲人、安静" maxlength="50" clearable></el-input></el-form-item>
+        <el-form-item label="紧急程度">
+            <el-select v-model="petForm.urgencyLevel" placeholder="请选择" clearable style="width:100%">
+                <el-option :label="'一般'" :value="0"></el-option>
+                <el-option :label="'紧急'" :value="1"></el-option>
+                <el-option :label="'非常紧急'" :value="2"></el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="领养状态">
+            <el-select v-model="petForm.status" placeholder="请选择" style="width:100%">
+                <el-option :label="'待领养'" :value="0"></el-option>
+                <el-option :label="'已领养'" :value="1"></el-option>
+            </el-select>
+        </el-form-item>
+        <el-form-item label="图片URL"><el-input v-model="petForm.imageUrl" placeholder="输入宠物图片链接（可选）" clearable></el-input></el-form-item>
+        <el-form-item label="描述"><el-input v-model="petForm.description" type="textarea" :rows="3" placeholder="宠物描述、救助经历等" maxlength="500" show-word-limit></el-input></el-form-item>
+        </el-form>
+        <span slot="footer">
+            <el-button @click="showPetDialog = false" size="medium">取消</el-button>
+            <el-button type="primary" :loading="dialogLoading" @click="handleSavePet" size="medium">{{ dialogLoading ? '保存中...' : '保存' }}</el-button>
+        </span>
+    </el-dialog>
+
+    <!-- 管理员：删除确认弹窗 -->
+    <el-dialog title="确认删除" :visible.sync="showDeleteDialog" width="420px" center>
+        <div style="text-align:center; padding: 12px 0;">
+            <div style="font-size:48px; margin-bottom:12px;">⚠️</div>
+            <p style="font-size:16px; color:#3D405B; margin:0 0 8px;">确定要删除宠物 <strong style="color:#E07A5F;">{{ deleteTarget.name }}</strong> 吗？</p>
+            <p style="font-size:13px; color:#8A8EA0; margin:0;">此操作不可恢复，请谨慎操作。</p>
+        </div>
+        <span slot="footer">
+            <el-button @click="showDeleteDialog = false" size="medium">取消</el-button>
+            <el-button type="danger" :loading="dialogLoading" @click="handleConfirmDelete" size="medium">{{ dialogLoading ? '删除中...' : '确认删除' }}</el-button>
+        </span>
+    </el-dialog>
+
+    <!-- 管理员：品种管理弹窗（原生覆盖层，不依赖 el-dialog） -->
+    <div v-if="showCatDialog" class="cat-overlay" @click.self="showCatDialog = false">
+        <div class="cat-panel">
+            <div class="cat-panel-header">
+                <h3>🌿 品种分类管理</h3>
+                <span class="cat-panel-close" @click="showCatDialog = false">✕</span>
+            </div>
+            <div class="cat-panel-body">
+                <div class="cat-management">
+                    <!-- 左侧：一级分类 -->
+                    <div class="cat-left">
+                        <div class="cat-panel-title">
+                            <span>宠物大类</span>
+                            <el-button type="text" icon="el-icon-plus" size="mini" @click="showAddRoot = true" style="color: var(--primary); padding: 2px 4px;">新增</el-button>
+                        </div>
+                        <!-- 新增大类表单 -->
+                        <div v-if="showAddRoot" class="add-form">
+                            <el-select v-model="newRootType" placeholder="选择大类" size="mini" style="width:100%;margin-bottom:6px;">
+                                <el-option label="🐱 猫类" value="CATS"></el-option>
+                                <el-option label="🐶 犬类" value="DOGS"></el-option>
+                                <el-option label="🐰 小动物" value="SMALL_ANIMALS"></el-option>
+                                <el-option label="🐦 鸟类" value="BIRDS"></el-option>
+                                <el-option label="🐟 其他" value="OTHER"></el-option>
+                            </el-select>
+                            <el-input v-model="newRootName" placeholder="名称，如：猫" size="mini" style="margin-bottom:6px;" @keyup.enter="handleAddRoot"></el-input>
+                            <div style="display:flex;gap:4px;">
+                                <el-button size="mini" @click="showAddRoot=false; newRootName=''; newRootType=''">取消</el-button>
+                                <el-button type="primary" size="mini" :loading="catLoading" @click="handleAddRoot">确定</el-button>
+                            </div>
+                        </div>
+                        <!-- 分类列表 -->
+                        <div class="cat-list">
+                            <div v-for="cat in categoryList" :key="cat.id" class="cat-item"
+                                 :class="{ active: selectedCat && selectedCat.id === cat.id }"
+                                 @click="selectCat(cat)">
+                                <span class="cat-item-icon">{{ getTypeEmoji(cat.type) }}</span>
+                                <span class="cat-item-name">{{ cat.name }}</span>
+                                <span class="cat-item-count">{{ (cat.children||[]).length }}种</span>
+                                <span class="cat-item-actions">
+                                    <i class="el-icon-edit" @click.stop="startEditRoot(cat)" title="编辑"></i>
+                                    <i class="el-icon-delete" @click.stop="handleDeleteRoot(cat)" title="删除"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <!-- 编辑大类名 -->
+                        <div v-if="editingRoot" class="add-form" style="margin-top:8px;">
+                            <el-input v-model="editingRootName" size="mini" style="margin-bottom:6px;" @keyup.enter="handleUpdateRoot"></el-input>
+                            <div style="display:flex;gap:4px;">
+                                <el-button size="mini" @click="editingRoot=null">取消</el-button>
+                                <el-button type="primary" size="mini" :loading="catLoading" @click="handleUpdateRoot">保存</el-button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右侧：品种列表 -->
+                    <div class="cat-right">
+                        <div class="cat-panel-title">
+                            <span>{{ selectedCat ? selectedCat.name + ' — 品种' : '请先选择左侧大类' }}</span>
+                            <el-button v-if="selectedCat" type="text" icon="el-icon-plus" size="mini" @click="showAddBreed=true" style="color:var(--primary);padding:2px 4px;">新增品种</el-button>
+                        </div>
+                        <!-- 新增品种表单 -->
+                        <div v-if="showAddBreed && selectedCat" class="add-form">
+                            <el-input v-model="newBreedName" placeholder="输入品种名称，如：布偶猫" size="mini" style="margin-bottom:6px;" @keyup.enter="handleAddBreed"></el-input>
+                            <div style="display:flex;gap:4px;">
+                                <el-button size="mini" @click="showAddBreed=false; newBreedName=''">取消</el-button>
+                                <el-button type="primary" size="mini" :loading="catLoading" @click="handleAddBreed">确定添加</el-button>
+                            </div>
+                        </div>
+                        <!-- 品种列表 -->
+                        <div class="breed-list" v-if="selectedCat">
+                            <div v-for="breed in selectedCatChildren" :key="breed.id" class="breed-item">
+                                <span class="breed-name">{{ breed.name }}</span>
+                                <div class="breed-actions">
+                                    <i class="el-icon-edit" @click="startEditBreed(breed)" style="color:var(--amber);cursor:pointer;" title="编辑"></i>
+                                    <i class="el-icon-delete" @click="handleDeleteBreed(breed)" style="color:var(--primary);cursor:pointer;" title="删除"></i>
+                                </div>
+                            </div>
+                            <div v-if="editingBreed" class="add-form" style="margin-top:6px;">
+                                <el-input v-model="editingBreedName" size="mini" style="margin-bottom:6px;" @keyup.enter="handleUpdateBreed"></el-input>
+                                <div style="display:flex;gap:4px;">
+                                    <el-button size="mini" @click="editingBreed=null">取消</el-button>
+                                    <el-button type="primary" size="mini" :loading="catLoading" @click="handleUpdateBreed">保存</el-button>
+                                </div>
+                            </div>
+                            <div v-if="!selectedCatChildren || selectedCatChildren.length===0" class="breed-empty">
+                                暂无品种，点击上方"新增品种"添加
+                            </div>
+                        </div>
+                        <div v-if="!selectedCat" class="breed-empty">请在左侧选择一个宠物大类</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div><!-- end #app -->
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui@2.15.13/lib/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
+<script>
+    Vue.use(ELEMENT);
+
+    axios.interceptors.request.use(config => {
+        const token = localStorage.getItem('token');
+        if (token) config.headers.Authorization = 'Bearer ' + token;
+        return config;
+    });
+
+    axios.interceptors.response.use(
+        response => response,
+        error => {
+            if (error.response && error.response.status === 401) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            }
+            return Promise.reject(error);
+        }
+    );
+
+    new Vue({
+        el: '#app',
+        data: {
+            pets: [],
+            loading: false,
+            total: 0,
+            currentPage: 1,
+            pageSize: 12,
+            breedOptions: [],
+            statusStats: {},
+            categoryStats: {},
+            filters: { keyword: '', categoryType: '', breed: '', urgencyLevel: '', gender: '', sortBy: 'default' },
+            categoryList: [],
+            breedChildren: [],
+            formBreedChildren: [],
+            isAdmin: false,
+            currentRole: '',
+            showPetDialog: false,
+            showDeleteDialog: false,
+            dialogMode: 'add',
+            dialogLoading: false,
+            deleteTarget: { id: null, name: '' },
+            petForm: {
+                id: null, name: '', categoryType: '', breed: '', gender: 0, age: null, weight: null,
+                color: '', healthStatus: '', personality: '', urgencyLevel: 0, status: 0, imageUrl: '', description: ''
             },
-            mounted() {
+            petRules: {
+                name: [{ required: true, message: '请输入宠物名称', trigger: 'blur' }],
+                categoryType: [{ required: true, message: '请选择宠物类型', trigger: 'change' }],
+                gender: [{ required: true, message: '请选择性别', trigger: 'change' }]
+            },
+            hasSearched: false,
+            // 品种管理
+            showCatDialog: false,
+            selectedCat: null,
+            selectedCatChildren: [],
+            showAddRoot: false,
+            newRootName: '',
+            newRootType: '',
+            editingRoot: null,
+            editingRootName: '',
+            showAddBreed: false,
+            newBreedName: '',
+            editingBreed: null,
+            editingBreedName: '',
+            catLoading: false
+        },
+        computed: {
+            hasActiveFilters() {
+                return !!(this.filters.keyword || this.filters.categoryType || this.filters.breed || (this.filters.urgencyLevel !== '' && this.filters.urgencyLevel !== null) || (this.filters.gender !== '' && this.filters.gender !== null));
+            },
+            urgentCount() {
+                return this.pets.filter(p => p.urgencyLevel && p.urgencyLevel > 0).length;
+            }
+        },
+        mounted() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                this.$message.warning('请先登录');
+                setTimeout(() => { window.location.href = 'login.html'; }, 1000);
+                return;
+            }
+            const userStr = localStorage.getItem('user');
+            if (userStr) {
+                try {
+                    const user = JSON.parse(userStr);
+                    this.currentRole = user.role || '';
+                    this.isAdmin = (this.currentRole === 'admin' || this.currentRole === 'institution_admin');
+                } catch (e) {}
+            }
+            this.loadPets();
+            this.loadCategories();
+        },
+        methods: {
+            loadPets() {
+                this.loading = true;
+                const params = {
+                    page: this.currentPage, pageSize: this.pageSize,
+                    keyword: this.filters.keyword || null,
+                    categoryType: this.filters.categoryType || null,
+                    breed: this.filters.breed || null,
+                    urgencyLevel: (this.filters.urgencyLevel !== '' && this.filters.urgencyLevel !== null) ? this.filters.urgencyLevel : null,
+                    status: 0
+                };
+                Object.keys(params).forEach(key => { if (params[key] === '' || params[key] === null) delete params[key]; });
+                axios.get('/api/pet/list', { params: params })
+                    .then(response => {
+                        this.loading = false;
+                        this.hasSearched = true;
+                        const data = response.data;
+                        if (data.code === 200) {
+                            this.pets = data.data.pets || [];
+                            this.total = data.data.total || this.pets.length;
+                            this.statusStats = data.data.statusStats || {};
+                            this.categoryStats = data.data.categoryStats || {};
+                            this.applySort();
+                            this.updateStats();
+                        } else if (data.code === 401) {
+                            this.$message.error('登录已过期，请重新登录');
+                            setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+                        } else {
+                            this.$message.error(data.message || '加载失败');
+                        }
+                    })
+                    .catch(error => {
+                        this.loading = false;
+                        if (error.response && error.response.status === 401) {
+                            this.$message.error('登录已过期，请重新登录');
+                            setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+                        } else {
+                            this.$message.error('加载宠物列表失败');
+                        }
+                    });
+            },
+
+            loadCategories() {
+                // 大类列表（无 type 参数）：返回猫、狗、小动物等根分类，供「宠物类型」下拉使用
+                return axios.get('/api/category/list')
+                    .then(res => {
+                        if (res.data.code === 200) this.categoryList = res.data.data.categories || [];
+                    });
+            },
+            /** 按大类 type 精准加载品种列表（直接用 /list?type=X，后端保证只返回该大类的子品种） */
+            loadBreedsByCategory(type) {
+                if (!type) { this.breedChildren = []; return Promise.resolve(); }
+                return axios.get('/api/category/list', { params: { type: type } })
+                    .then(res => {
+                        if (res.data.code === 200) {
+                            const cats = res.data.data.categories || [];
+                            // 大类下只有一个根，直接取其 children
+                            this.breedChildren = (cats[0] && cats[0].children) ? cats[0].children : [];
+                        } else {
+                            this.breedChildren = [];
+                        }
+                    })
+                    .catch(() => { this.breedChildren = []; });
+            },
+
+            onCategoryTypeChange(type) {
+                this.filters.breed = '';
+                if (!type) {
+                    this.breedChildren = [];
+                    this.handleSearch();
+                    return;
+                }
+                // 精准拉该大类的品种，再搜索
+                this.loadBreedsByCategory(type).then(() => this.handleSearch());
+            },
+
+            onFormCategoryChange(type) {
+                this.petForm.breed = '';
+                if (!type) { this.formBreedChildren = []; return; }
+                this.loadBreedsByCategory(type).then(() => {
+                    this.formBreedChildren = this.breedChildren.slice();
+                });
+            },
+
+            applySort() {
+                if (this.filters.sortBy === 'urgency') {
+                    this.pets.sort((a, b) => (b.urgencyLevel||0) - (a.urgencyLevel||0));
+                }
+            },
+
+            updateStats() {
+                this.statusStats = {};
+                this.pets.forEach(p => {
+                    const t = p.categoryType || 'OTHER';
+                    this.categoryStats[t] = (this.categoryStats[t] || 0) + 1;
+                });
+            },
+
+            handleSearch() {
+                this.currentPage = 1;
                 this.loadPets();
             },
-            methods: {
-                loadPets() {
-                    this.loading = true;
-                    const params = {
-                        page: this.currentPage,
-                        pageSize: this.pageSize,
-                        keyword: this.searchKeyword
-                    };
-                    axios.get('/api/pet/list', { params: params })
-                        .then(response => {
-                            this.loading = false;
-                            const data = response.data;
-                            if (data.code === 200) {
-                                this.pets = data.data.pets;
-                                this.total = data.data.total || this.pets.length;
+
+            handleReset() {
+                this.filters = { keyword: '', categoryType: '', breed: '', urgencyLevel: '', gender: '', sortBy: 'default' };
+                this.breedChildren = [];
+                this.currentPage = 1;
+                this.loadPets();
+            },
+
+            handlePageChange(page) {
+                this.currentPage = page;
+                this.loadPets();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
+
+            handlePetDetail(petId) {
+                window.location.href = 'pet-detail.html?id=' + petId;
+            },
+
+            handleImgError(e) {
+                e.target.style.display = 'none';
+                e.target.parentElement.querySelector('.placeholder') && (e.target.parentElement.querySelector('.placeholder').style.display = 'flex');
+            },
+
+            getCategoryName(type) {
+                const cat = this.categoryList.find(c => c.type === type);
+                return cat ? cat.name : type;
+            },
+
+            getRoleName(role) {
+                const map = { admin:'管理员', adopter:'领养人', volunteer:'志愿者', institution_admin:'机构管理员', hospital:'宠物医院' };
+                return map[role] || role || '用户';
+            },
+
+            logout() {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            },
+
+            openAddDialog() {
+                this.dialogMode = 'add';
+                this.petForm = { id: null, name: '', categoryType: '', breed: '', gender: 0, age: null, weight: null, color: '', healthStatus: '', personality: '', urgencyLevel: 0, status: 0, imageUrl: '', description: '' };
+                this.formBreedChildren = [];
+                this.$nextTick(() => { this.$refs.petFormRef && this.$refs.petFormRef.clearValidate(); });
+                this.showPetDialog = true;
+            },
+
+            openEditDialog(pet) {
+                this.dialogMode = 'edit';
+                this.petForm = Object.assign({}, pet);
+                this.$nextTick(() => { this.$refs.petFormRef && this.$refs.petFormRef.clearValidate(); });
+                this.showPetDialog = true;
+            },
+
+            confirmDelete(pet) {
+                this.deleteTarget = { id: pet.id, name: pet.name };
+                this.showDeleteDialog = true;
+            },
+
+            handleSavePet() {
+                this.$refs.petFormRef.validate(valid => {
+                    if (!valid) return;
+                    this.dialogLoading = true;
+                    const url = this.dialogMode === 'add' ? '/api/pet/add' : '/api/pet/update';
+                    const method = this.dialogMode === 'add' ? 'post' : 'put';
+                    axios[method](url, this.petForm)
+                        .then(res => {
+                            if (res.data.code === 200) {
+                                this.$message.success(this.dialogMode === 'add' ? '添加成功' : '更新成功');
+                                this.showPetDialog = false;
+                                this.loadPets();
+                                if (this.dialogMode === 'add') this.loadCategories();
                             } else {
-                                this.$message.error(data.message);
+                                this.$message.error(res.data.message || '保存失败');
                             }
                         })
-                        .catch(error => {
-                            this.loading = false;
-                            this.$message.error('加载宠物列表失败：' + error.message);
-                        });
-                },
-                handleSearch() {
-                    this.currentPage = 1;
-                    this.loadPets();
-                },
-                handleReset() {
-                    this.searchKeyword = '';
-                    this.currentPage = 1;
-                    this.loadPets();
-                },
-                handlePageChange(page) {
-                    this.currentPage = page;
-                    this.loadPets();
-                },
-                handlePetDetail(petId) {
-                    window.location.href = 'pet-detail.html?id=' + petId;
-                }
+                        .catch(() => { this.$message.error('保存失败，请重试'); })
+                        .finally(() => { this.dialogLoading = false; });
+                });
+            },
+
+            handleConfirmDelete() {
+                this.dialogLoading = true;
+                axios.delete('/api/pet/delete/' + this.deleteTarget.id)
+                    .then(res => {
+                        if (res.data.code === 200) {
+                            this.$message.success('删除成功');
+                            this.showDeleteDialog = false;
+                            this.loadPets();
+                        } else {
+                            this.$message.error(res.data.message || '删除失败');
+                        }
+                    })
+                    .catch(err => { this.$message.error(err.response?.data?.message || '删除失败，请重试'); })
+                    .finally(() => { this.dialogLoading = false; });
+            },
+
+            // ========== 品种管理 ==========
+            openCatDialog() {
+                this.showCatDialog = true;
+                this.selectedCat = null;
+                this.selectedCatChildren = [];
+                this.showAddRoot = false;
+                this.showAddBreed = false;
+                this.editingRoot = null;
+                this.editingBreed = null;
+                this.newRootName = '';
+                this.newRootType = '';
+                this.newBreedName = '';
+                this.loadCategories();
+            },
+
+            getTypeEmoji(type) {
+                const map = { CATS:'🐱', DOGS:'🐶', SMALL_ANIMALS:'🐰', BIRDS:'🐦', OTHER:'🐟' };
+                return map[type] || '📁';
+            },
+
+            selectCat(cat) {
+                if (this.editingRoot) return;
+                this.selectedCat = cat;
+                this.selectedCatChildren = cat.children || [];
+                this.showAddBreed = false;
+                this.editingBreed = null;
+                this.newBreedName = '';
+            },
+
+            handleAddRoot() {
+                if (!this.newRootType || !this.newRootName.trim()) { this.$message.warning('请选择大类类型并输入名称'); return; }
+                this.catLoading = true;
+                axios.post('/api/category/add', { name: this.newRootName.trim(), type: this.newRootType, parentId: null, isActive: 1, sort: 0 })
+                    .then(res => {
+                        if (res.data.code === 200) {
+                            this.$message.success('新增大类成功');
+                            this.newRootName = ''; this.newRootType = ''; this.showAddRoot = false;
+                            this.loadCategories();
+                        } else { this.$message.error(res.data.message || '添加失败'); }
+                    })
+                    .catch(() => { this.$message.error('添加失败，请重试'); })
+                    .finally(() => { this.catLoading = false; });
+            },
+
+            startEditRoot(cat) {
+                this.editingRoot = cat;
+                this.editingRootName = cat.name;
+            },
+
+            handleUpdateRoot() {
+                if (!this.editingRootName.trim()) { this.$message.warning('名称不能为空'); return; }
+                this.catLoading = true;
+                axios.put('/api/category/update', { id: this.editingRoot.id, name: this.editingRootName.trim(), type: this.editingRoot.type, parentId: null, isActive: 1, sort: this.editingRoot.sort||0 })
+                    .then(res => {
+                        if (res.data.code === 200) {
+                            this.$message.success('更新成功');
+                            this.editingRoot = null;
+                            this.loadCategories().then(() => {
+                                if (this.selectedCat && this.selectedCat.id === this.editingRoot?.id) this.selectedCat = null;
+                            });
+                        } else { this.$message.error(res.data.message || '更新失败'); }
+                    })
+                    .catch(() => { this.$message.error('更新失败，请重试'); })
+                    .finally(() => { this.catLoading = false; });
+            },
+
+            handleDeleteRoot(cat) {
+                const childCount = (cat.children||[]).length;
+                this.$confirm(childCount > 0 ? `删除"${cat.name}"将同时删除其下${childCount}个品种，是否确认？` : `确定要删除大类"${cat.name}"吗？`, '确认删除', { type: 'warning' })
+                    .then(() => {
+                        this.catLoading = true;
+                        axios.delete('/api/category/delete/' + cat.id)
+                            .then(res => {
+                                if (res.data.code === 200) {
+                                    this.$message.success('删除成功');
+                                    if (this.selectedCat && this.selectedCat.id === cat.id) { this.selectedCat = null; this.selectedCatChildren = []; }
+                                    this.loadCategories();
+                                } else { this.$message.error(res.data.message || '删除失败'); }
+                            })
+                            .catch(err => { this.$message.error(err.response?.data?.message || '删除失败'); })
+                            .finally(() => { this.catLoading = false; });
+                    }).catch(() => {});
+            },
+
+            handleAddBreed() {
+                if (!this.newBreedName.trim()) { this.$message.warning('请输入品种名称'); return; }
+                this.catLoading = true;
+                axios.post('/api/category/add', { name: this.newBreedName.trim(), type: this.selectedCat.type, parentId: this.selectedCat.id, isActive: 1, sort: 0 })
+                    .then(res => {
+                        if (res.data.code === 200) {
+                            this.$message.success('新增品种成功');
+                            this.newBreedName = ''; this.showAddBreed = false;
+                            this.loadCategories().then(() => {
+                                const cat = this.categoryList.find(c => c.id === this.selectedCat.id);
+                                if (cat) { this.selectedCat = cat; this.selectedCatChildren = cat.children || []; }
+                            });
+                        } else { this.$message.error(res.data.message || '添加失败'); }
+                    })
+                    .catch(() => { this.$message.error('添加失败，请重试'); })
+                    .finally(() => { this.catLoading = false; });
+            },
+
+            startEditBreed(breed) {
+                this.editingBreed = breed;
+                this.editingBreedName = breed.name;
+            },
+
+            handleUpdateBreed() {
+                if (!this.editingBreedName.trim()) { this.$message.warning('名称不能为空'); return; }
+                this.catLoading = true;
+                axios.put('/api/category/update', { id: this.editingBreed.id, name: this.editingBreedName.trim(), type: this.editingBreed.type, parentId: this.editingBreed.parentId, isActive: 1, sort: this.editingBreed.sort||0 })
+                    .then(res => {
+                        if (res.data.code === 200) {
+                            this.$message.success('更新成功');
+                            this.editingBreed = null;
+                            this.loadCategories().then(() => {
+                                if (this.selectedCat) {
+                                    const cat = this.categoryList.find(c => c.id === this.selectedCat.id);
+                                    if (cat) { this.selectedCat = cat; this.selectedCatChildren = cat.children || []; }
+                                }
+                            });
+                        } else { this.$message.error(res.data.message || '更新失败'); }
+                    })
+                    .catch(() => { this.$message.error('更新失败，请重试'); })
+                    .finally(() => { this.catLoading = false; });
+            },
+
+            handleDeleteBreed(breed) {
+                if (!breed) return;
+                this.$confirm(`确定要删除品种"${breed.name}"吗？`, '确认删除', { type: 'warning' })
+                    .then(() => {
+                        this.catLoading = true;
+                        axios.delete('/api/category/delete/' + breed.id)
+                            .then(res => {
+                                if (res.data.code === 200) {
+                                    this.$message.success('删除成功');
+                                    this.loadCategories().then(() => {
+                                        if (this.selectedCat) {
+                                            const cat = this.categoryList.find(c => c.id === this.selectedCat.id);
+                                            if (cat) { this.selectedCat = cat; this.selectedCatChildren = cat.children || []; }
+                                        }
+                                    });
+                                } else { this.$message.error(res.data.message || '删除失败'); }
+                            })
+                            .catch(err => { this.$message.error(err.response?.data?.message || '删除失败'); })
+                            .finally(() => { this.catLoading = false; });
+                    }).catch(() => {});
             }
-        });
-    </script>
+        }
+    });
+</script>
 </body>
 </html>

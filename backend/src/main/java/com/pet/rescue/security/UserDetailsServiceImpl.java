@@ -21,11 +21,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException("用户不存在: " + phone);
         }
 
-        return new org.springframework.security.core.userdetails.User(
-                user.getPhone(),
-                user.getPassword(),
-                true, true, true, true,
-                new java.util.ArrayList<>()
-        );
+        return new CustomUserDetails(user);
     }
 }

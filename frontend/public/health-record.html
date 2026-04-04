@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>健康档案管理 - 宠物救助收养系统</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.15.13/lib/theme-chalk/index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #E07A5F;
+            --primary-dark: #c96a50;
+            --primary-light: #f0a28a;
+            --primary-bg: rgba(224, 122, 95, 0.08);
+            --sage: #81B29A;
+            --sage-light: #a8cdb8;
+            --amber: #F4A261;
+            --warm-white: #FDF6F0;
+            --warm-cream: #FAEEE7;
+            --warm-gray: #f0ebe7;
+            --warm-gray2: #ede6df;
+            --text-dark: #3D405B;
+            --text-muted: #8A8EA0;
+            --bg: var(--warm-white);
+            --card-shadow: 0 4px 20px rgba(224, 122, 95, 0.1);
+            --card-shadow-hover: 0 12px 40px rgba(224, 122, 95, 0.2);
+            --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius: 20px;
+            --radius-sm: 12px;
+        }
+        * { box-sizing: border-box; }
+        *:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+        body {
+            margin: 0; padding: 0;
+            background: var(--bg);
+            font-family: "Nunito", "PingFang SC", "Microsoft YaHei", sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--warm-gray); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* Element UI 暖色覆盖 */
+        .el-button--primary { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; }
+        .el-button--primary:hover { background-color: var(--primary-dark) !important; border-color: var(--primary-dark) !important; }
+        .el-button--success { background-color: var(--sage) !important; border-color: var(--sage) !important; border-radius: var(--radius-sm) !important; }
+        .el-button--warning { background-color: var(--amber) !important; border-color: var(--amber) !important; border-radius: var(--radius-sm) !important; }
+        .el-button--danger { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; }
+        .el-button { border-radius: var(--radius-sm) !important; }
+        .el-input__inner:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(224,122,95,0.12) !important; }
+        .el-textarea__inner:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(224,122,95,0.12) !important; }
+        .el-pager li.active { background-color: var(--primary) !important; color: white !important; border-radius: 50% !important; }
+        .el-tag--success { background-color: #e8f5ee !important; border-color: var(--sage-light) !important; color: #5a8a6e !important; }
+        .el-tag--warning { background-color: #fef3e8 !important; border-color: #f5c48a !important; color: #d98a32 !important; }
+        .el-tag--danger { background-color: #fce8e2 !important; border-color: var(--primary-light) !important; color: var(--primary) !important; }
+        .el-tag--info { background-color: var(--warm-cream) !important; border-color: var(--warm-gray2) !important; color: var(--text-muted) !important; }
+        .el-select .el-input__inner:focus { border-color: var(--primary) !important; }
+        .el-pagination .el-pager li { border-radius: 50% !important; }
+        .el-pagination .el-pager li:hover { color: var(--primary) !important; }
+        .el-dialog { border-radius: var(--radius) !important; overflow: hidden; }
+        .el-dialog__header { background: linear-gradient(135deg, var(--warm-cream) 0%, var(--warm-white) 100%); padding: 20px 24px 16px; }
+        .el-dialog__title { font-weight: 700; color: var(--text-dark); font-size: 17px; }
+        .el-dialog__body { padding: 24px; }
+        .el-dialog__footer { padding: 12px 24px 20px; border-top: 1px solid var(--warm-gray); }
+        .el-table { border-radius: var(--radius-sm); overflow: hidden; }
+        .el-table th { background: var(--warm-cream) !important; color: var(--text-dark); font-weight: 700; }
+        .el-table td { border-color: var(--warm-gray) !important; }
+        .el-table--striped .el-table__body tr:nth-child(even) { background: rgba(250,238,231,0.4); }
+        .el-form-item__label { color: var(--text-dark); font-weight: 600; }
+        .el-input__inner { border-radius: var(--radius-sm) !important; }
+        .el-textarea__inner { border-radius: var(--radius-sm) !important; }
+        .el-input-number { border-radius: var(--radius-sm) !important; }
+        .el-select { border-radius: var(--radius-sm) !important; }
+        .el-date-editor.el-input { border-radius: var(--radius-sm) !important; }
+        .el-message-box { border-radius: var(--radius) !important; }
+
+        @keyframes fadeSlideDown {
+            from { opacity: 0; transform: translateY(-16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        @keyframes cardEnter {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes shimmerBg {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* ========== 页面整体布局 ========== */
+        .page-wrapper {
+            min-height: 100vh;
+            background: linear-gradient(180deg, var(--warm-white) 0%, var(--warm-cream) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 爪印背景 */
+        .page-bg-paws {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .page-bg-paws svg {
+            position: absolute;
+            fill: var(--primary);
+            opacity: 0.04;
+        }
+
+        .page-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px 24px 40px;
+        }
+
+        /* ========== 顶部横幅 ========== */
+        .hero-banner {
+            background: white;
+            border-radius: var(--radius);
+            padding: 32px 36px;
+            margin-bottom: 24px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeSlideDown 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-banner::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 160px;
+            height: 160px;
+            background: radial-gradient(circle, rgba(224,122,95,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .hero-banner::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: 40%;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, rgba(129,178,154,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .hero-left { display: flex; align-items: center; gap: 20px; }
+        .hero-icon {
+            width: 64px; height: 64px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 8px 24px rgba(224,122,95,0.3);
+            flex-shrink: 0;
+        }
+        .hero-title-group h1 {
+            margin: 0 0 4px;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-dark);
+        }
+        .hero-title-group h1 span { color: var(--primary); }
+        .hero-title-group p {
+            margin: 0;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+        .hero-right { display: flex; align-items: center; gap: 12px; }
+        .hero-paw { font-size: 28px; animation: float 3s ease-in-out infinite; opacity: 0.3; }
+        .hero-paw:nth-child(2) { animation-delay: 0.8s; opacity: 0.2; }
+
+        /* 导航链接 */
+        .nav-links {
+            display: flex; gap: 12px; font-size: 13px; flex-wrap: wrap;
+        }
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: var(--transition);
+            padding: 4px 0;
+        }
+        .nav-links a:hover { color: var(--primary); }
+        .nav-links span { color: var(--warm-gray2); }
+
+        /* ========== 筛选卡片 ========== */
+        .filter-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--card-shadow);
+            animation: fadeSlideDown 0.5s ease 0.08s both;
+        }
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        .filter-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .filter-item { display: flex; flex-direction: column; }
+
+        /* ========== 统计卡片组 ========== */
+        .stat-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 22px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: var(--transition);
+            animation: cardEnter 0.5s ease both;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card:hover {
+            box-shadow: var(--card-shadow-hover);
+            transform: translateY(-4px);
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+        .stat-card.total::before { background: linear-gradient(90deg, var(--text-muted), #c0c4cc); }
+        .stat-card.vaccine::before { background: linear-gradient(90deg, var(--sage), var(--sage-light)); }
+        .stat-card.checkup::before { background: linear-gradient(90deg, #409EFF, #66B1FF); }
+        .stat-card.treatment::before { background: linear-gradient(90deg, var(--primary), var(--primary-light)); }
+        .stat-card.cost::before { background: linear-gradient(90deg, var(--amber), #f5c48a); }
+        .stat-icon {
+            width: 52px; height: 52px;
+            border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 26px;
+            flex-shrink: 0;
+        }
+        .stat-card.total .stat-icon { background: var(--warm-cream); }
+        .stat-card.vaccine .stat-icon { background: #e8f5ee; }
+        .stat-card.checkup .stat-icon { background: #ecf5ff; }
+        .stat-card.treatment .stat-icon { background: #fce8e2; }
+        .stat-card.cost .stat-icon { background: #fef3e8; }
+        .stat-info { flex: 1; min-width: 0; }
+        .stat-num {
+            font-size: 26px; font-weight: 800; color: var(--text-dark); line-height: 1;
+            margin-bottom: 4px;
+        }
+        .stat-label { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+
+        /* ========== 提示卡片 ========== */
+        .hint-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 32px;
+            text-align: center;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 24px;
+            animation: fadeSlideUp 0.5s ease 0.1s both;
+        }
+        .hint-card .icon { font-size: 48px; margin-bottom: 12px; animation: float 3s ease-in-out infinite; display: block; }
+        .hint-card .title { font-size: 16px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; }
+        .hint-card .desc { font-size: 13px; color: var(--text-muted); }
+
+        /* ========== 主内容两栏 ========== */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .content-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            animation: cardEnter 0.5s ease both;
+        }
+        .content-card:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-2px); }
+        .content-card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--warm-gray);
+        }
+        .content-card-title {
+            font-size: 15px; font-weight: 800; color: var(--text-dark);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .content-card-title .icon { font-size: 20px; }
+
+        /* ========== 记录类型标签 ========== */
+        .record-type-tag {
+            display: inline-flex; align-items: center;
+            padding: 3px 10px; border-radius: 20px;
+            font-size: 12px; font-weight: 700;
+            margin-right: 6px;
+        }
+        .type-vaccine { background: #e8f5ee; color: #5a8a6e; }
+        .type-checkup { background: #ecf5ff; color: #2e7fc8; }
+        .type-treatment { background: #fce8e2; color: var(--primary); }
+        .type-surgery { background: #fef3e8; color: #d98a32; }
+        .type-dental { background: var(--warm-cream); color: var(--text-muted); }
+        .type-other { background: var(--warm-gray); color: var(--text-muted); }
+
+        /* ========== 时间线 ========== */
+        .timeline { position: relative; padding-left: 28px; }
+        .timeline::before {
+            content: ''; position: absolute;
+            left: 8px; top: 8px; bottom: 8px;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--primary), var(--sage));
+            border-radius: 2px;
+        }
+        .timeline-item {
+            position: relative;
+            padding-bottom: 20px;
+            animation: fadeSlideUp 0.4s ease both;
+        }
+        .timeline-item:last-child { padding-bottom: 0; }
+        .timeline-dot {
+            position: absolute; left: -24px; top: 6px;
+            width: 18px; height: 18px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .timeline-dot.vaccine { background: var(--sage); }
+        .timeline-dot.checkup { background: #409EFF; }
+        .timeline-dot.treatment { background: var(--primary); }
+        .timeline-dot.surgery { background: var(--amber); }
+        .timeline-dot.dental { background: var(--text-muted); }
+        .timeline-dot.other { background: var(--warm-gray2); }
+        .timeline-content {
+            background: var(--warm-white);
+            padding: 14px 16px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--warm-gray);
+            transition: var(--transition);
+        }
+        .timeline-content:hover {
+            border-color: var(--primary-light);
+            background: white;
+            box-shadow: 0 4px 16px rgba(224,122,95,0.1);
+        }
+        .timeline-date { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; }
+        .timeline-title { font-weight: 700; color: var(--text-dark); margin-bottom: 6px; font-size: 14px; }
+        .timeline-desc { font-size: 13px; color: #606266; line-height: 1.5; }
+        .timeline-meta {
+            display: flex; flex-wrap: wrap; gap: 8px;
+            margin-top: 8px; font-size: 12px; color: var(--text-muted);
+        }
+        .timeline-meta span { display: flex; align-items: center; gap: 3px; }
+        .reminder-tag {
+            display: inline-flex; align-items: center; gap: 4px;
+            background: #fef3e8; color: #d98a32;
+            padding: 2px 8px; border-radius: 20px;
+            font-size: 11px; font-weight: 700;
+            margin-left: 6px;
+        }
+
+        /* ========== 即将到期提醒 ========== */
+        .reminder-card {
+            background: #fffbf5;
+            border: 1px solid #f5c48a;
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-top: 16px;
+            animation: fadeSlideUp 0.4s ease;
+        }
+        .reminder-card-header {
+            font-size: 13px; font-weight: 700; color: #d98a32;
+            margin-bottom: 10px;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .reminder-item {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: var(--text-dark);
+            border: 1px solid var(--warm-gray);
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .reminder-item:last-child { margin-bottom: 0; }
+        .reminder-item .urgent { color: var(--primary); font-weight: 700; }
+
+        /* ========== 全量列表卡片 ========== */
+        .table-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+            transition: var(--transition);
+            animation: cardEnter 0.5s ease both;
+        }
+        .table-card:hover { box-shadow: var(--card-shadow-hover); }
+        .table-card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px;
+        }
+        .table-card-title {
+            font-size: 15px; font-weight: 800; color: var(--text-dark);
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        /* ========== 详情网格 ========== */
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; margin-bottom: 16px; }
+        .detail-item { display: flex; align-items: flex-start; gap: 8px; }
+        .detail-label { color: var(--text-muted); font-size: 13px; min-width: 72px; font-weight: 600; }
+        .detail-value { color: var(--text-dark); font-size: 13px; word-break: break-all; }
+        .detail-value.bold { font-weight: 700; }
+        .detail-section-title {
+            font-size: 14px; font-weight: 700; color: var(--text-dark);
+            margin: 12px 0 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--warm-gray);
+        }
+        .detail-content-box {
+            background: var(--warm-white);
+            padding: 12px 14px; border-radius: var(--radius-sm);
+            color: #606266; font-size: 13px; line-height: 1.6;
+            border: 1px solid var(--warm-gray);
+        }
+
+        /* ========== 骨架屏 ========== */
+        .skeleton-stat {
+            background: white; border-radius: var(--radius);
+            padding: 22px; box-shadow: var(--card-shadow);
+        }
+        .skeleton-line {
+            border-radius: 6px;
+            background: linear-gradient(90deg, var(--warm-gray) 25%, var(--warm-cream) 50%, var(--warm-gray) 75%);
+            background-size: 200% 100%;
+            animation: shimmerBg 1.5s infinite;
+        }
+        .skeleton-card {
+            background: white; border-radius: var(--radius);
+            padding: 16px; margin-bottom: 16px;
+            box-shadow: var(--card-shadow);
+        }
+
+        /* ========== 响应式 ========== */
+        @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } .detail-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 480px) {
+            .page-content { padding: 16px 12px 32px; }
+            .hero-banner { padding: 20px; flex-direction: column; align-items: flex-start; gap: 16px; }
+            .hero-title-group h1 { font-size: 20px; }
+            .hero-right { display: none; }
+            .filter-row { flex-direction: column; }
+            .filter-item { width: 100%; }
+            .stat-cards { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .stat-card { padding: 16px; gap: 12px; }
+            .stat-num { font-size: 22px; }
+            .content-card { padding: 16px; }
+            .table-card { padding: 16px; }
+        }
+        @media (hover: none) {
+            .stat-card:hover { transform: none; box-shadow: var(--card-shadow); }
+            .content-card:hover { transform: none; box-shadow: var(--card-shadow); }
+            .table-card:hover { box-shadow: var(--card-shadow); }
+            .timeline-content:hover { transform: none; box-shadow: none; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
+
+        /* ========== 预加载覆盖层（Vue挂载前） ========== */
+        .loading-overlay {
+            position: fixed; inset: 0; z-index: 9999;
+            background: var(--warm-white);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 24px;
+        }
+        .loading-overlay .paw-wrap {
+            width: 72px; height: 72px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 22px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 12px 36px rgba(224,122,95,0.35);
+            animation: pawBounce 1.2s ease-in-out infinite;
+        }
+        .loading-overlay .paw-wrap svg { width: 40px; height: 40px; fill: white; }
+        .loading-overlay p { color: var(--text-muted); font-size: 14px; font-weight: 600; margin: 0; }
+        @keyframes pawBounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-14px) scale(1.08); }
+        }
+
+        /* ========== 渐变主按钮 ========== */
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--primary) 100%) !important;
+            background-size: 200% auto !important;
+            border: none !important;
+            color: white !important;
+            font-weight: 700 !important;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            box-shadow: 0 4px 16px rgba(224,122,95,0.3) !important;
+        }
+        .btn-gradient:hover {
+            background-position: right center !important;
+            box-shadow: 0 8px 28px rgba(224,122,95,0.45) !important;
+            transform: translateY(-2px) !important;
+        }
+
+        /* ========== 骨架屏增强 ========== */
+        .skeleton-overlay {
+            background: rgba(253,246,240,0.92);
+            backdrop-filter: blur(6px);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .skeleton-stat {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 18px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 12px rgba(224,122,95,0.06);
+        }
+        .skeleton-line {
+            background: linear-gradient(90deg, #f0ebe7 25%, #faeee7 50%, #f0ebe7 75%);
+            background-size: 400% 100%;
+            animation: shimmer 1.8s ease infinite;
+            border-radius: 6px;
+        }
+        .skeleton-table {
+            background: white;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            padding: 20px;
+        }
+        .skeleton-row {
+            display: flex; gap: 12px; padding: 14px 0;
+            border-bottom: 1px solid var(--warm-gray);
+        }
+        .skeleton-row:last-child { border-bottom: none; }
+        @keyframes shimmer {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+
+        /* ========== 统计卡片悬浮数字效果 ========== */
+        .stat-card .stat-num { transition: var(--transition); }
+        .stat-card:hover .stat-num { transform: scale(1.06); }
+
+        /* ========== 筛选区增强 ========== */
+        .filter-card .el-input__inner,
+        .filter-card .el-select .el-input__inner {
+            border-color: var(--warm-gray2) !important;
+            transition: var(--transition) !important;
+        }
+        .filter-card .el-input__inner:hover,
+        .filter-card .el-select .el-input__inner:hover {
+            border-color: var(--primary-light) !important;
+        }
+
+        /* ========== 表格行悬浮高亮 ========== */
+        .health-table-wrap {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            animation: fadeSlideUp 0.5s ease 0.15s both;
+        }
+        .health-table-wrap .el-table__header th {
+            background: linear-gradient(135deg, var(--warm-cream) 0%, var(--warm-white) 100%) !important;
+        }
+        .health-table-wrap .el-table__row { transition: var(--transition); }
+        .health-table-wrap .el-table__row:hover > td {
+            background-color: rgba(224,122,95,0.04) !important;
+        }
+        .health-table-wrap .el-table td .cell { display: flex; align-items: center; gap: 4px; }
+
+        /* ========== 时间线增强 ========== */
+        .timeline-item .timeline-dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-light);
+            background: white;
+            position: absolute;
+            left: 50%; top: 22px;
+            transform: translateX(-50%);
+            z-index: 1;
+            transition: var(--transition);
+        }
+        .timeline-item:hover .timeline-dot {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateX(-50%) scale(1.3);
+        }
+        .timeline-record-card {
+            background: white;
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            box-shadow: 0 2px 10px rgba(224,122,95,0.06);
+            border: 1px solid var(--warm-gray);
+            transition: var(--transition);
+        }
+        .timeline-record-card:hover {
+            border-color: var(--primary-light);
+            box-shadow: 0 4px 20px rgba(224,122,95,0.12);
+            transform: translateY(-2px);
+        }
+
+        /* ========== 即将到期提醒框增强 ========== */
+        .reminder-card {
+            background: linear-gradient(135deg, #fff8f5 0%, #fff 100%);
+            border-left: 4px solid var(--primary) !important;
+            border-radius: var(--radius-sm) !important;
+            transition: var(--transition);
+        }
+        .reminder-card:hover {
+            box-shadow: 0 4px 20px rgba(224,122,95,0.15) !important;
+        }
+        .reminder-card .el-tag { font-weight: 600; }
+    </style>
+</head>
+<body>
+<!-- 预加载覆盖层（Vue挂载前显示） -->
+<div class="loading-overlay" id="appLoading">
+    <div class="paw-wrap">
+        <svg viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+    </div>
+    <p>正在加载健康档案管理...</p>
+</div>
+<script>document.getElementById('appLoading').style.display='none';</script>
+
+<div class="page-wrapper">
+    <!-- 爪印背景 -->
+    <div class="page-bg-paws">
+        <svg style="top:8%;left:5%;width:64px;transform:rotate(-20deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        <svg style="top:30%;right:8%;width:48px;transform:rotate(15deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        <svg style="bottom:15%;left:12%;width:56px;transform:rotate(-10deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        <svg style="bottom:5%;right:15%;width:40px;transform:rotate(25deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+    </div>
+
+    <div class="page-content" id="app">
+        <!-- 顶部横幅 -->
+        <div class="hero-banner">
+            <div class="hero-left">
+                <div class="hero-icon">🏥</div>
+                <div class="hero-title-group">
+                    <h1>健康档案<span>管理</span></h1>
+                    <p>守护每一只小可爱的健康成长记录</p>
+                </div>
+            </div>
+            <div class="hero-right">
+                <div class="nav-links" style="position:absolute;right:24px;bottom:20px;">
+                    <a href="pet-list.html">首页</a><span>|</span>
+                    <a href="profile.html">个人中心</a>
+                    <span v-if="currentRole === 'admin'">|</span>
+                    <a v-if="currentRole === 'admin'" href="user-management.html">用户管理</a>
+                    <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'">|</span>
+                    <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="adoption-list.html">领养审核</a>
+                    <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'">|</span>
+                    <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="stats.html">数据统计</a>
+                    <span>|</span>
+                    <span href="javascript:void(0)" @click="logout" style="color:var(--primary);cursor:pointer;font-weight:600">
+                        退出登录
+                    </span>
+                    <span :style="'background:' + (currentRole==='admin'?'#fef0ee':'#e3f2fd') + ';color:' + (currentRole==='admin'?'var(--primary)':'#1565c0') + ';padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;margin-left:6px'">
+                        {{ getRoleNameH(currentRole) }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 骨架屏加载 -->
+        <template v-if="loading">
+            <div class="stat-cards">
+                <div class="skeleton-stat" v-for="i in 4" :key="'sk'+i">
+                    <div style="display:flex;align-items:center;gap:16px;">
+                        <div class="skeleton-line" style="width:52px;height:52px;border-radius:14px;flex-shrink:0;"></div>
+                        <div style="flex:1;">
+                            <div class="skeleton-line" style="height:26px;width:60px;margin-bottom:6px;"></div>
+                            <div class="skeleton-line" style="height:13px;width:80px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- 筛选卡片 -->
+        <div class="filter-card">
+            <div class="filter-row">
+                <div class="filter-item">
+                    <span class="filter-label">关键词搜索</span>
+                    <el-input v-model="filters.keyword" placeholder="搜索标题或机构"
+                        style="width: 220px;" clearable
+                        @keyup.enter.native="loadRecords">
+                        <i slot="prefix" class="el-input__icon el-icon-search"></i>
+                    </el-input>
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">选择宠物</span>
+                    <el-select v-model="filters.petId" placeholder="请选择宠物" clearable filterable @change="onPetChange" style="width: 200px;">
+                        <el-option v-for="p in petOptions" :key="p.id" :label="p.name + ' · ' + p.breed" :value="p.id"></el-option>
+                    </el-select>
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">记录类型</span>
+                    <el-select v-model="filters.recordType" placeholder="全部类型" clearable @change="loadRecords" style="width: 160px;">
+                        <el-option label="全部类型" value=""></el-option>
+                        <el-option label="💉 疫苗接种" value="vaccine"></el-option>
+                        <el-option label="🩺 健康体检" value="checkup"></el-option>
+                        <el-option label="💊 疾病治疗" value="treatment"></el-option>
+                        <el-option label="🏥 手术" value="surgery"></el-option>
+                        <el-option label="🦷 牙齿护理" value="dental"></el-option>
+                        <el-option label="📋 其他" value="other"></el-option>
+                    </el-select>
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">状态</span>
+                    <el-select v-model="filters.status" placeholder="全部" clearable @change="loadRecords" style="width: 120px;">
+                        <el-option label="全部" value=""></el-option>
+                        <el-option label="✅ 正常" :value="0"></el-option>
+                        <el-option label="⚠️ 已过期" :value="1"></el-option>
+                    </el-select>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-end;padding-top:18px;">
+                    <el-button type="primary" icon="el-icon-search" @click="loadRecords">查询</el-button>
+                    <el-button icon="el-icon-refresh-right" @click="handleReset">重置</el-button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 统计卡片 -->
+        <div class="stat-cards" v-if="filters.petId && !loading">
+            <div class="stat-card total" style="animation-delay:0.05s">
+                <div class="stat-icon">📋</div>
+                <div class="stat-info">
+                    <div class="stat-num">{{ currentStats.totalRecords || 0 }}</div>
+                    <div class="stat-label">档案总数</div>
+                </div>
+            </div>
+            <div class="stat-card vaccine" style="animation-delay:0.1s">
+                <div class="stat-icon">💉</div>
+                <div class="stat-info">
+                    <div class="stat-num">{{ currentStats.vaccineCount || 0 }}</div>
+                    <div class="stat-label">疫苗记录</div>
+                </div>
+            </div>
+            <div class="stat-card checkup" style="animation-delay:0.15s">
+                <div class="stat-icon">🩺</div>
+                <div class="stat-info">
+                    <div class="stat-num">{{ currentStats.checkupCount || 0 }}</div>
+                    <div class="stat-label">体检记录</div>
+                </div>
+            </div>
+            <div class="stat-card cost" style="animation-delay:0.2s">
+                <div class="stat-icon">💰</div>
+                <div class="stat-info">
+                    <div class="stat-num">¥{{ (currentStats.totalCost || 0).toFixed(0) }}</div>
+                    <div class="stat-label">累计费用</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 宠物选择提示 -->
+        <div class="hint-card" v-if="!filters.petId">
+            <span class="icon">🏥</span>
+            <div class="title">请从上方筛选栏选择一个宠物</div>
+            <div class="desc">查看该宠物的完整健康档案、时间线和统计数据</div>
+        </div>
+
+        <!-- 两栏布局（选中宠物时） -->
+        <div class="two-col" v-if="filters.petId">
+            <!-- 左侧：档案列表 -->
+            <div>
+                <div class="content-card" style="animation-delay:0.15s">
+                    <div class="content-card-header">
+                        <span class="content-card-title">
+                            <span class="icon">📋</span>
+                            健康档案记录
+                        </span>
+                        <el-button type="primary" size="small" icon="el-icon-plus" class="btn-gradient" @click="handleAdd">添加记录</el-button>
+                    </div>
+
+                    <div class="health-table-wrap" style="padding:0;">
+                    <el-table :data="records" v-loading="loading" stripe style="width: 100%">
+                        <el-table-column prop="title" label="记录标题" min-width="160">
+                            <template slot-scope="scope">
+                                <span class="record-type-tag" :class="'type-' + scope.row.recordType">
+                                    {{ getRecordTypeText(scope.row.recordType) }}
+                                </span>
+                                <span style="font-weight:600;">{{ scope.row.title }}</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="recordDate" label="日期" width="110">
+                            <template slot-scope="scope">{{ formatDate(scope.row.recordDate) }}</template>
+                        </el-table-column>
+                        <el-table-column prop="veterinarian" label="兽医" width="80" show-overflow-tooltip></el-table-column>
+                        <el-table-column prop="cost" label="费用" width="72">
+                            <template slot-scope="scope">
+                                <span style="font-weight:700;color:var(--amber);" v-if="scope.row.cost">¥{{ scope.row.cost.toFixed(0) }}</span>
+                                <span style="color:var(--text-muted);" v-else>—</span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column label="操作" width="140" fixed="right">
+                            <template slot-scope="scope">
+                                <el-button type="text" size="small" style="color:var(--sage);font-weight:700;" @click="handleDetail(scope.row)">详情</el-button>
+                                <el-button type="text" size="small" style="color:var(--primary);font-weight:700;" @click="handleEdit(scope.row)">编辑</el-button>
+                                <el-button type="text" size="small" style="color:#d98a32;font-weight:700;" @click="handleDelete(scope.row)">删除</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                    </div><!-- end health-table-wrap -->
+
+                    <el-pagination
+                        v-if="total > 0"
+                        @current-change="handlePageChange"
+                        :current-page="currentPage"
+                        :page-size="pageSize"
+                        layout="total, prev, pager, next"
+                        :total="total"
+                        style="margin-top:16px;">
+                    </el-pagination>
+                </div>
+
+                <!-- 即将到期提醒 -->
+                <div class="reminder-card" v-if="reminders.length > 0" style="animation-delay:0.2s">
+                    <div class="reminder-card-header">
+                        <span>⏰</span> 即将到期提醒
+                    </div>
+                    <div class="reminder-item" v-for="r in reminders" :key="r.id">
+                        <span>
+                            <span class="record-type-tag" :class="'type-' + r.recordType" style="margin-right:6px;">
+                                {{ getRecordTypeText(r.recordType) }}
+                            </span>
+                            {{ r.title }}
+                        </span>
+                        <span class="urgent">{{ daysUntil(r.nextReminderDate) }}天后</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：健康时间线 -->
+            <div class="content-card" style="animation-delay:0.2s">
+                <div class="content-card-header">
+                    <span class="content-card-title">
+                        <span class="icon">📅</span>
+                        健康时间线
+                    </span>
+                    <span style="font-size:12px;color:var(--text-muted);">最近 {{ timelineRecords.length }} 条记录</span>
+                </div>
+                <div class="timeline" v-if="timelineRecords.length > 0">
+                    <div class="timeline-item" v-for="(r, idx) in timelineRecords" :key="r.id"
+                         :style="'animation-delay:' + (0.05 * idx) + 's'">
+                        <div class="timeline-dot" :class="r.recordType"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">{{ formatDate(r.recordDate) }}</div>
+                            <div class="timeline-title">
+                                {{ r.title }}
+                                <span class="reminder-tag" v-if="r.nextReminderDate && isUpcoming(r.nextReminderDate)">
+                                    {{ daysUntil(r.nextReminderDate) }}天后需复诊
+                                </span>
+                            </div>
+                            <div class="timeline-desc">{{ r.content }}</div>
+                            <div class="timeline-meta">
+                                <span v-if="r.institution">🏥 {{ r.institution }}</span>
+                                <span v-if="r.veterinarian">👨‍⚕️ {{ r.veterinarian }}</span>
+                                <span v-if="r.cost" style="color:var(--amber);font-weight:700;">💰 ¥{{ r.cost.toFixed(0) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div v-else style="text-align:center;padding:40px 0;color:var(--text-muted);">
+                    <div style="font-size:48px;margin-bottom:12px;animation:float 3s ease-in-out infinite;display:block;">📅</div>
+                    <div style="font-size:14px;font-weight:600;">暂无健康记录</div>
+                    <div style="font-size:12px;margin-top:4px;">该宠物还没有健康档案，点击上方添加</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 全量列表（未选宠物时） -->
+        <div class="table-card" v-if="!filters.petId && records.length > 0">
+            <div class="table-card-header">
+                <span class="table-card-title">
+                    <span>📋</span> 所有健康档案
+                </span>
+            </div>
+            <el-table :data="records" v-loading="loading" stripe style="width: 100%">
+                <el-table-column prop="petName" label="宠物" width="120"></el-table-column>
+                <el-table-column prop="title" label="标题" min-width="160">
+                    <template slot-scope="scope">
+                        <span class="record-type-tag" :class="'type-' + scope.row.recordType">
+                            {{ getRecordTypeText(scope.row.recordType) }}
+                        </span>
+                        {{ scope.row.title }}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="recordType" label="类型" width="100">
+                    <template slot-scope="scope">
+                        <span class="record-type-tag" :class="'type-' + scope.row.recordType">
+                            {{ getRecordTypeText(scope.row.recordType) }}
+                        </span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="recordDate" label="日期" width="110">
+                    <template slot-scope="scope">{{ formatDate(scope.row.recordDate) }}</template>
+                </el-table-column>
+                <el-table-column prop="institution" label="机构" width="140" show-overflow-tooltip></el-table-column>
+                <el-table-column label="操作" width="100">
+                    <template slot-scope="scope">
+                        <el-button type="text" size="small" style="color:var(--sage);font-weight:700;" @click="handleDetail(scope.row)">详情</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <el-pagination
+                v-if="total > 0"
+                @current-change="handlePageChange"
+                :current-page="currentPage"
+                :page-size="pageSize"
+                layout="total, prev, pager, next"
+                :total="total"
+                style="margin-top:16px;">
+            </el-pagination>
+        </div>
+
+        <!-- 详情对话框 -->
+        <el-dialog title="健康档案详情" :visible.sync="detailDialogVisible" width="600px" top="8vh">
+            <div v-if="currentRecord">
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">记录类型</span>
+                        <span class="detail-value">
+                            <span class="record-type-tag" :class="'type-' + currentRecord.recordType">
+                                {{ getRecordTypeText(currentRecord.recordType) }}
+                            </span>
+                        </span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">记录日期</span>
+                        <span class="detail-value bold">{{ formatDate(currentRecord.recordDate) }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">宠物名称</span>
+                        <span class="detail-value bold">{{ currentRecord.petName || '未知' }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">执行机构</span>
+                        <span class="detail-value">{{ currentRecord.institution || '—' }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">兽医</span>
+                        <span class="detail-value">{{ currentRecord.veterinarian || '—' }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">费用</span>
+                        <span class="detail-value bold" style="color:var(--amber);">
+                            {{ currentRecord.cost ? '¥' + currentRecord.cost.toFixed(2) : '—' }}
+                        </span>
+                    </div>
+                    <div class="detail-item" v-if="currentRecord.nextReminderDate">
+                        <span class="detail-label">下次提醒</span>
+                        <span class="detail-value bold" style="color:#d98a32;">{{ formatDate(currentRecord.nextReminderDate) }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">状态</span>
+                        <span class="detail-value">
+                            <el-tag :type="currentRecord.status === 0 ? 'success' : currentRecord.status === 1 ? 'warning' : 'info'" size="mini">
+                                {{ currentRecord.status === 0 ? '正常' : currentRecord.status === 1 ? '已过期' : '已取消' }}
+                            </el-tag>
+                        </span>
+                    </div>
+                </div>
+                <div class="detail-section-title">📝 标题</div>
+                <div class="detail-content-box" style="font-weight:700;font-size:15px;color:var(--text-dark);">
+                    {{ currentRecord.title }}
+                </div>
+                <div class="detail-section-title">📋 记录内容</div>
+                <div class="detail-content-box">
+                    {{ currentRecord.content || '无' }}
+                </div>
+                <div class="detail-section-title" v-if="currentRecord.remark">💬 备注</div>
+                <div v-if="currentRecord.remark" class="detail-content-box" style="background:var(--warm-cream);">
+                    {{ currentRecord.remark }}
+                </div>
+            </div>
+            <div slot="footer">
+                <el-button @click="detailDialogVisible = false">关闭</el-button>
+                <el-button type="primary" icon="el-icon-edit" @click="detailDialogVisible = false; handleEdit(currentRecord)">编辑</el-button>
+            </div>
+        </el-dialog>
+
+        <!-- 添加/编辑对话框 -->
+        <el-dialog :title="editForm.id ? '编辑健康档案' : '添加健康档案'" :visible.sync="editDialogVisible" width="650px" top="8vh">
+            <el-form :model="editForm" :rules="editRules" ref="editFormRef" label-width="100px">
+                <el-form-item label="选择宠物" prop="petId">
+                    <el-select v-model="editForm.petId" placeholder="请选择宠物" filterable style="width: 100%;">
+                        <el-option v-for="p in petOptions" :key="p.id" :label="p.name + ' · ' + p.breed" :value="p.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="记录类型" prop="recordType">
+                    <el-select v-model="editForm.recordType" placeholder="请选择类型" style="width: 100%;">
+                        <el-option label="💉 疫苗接种" value="vaccine"></el-option>
+                        <el-option label="🩺 健康体检" value="checkup"></el-option>
+                        <el-option label="💊 疾病治疗" value="treatment"></el-option>
+                        <el-option label="🏥 手术" value="surgery"></el-option>
+                        <el-option label="🦷 牙齿护理" value="dental"></el-option>
+                        <el-option label="📋 其他" value="other"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="标题" prop="title">
+                    <el-input v-model="editForm.title" placeholder="请输入记录标题"></el-input>
+                </el-form-item>
+                <el-form-item label="记录日期" prop="recordDate">
+                    <el-date-picker v-model="editForm.recordDate" type="date" placeholder="选择日期"
+                        value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+                </el-form-item>
+                <el-form-item label="执行机构">
+                    <el-input v-model="editForm.institution" placeholder="请输入宠物医院/机构名称"></el-input>
+                </el-form-item>
+                <el-form-item label="兽医">
+                    <el-input v-model="editForm.veterinarian" placeholder="请输入兽医姓名"></el-input>
+                </el-form-item>
+                <el-form-item label="费用（元）">
+                    <el-input-number v-model="editForm.cost" :min="0" :precision="2" :step="10" style="width: 100%;"></el-input-number>
+                </el-form-item>
+                <el-form-item label="下次提醒">
+                    <el-date-picker v-model="editForm.nextReminderDate" type="date" placeholder="选择下次提醒日期"
+                        value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+                </el-form-item>
+                <el-form-item label="记录内容">
+                    <el-input type="textarea" v-model="editForm.content" :rows="3" placeholder="请输入详细记录内容"></el-input>
+                </el-form-item>
+                <el-form-item label="备注">
+                    <el-input type="textarea" v-model="editForm.remark" :rows="2" placeholder="请输入备注信息"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer">
+                <el-button @click="editDialogVisible = false">取消</el-button>
+                <el-button type="primary" icon="el-icon-check" @click="handleSave" :loading="saveLoading">保存</el-button>
+            </div>
+        </el-dialog>
+    </div><!-- end #app -->
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui@2.15.13/lib/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
+<script>
+    Vue.use(ELEMENT);
+
+    axios.interceptors.request.use(config => {
+        const token = localStorage.getItem('token');
+        if (token) config.headers.Authorization = 'Bearer ' + token;
+        return config;
+    });
+
+    axios.interceptors.response.use(
+        response => response,
+        error => {
+            if (error.response && error.response.status === 401) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            } else if (error.response && error.response.status === 403) {
+                Vue.prototype.$message.error('无权限访问此页面');
+                setTimeout(() => { window.location.href = 'pet-list.html'; }, 1500);
+            }
+            return Promise.reject(error);
+        }
+    );
+
+    const ROLE_NAMES_H = {
+        admin: '系统管理员', institution_admin: '机构管理员'
+    };
+    const getRoleNameH = r => ROLE_NAMES_H[r] || r;
+
+    new Vue({
+        el: '#app',
+        data: {
+            currentUser: {}, currentRole: '',
+            records: [],
+            timelineRecords: [],
+            reminders: [],
+            petOptions: [],
+            loading: false,
+            saveLoading: false,
+            total: 0,
+            currentPage: 1,
+            pageSize: 20,
+            currentStats: {},
+            detailDialogVisible: false,
+            editDialogVisible: false,
+            currentRecord: null,
+            filters: {
+                keyword: '',
+                petId: '',
+                recordType: '',
+                status: ''
+            },
+            editForm: {
+                id: null, petId: null, recordType: '', title: '',
+                recordDate: '', institution: '', veterinarian: '',
+                cost: 0, nextReminderDate: '', content: '', remark: ''
+            },
+            editRules: {
+                petId: [{ required: true, message: '请选择宠物', trigger: 'change' }],
+                recordType: [{ required: true, message: '请选择记录类型', trigger: 'change' }],
+                title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
+                recordDate: [{ required: true, message: '请选择日期', trigger: 'change' }]
+            }
+        },
+        watch: {
+            'filters.petId': function(val) {
+                if (val) {
+                    this.loadStats(val);
+                    this.loadReminders();
+                }
+            }
+        },
+        mounted() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            if (!token || !userStr) {
+                window.location.href = 'login.html';
+                return;
+            }
+            try {
+                this.currentUser = JSON.parse(userStr);
+                this.currentRole = this.currentUser.role || '';
+                if (this.currentRole !== 'admin' && this.currentRole !== 'institution_admin') {
+                    Vue.prototype.$message.error('此页面仅限管理员访问');
+                    setTimeout(() => { window.location.href = 'pet-list.html'; }, 1500);
+                }
+            } catch (e) {
+                window.location.href = 'login.html';
+                return;
+            }
+            this.loadPets();
+            this.loadRecords();
+        },
+        methods: {
+            onPetChange(val) {
+                this.currentPage = 1;
+                this.loadRecords();
+            },
+            loadPets() {
+                axios.get('/api/pet/list', { params: { page: 1, pageSize: 100 } })
+                    .then(res => {
+                        if (res.data.code === 200) {
+                            this.petOptions = res.data.data.pets || [];
+                        }
+                    });
+            },
+            loadRecords() {
+                this.loading = true;
+                const params = {
+                    page: this.currentPage,
+                    pageSize: this.pageSize,
+                    keyword: this.filters.keyword,
+                    petId: this.filters.petId,
+                    recordType: this.filters.recordType,
+                    status: this.filters.status !== '' ? this.filters.status : null
+                };
+                axios.get('/api/health-record/list', { params: params })
+                    .then(res => {
+                        this.loading = false;
+                        if (res.data.code === 200) {
+                            this.records = res.data.data.records || [];
+                            this.total = this.records.length;
+                            this.timelineRecords = this.records.slice(0, 10);
+                        } else {
+                            this.$message.error(res.data.message || '加载失败');
+                        }
+                    })
+                    .catch(() => { this.loading = false; });
+            },
+            loadStats(petId) {
+                axios.get('/api/health-record/stats/' + petId)
+                    .then(res => {
+                        if (res.data.code === 200) {
+                            this.currentStats = res.data.data.stats || {};
+                        }
+                    });
+            },
+            loadReminders() {
+                axios.get('/api/health-record/reminders', { params: { days: 30 } })
+                    .then(res => {
+                        if (res.data.code === 200) {
+                            this.reminders = (res.data.data.reminders || []).filter(r =>
+                                !this.filters.petId || r.petId == this.filters.petId
+                            );
+                        }
+                    });
+            },
+            handleReset() {
+                this.filters = { keyword: '', petId: '', recordType: '', status: '' };
+                this.currentPage = 1;
+                this.loadRecords();
+            },
+            handlePageChange(page) {
+                this.currentPage = page;
+                this.loadRecords();
+            },
+            handleAdd() {
+                this.editForm = {
+                    id: null, petId: this.filters.petId || null,
+                    recordType: '', title: '', recordDate: this.getToday(),
+                    institution: '', veterinarian: '', cost: 0,
+                    nextReminderDate: '', content: '', remark: ''
+                };
+                this.$nextTick(() => { this.$refs.editFormRef && this.$refs.editFormRef.clearValidate(); });
+                this.editDialogVisible = true;
+            },
+            handleEdit(row) {
+                this.editForm = {
+                    id: row.id, petId: row.petId,
+                    recordType: row.recordType, title: row.title,
+                    recordDate: this.formatDateForEdit(row.recordDate),
+                    institution: row.institution || '', veterinarian: row.veterinarian || '',
+                    cost: row.cost || 0,
+                    nextReminderDate: this.formatDateForEdit(row.nextReminderDate),
+                    content: row.content || '', remark: row.remark || ''
+                };
+                this.$nextTick(() => { this.$refs.editFormRef && this.$refs.editFormRef.clearValidate(); });
+                this.editDialogVisible = true;
+            },
+            handleSave() {
+                this.$refs.editFormRef.validate(valid => {
+                    if (!valid) return;
+                    this.saveLoading = true;
+                    const url = this.editForm.id ? '/api/health-record/update' : '/api/health-record/add';
+                    const method = this.editForm.id ? 'put' : 'post';
+                    axios[method](url, this.editForm)
+                        .then(res => {
+                            this.saveLoading = false;
+                            if (res.data.code === 200) {
+                                this.$message.success(this.editForm.id ? '更新成功' : '添加成功');
+                                this.editDialogVisible = false;
+                                this.loadRecords();
+                                if (this.filters.petId) {
+                                    this.loadStats(this.filters.petId);
+                                    this.loadReminders();
+                                }
+                            } else {
+                                this.$message.error(res.data.message || '操作失败');
+                            }
+                        })
+                        .catch(() => { this.saveLoading = false; });
+                });
+            },
+            handleDetail(row) {
+                this.currentRecord = row;
+                this.detailDialogVisible = true;
+            },
+            handleDelete(row) {
+                this.$confirm('确认删除该健康档案？删除后不可恢复。', '删除确认', { type: 'warning' })
+                    .then(() => {
+                        axios.delete('/api/health-record/delete/' + row.id)
+                            .then(res => {
+                                if (res.data.code === 200) {
+                                    this.$message.success('删除成功');
+                                    this.loadRecords();
+                                    if (this.filters.petId) this.loadStats(this.filters.petId);
+                                } else {
+                                    this.$message.error(res.data.message || '删除失败');
+                                }
+                            });
+                    });
+            },
+            getRecordTypeText(type) {
+                const map = { vaccine: '疫苗', checkup: '体检', treatment: '治疗', surgery: '手术', dental: '牙科', other: '其他' };
+                return map[type] || '其他';
+            },
+            formatDate(date) {
+                if (!date) return '-';
+                if (typeof date === 'string') return date.substring(0, 10);
+                if (date.time) return new Date(date.time).toISOString().substring(0, 10);
+                return String(date).substring(0, 10);
+            },
+            formatDateForEdit(date) {
+                if (!date) return '';
+                if (typeof date === 'string') return date.substring(0, 10);
+                if (date.time) return new Date(date.time).toISOString().substring(0, 10);
+                return '';
+            },
+            getToday() { return new Date().toISOString().substring(0, 10); },
+            isUpcoming(date) {
+                if (!date) return false;
+                const d = new Date(this.formatDate(date));
+                const diff = (d - new Date()) / (1000 * 60 * 60 * 24);
+                return diff >= 0 && diff <= 30;
+            },
+            daysUntil(date) {
+                if (!date) return 0;
+                const d = new Date(this.formatDate(date));
+                return Math.ceil((d - new Date()) / (1000 * 60 * 60 * 24));
+            },
+            getRoleNameH,
+            logout() {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            }
+        }
+    });
+</script>
+</body>
+</html>

@@ -2,10 +2,9 @@ package com.pet.rescue.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.pet.rescue.entity.BaseEntity;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+
+import java.util.Date;
 
 /**
  * 救助所实体类
@@ -107,6 +106,12 @@ public class Shelter extends BaseEntity {
      * 审核意见
      */
     private String auditComment;
+
+    /**
+     * 逻辑删除标志：0-未删除，1-已删除
+     */
+    @TableField("deleted")
+    private Integer deleted;
 
     /**
      * 无参构造函数
@@ -226,6 +231,62 @@ public class Shelter extends BaseEntity {
                 return "上海市";
         }
     }
+
+    // Lombok @Data 应该自动生成以下方法，但为确保兼容性手动添加
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
+
+    public Double getLat() { return lat; }
+    public void setLat(Double lat) { this.lat = lat; }
+
+    public Double getLon() { return lon; }
+    public void setLon(Double lon) { this.lon = lon; }
+
+    public Integer getMaxCapacity() { return maxCapacity; }
+    public void setMaxCapacity(Integer maxCapacity) { this.maxCapacity = maxCapacity; }
+
+    public Integer getCurrentCapacity() { return currentCapacity; }
+    public void setCurrentCapacity(Integer currentCapacity) { this.currentCapacity = currentCapacity; }
+
+    public String getRegionCode() { return regionCode; }
+    public void setRegionCode(String regionCode) { this.regionCode = regionCode; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public Integer getStatus() { return status; }
+    public void setStatus(Integer status) { this.status = status; }
+
+    public Integer getMedicalLevel() { return medicalLevel; }
+    public void setMedicalLevel(Integer medicalLevel) { this.medicalLevel = medicalLevel; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public String getImages() { return images; }
+    public void setImages(String images) { this.images = images; }
+
+    public Integer getEntryStatus() { return entryStatus; }
+    public void setEntryStatus(Integer entryStatus) { this.entryStatus = entryStatus; }
+
+    public Date getEntryTime() { return entryTime; }
+    public void setEntryTime(Date entryTime) { this.entryTime = entryTime; }
+
+    public Integer getAuditStatus() { return auditStatus; }
+    public void setAuditStatus(Integer auditStatus) { this.auditStatus = auditStatus; }
+
+    public String getAuditComment() { return auditComment; }
+    public void setAuditComment(String auditComment) { this.auditComment = auditComment; }
+
+    public Integer getDeleted() { return deleted; }
+    public void setDeleted(Integer deleted) { this.deleted = deleted; }
+
+    public Double getDistance() { return distance; }
+    public void setDistance(Double distance) { this.distance = distance; }
 
     @Override
     public String toString() {

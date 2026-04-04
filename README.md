@@ -107,15 +107,17 @@ USE pet_rescue;
 ```
 
 ### 后端启动
-1. 使用IntelliJ IDEA打开 `backend` 目录
-2. 等待Maven依赖下载
+1. 复制 `backend/src/main/resources/application-example.yml` 为 `application.yml`，填入数据库密码和 JWT 密钥
+2. 使用 IntelliJ IDEA 打开 `backend` 目录，等待 Maven 依赖下载
 3. 运行 `PetRescueSystemApplication.main()`
-4. 默认端口：8080
+4. 默认端口：**8081**，接口根路径：`/api`
 
 ### 前端启动
-1. 进入 `frontend` 目录
-2. 双击 `public/login.html` 或使用http-server
-3. 访问：http://localhost:8081/public/login.html
+1. 进入 `frontend` 目录，执行 `npm install`
+2. 执行 `npm run dev` 启动开发服务器
+3. 访问提示的本地地址（默认 http://localhost:5173）
+
+> 也可直接双击 `frontend/public/login.html` 打开静态页面（需后端运行在 8081 端口）
 
 ### 测试账号
 - 管理员：13800000000 / 123456
@@ -158,24 +160,16 @@ pet-rescue-system/
 ## 📊 开发进度
 
 ### 已完成功能
-- ✅ 用户认证与权限管理
-- ✅ 宠物信息管理
-- ✅ 领养申请流程
-- ✅ 数据统计功能
-- ✅ 基础权限控制
-
-### 开发中功能
-- 🔄 健康档案管理
-- 🔄 协同任务管理
-- 🔄 智能匹配算法
-- 🔄 微信小程序端
+- ✅ 用户认证与权限管理（Spring Security + JWT）
+- ✅ 宠物信息管理（含品种分类筛选）
+- ✅ 领养申请全流程（提交→审核→跟踪）
+- ✅ 救助机构管理（含智能匹配算法）
+- ✅ 数据统计看板
+- ✅ 健康档案管理
+- ✅ 协同任务管理
+- ✅ 志愿者成长体系（积分/等级/排行榜）
 
 ## 📚 相关文档
-
-- [运行指南](RUNNING_GUIDE.md) - 详细的系统运行步骤
-- [测试指南](TESTING_GUIDE.md) - 完整的测试流程
-- [需求规格说明书](docs/需求规格说明书.docx) - 系统需求分析
-- [开题报告](docs/开题报告.txt) - 项目背景与规划
 
 ## 🎓 毕业设计说明
 

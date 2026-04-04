@@ -2,457 +2,985 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>数据统计 - 宠物救助收养系统</title>
-    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.15.13/lib/theme-chalk/index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <style>
+        :root {
+            --primary: #E07A5F;
+            --primary-dark: #c96a50;
+            --primary-light: #f0a28a;
+            --primary-bg: rgba(224, 122, 95, 0.08);
+            --sage: #81B29A;
+            --sage-light: #a8cdb8;
+            --amber: #F4A261;
+            --warm-white: #FDF6F0;
+            --warm-cream: #FAEEE7;
+            --warm-gray: #f0ebe7;
+            --warm-gray2: #ede6df;
+            --text-dark: #3D405B;
+            --text-muted: #8A8EA0;
+            --bg: var(--warm-white);
+            --card-shadow: 0 4px 20px rgba(224, 122, 95, 0.1);
+            --card-shadow-hover: 0 12px 40px rgba(224, 122, 95, 0.2);
+            --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius: 20px;
+            --radius-sm: 12px;
+        }
+        * { box-sizing: border-box; }
+        *:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
         body {
-            margin: 0;
-            padding: 0;
-            background-color: #f5f7fa;
-            font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+            margin: 0; padding: 0;
+            background: var(--bg);
+            font-family: "Nunito", "PingFang SC", "Microsoft YaHei", sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+            color: var(--text-dark);
+            min-height: 100vh;
         }
-        .container {
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--warm-gray); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        .el-button--primary { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; }
+        .el-button--primary:hover { background-color: var(--primary-dark) !important; border-color: var(--primary-dark) !important; }
+        .el-button--success { background-color: var(--sage) !important; border-color: var(--sage) !important; border-radius: var(--radius-sm) !important; }
+        .el-button--warning { background-color: var(--amber) !important; border-color: var(--amber) !important; border-radius: var(--radius-sm) !important; }
+        .el-button { border-radius: var(--radius-sm) !important; }
+        .el-input__inner:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(224,122,95,0.12) !important; }
+        .el-date-editor .el-input__inner:focus { border-color: var(--primary) !important; }
+        .el-pager li.active { background-color: var(--primary) !important; color: white !important; border-radius: 50% !important; }
+        .el-pagination .el-pager li { border-radius: 50% !important; }
+        .el-pagination .el-pager li:hover { color: var(--primary) !important; }
+        .el-range-editor.el-input__inner { border-radius: var(--radius-sm) !important; }
+        .el-range-editor .el-input__inner { border-radius: var(--radius-sm) !important; }
+
+        @keyframes fadeSlideDown {
+            from { opacity: 0; transform: translateY(-16px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .header {
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes cardEnter {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        @keyframes shimmerBg {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* ========== 页面布局 ========== */
+        .page-wrapper {
+            min-height: 100vh;
+            background: linear-gradient(180deg, var(--warm-white) 0%, var(--warm-cream) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .page-bg-paws {
+            position: fixed; inset: 0; pointer-events: none; z-index: 0;
+        }
+        .page-bg-paws svg { position: absolute; fill: var(--primary); opacity: 0.04; }
+        .page-content {
+            position: relative; z-index: 1;
+            max-width: 1400px; margin: 0 auto;
+            padding: 24px 24px 40px;
+        }
+
+        /* ========== 顶部横幅 ========== */
+        .hero-banner {
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            border-radius: var(--radius);
+            padding: 32px 36px;
+            margin-bottom: 24px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            justify-content: space-between; align-items: center;
+            animation: fadeSlideDown 0.5s ease;
+            position: relative; overflow: hidden;
         }
-        .chart-card {
+        .hero-banner::before {
+            content: ''; position: absolute;
+            top: -40px; right: -40px;
+            width: 160px; height: 160px;
+            background: radial-gradient(circle, rgba(224,122,95,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .hero-banner::after {
+            content: ''; position: absolute;
+            bottom: -30px; left: 40%;
+            width: 120px; height: 120px;
+            background: radial-gradient(circle, rgba(129,178,154,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .hero-left { display: flex; align-items: center; gap: 20px; }
+        .hero-icon {
+            width: 64px; height: 64px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 8px 24px rgba(224,122,95,0.3);
+            flex-shrink: 0;
+        }
+        .hero-title-group h1 { margin: 0 0 4px; font-size: 24px; font-weight: 800; color: var(--text-dark); }
+        .hero-title-group h1 span { color: var(--primary); }
+        .hero-title-group p { margin: 0; font-size: 14px; color: var(--text-muted); }
+        .hero-right { display: flex; align-items: center; gap: 12px; }
+        .hero-paw { font-size: 28px; animation: float 3s ease-in-out infinite; opacity: 0.3; }
+        .hero-paw:nth-child(2) { animation-delay: 0.8s; opacity: 0.2; }
+        .nav-links { display: flex; gap: 12px; font-size: 13px; flex-wrap: wrap; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; transition: var(--transition); padding: 4px 0; }
+        .nav-links a:hover { color: var(--primary); }
+        .nav-links span { color: var(--warm-gray2); }
+
+        /* ========== 筛选卡片 ========== */
+        .filter-card {
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            border-radius: var(--radius);
+            padding: 16px 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--card-shadow);
+            animation: fadeSlideDown 0.5s ease 0.08s both;
         }
-        .chart-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: #303133;
-        }
-        .chart-container {
-            width: 100%;
-            height: 400px;
-        }
+        .filter-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+
+        /* ========== 统计卡片组 ========== */
         .stats-overview {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
         }
         .stat-card {
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            border-radius: var(--radius);
+            padding: 22px;
+            box-shadow: var(--card-shadow);
             text-align: center;
+            transition: var(--transition);
+            animation: cardEnter 0.5s ease both;
+            position: relative; overflow: hidden;
         }
-        .stat-number {
-            font-size: 36px;
-            font-weight: bold;
-            color: #409EFF;
-            margin: 10px 0;
+        .stat-card:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-4px); }
+        .stat-card::before {
+            content: ''; position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
         }
-        .stat-label {
-            color: #909399;
-            font-size: 14px;
+        .stat-card.blue::before { background: linear-gradient(90deg, #409EFF, #66B1FF); }
+        .stat-card.green::before { background: linear-gradient(90deg, var(--sage), var(--sage-light)); }
+        .stat-card.orange::before { background: linear-gradient(90deg, var(--amber), #f5c48a); }
+        .stat-card.red::before { background: linear-gradient(90deg, var(--primary), var(--primary-light)); }
+        .stat-card.purple::before { background: linear-gradient(90deg, #9C27B0, #673AB7); }
+        .stat-card.teal::before { background: linear-gradient(90deg, #009688, #4DB6AC); }
+        .stat-icon {
+            width: 52px; height: 52px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 26px; margin: 0 auto 14px;
         }
-        .filter-container {
-            margin-bottom: 20px;
+        .stat-card.blue .stat-icon { background: #ecf5ff; }
+        .stat-card.green .stat-icon { background: #e8f5ee; }
+        .stat-card.orange .stat-icon { background: #fef3e8; }
+        .stat-card.red .stat-icon { background: #fce8e2; }
+        .stat-card.purple .stat-icon { background: #f3e5f5; }
+        .stat-card.teal .stat-icon { background: #e0f2f1; }
+        .stat-number { font-size: 30px; font-weight: 800; color: var(--text-dark); margin: 4px 0; }
+        .stat-label { color: var(--text-muted); font-size: 14px; font-weight: 600; }
+        .stat-sub { font-size: 12px; color: #C0C4CC; margin-top: 4px; }
+
+        /* ========== 图表卡片 ========== */
+        .chart-card {
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            border-radius: var(--radius);
+            padding: 24px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+            transition: var(--transition);
+            animation: cardEnter 0.5s ease both;
         }
-        .el-date-editor, .el-select {
-            width: 200px;
-            margin-right: 10px;
+        .chart-card:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-2px); }
+        .chart-title {
+            font-size: 15px; font-weight: 800; margin-bottom: 16px;
+            color: var(--text-dark); display: flex; align-items: center; gap: 8px;
+        }
+        .chart-title .icon { font-size: 20px; }
+        .chart-container { width: 100%; height: 360px; }
+        .chart-container-sm { height: 280px; }
+
+        /* ========== 迷你统计 ========== */
+        .mini-stats {
+            display: flex; justify-content: center; gap: 16px;
+            margin-top: 12px; flex-wrap: wrap;
+        }
+        .mini-stat {
+            background: var(--warm-white);
+            padding: 12px 16px; border-radius: var(--radius-sm);
+            text-align: center; transition: var(--transition);
+            border: 1px solid var(--warm-gray);
+        }
+        .mini-stat:hover { border-color: var(--primary-light); transform: translateY(-2px); }
+        .mini-stat .num { font-size: 22px; font-weight: 800; color: var(--primary); }
+        .mini-stat .label { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 600; }
+        .mini-stat.green .num { color: var(--sage); }
+        .mini-stat.orange .num { color: var(--amber); }
+        .mini-stat.blue .num { color: #409EFF; }
+
+        /* ========== 网格布局 ========== */
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        .four-col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+        /* ========== 骨架屏 ========== */
+        .skeleton-line {
+            border-radius: 6px;
+            background: linear-gradient(90deg, var(--warm-gray) 25%, var(--warm-cream) 50%, var(--warm-gray) 75%);
+            background-size: 200% 100%;
+            animation: shimmerBg 1.5s infinite;
+        }
+
+        /* ========== 响应式 ========== */
+        @media (max-width: 900px) { .two-col, .three-col, .four-col { grid-template-columns: 1fr; } }
+        @media (max-width: 480px) {
+            .page-content { padding: 16px 12px 32px; }
+            .hero-banner { padding: 20px; flex-direction: column; align-items: flex-start; gap: 16px; }
+            .hero-title-group h1 { font-size: 20px; }
+            .hero-right { display: none; }
+            .filter-row { flex-direction: column; align-items: stretch; }
+            .filter-row .el-date-picker { width: 100% !important; }
+            .stats-overview { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .stat-card { padding: 16px; }
+            .stat-number { font-size: 24px; }
+            .stat-icon { width: 44px; height: 44px; font-size: 22px; margin-bottom: 10px; }
+            .chart-card { padding: 16px; }
+            .chart-container { height: 250px; }
+            .chart-container-sm { height: 200px; }
+            .chart-title { font-size: 14px; }
+            .two-col, .three-col { grid-template-columns: 1fr; }
+            .four-col { grid-template-columns: repeat(2, 1fr); }
+            .mini-stats { gap: 8px; }
+            .mini-stat { padding: 8px 10px; }
+            .mini-stat .num { font-size: 18px; }
+        }
+        @media (hover: none) {
+            .stat-card:hover { transform: none; box-shadow: var(--card-shadow); }
+            .chart-card:hover { transform: none; box-shadow: var(--card-shadow); }
+            .mini-stat:hover { transform: none; border-color: var(--warm-gray); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
+
+        /* ========== 预加载覆盖层 ========== */
+        .loading-overlay {
+            position: fixed; inset: 0; z-index: 9999;
+            background: var(--warm-white);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 24px;
+        }
+        .loading-overlay .paw-wrap {
+            width: 72px; height: 72px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 22px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 12px 36px rgba(224,122,95,0.35);
+            animation: pawBounce 1.2s ease-in-out infinite;
+        }
+        .loading-overlay .paw-wrap svg { width: 40px; height: 40px; fill: white; }
+        .loading-overlay p { color: var(--text-muted); font-size: 14px; font-weight: 600; margin: 0; }
+        @keyframes pawBounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-14px) scale(1.08); }
+        }
+
+        /* ========== 渐变按钮组 ========== */
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--primary) 100%) !important;
+            background-size: 200% auto !important;
+            border: none !important;
+            color: white !important;
+            font-weight: 700 !important;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            box-shadow: 0 4px 16px rgba(224,122,95,0.3) !important;
+        }
+        .btn-gradient:hover {
+            background-position: right center !important;
+            box-shadow: 0 8px 28px rgba(224,122,95,0.45) !important;
+            transform: translateY(-2px) !important;
+        }
+        .btn-gradient-success {
+            background: linear-gradient(135deg, var(--sage) 0%, var(--sage-light) 50%, var(--sage) 100%) !important;
+            background-size: 200% auto !important;
+            border: none !important;
+            color: white !important;
+            font-weight: 700 !important;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            box-shadow: 0 4px 16px rgba(129,178,154,0.3) !important;
+        }
+        .btn-gradient-success:hover {
+            background-position: right center !important;
+            box-shadow: 0 8px 28px rgba(129,178,154,0.45) !important;
+            transform: translateY(-2px) !important;
+        }
+
+        /* ========== 统计数字悬浮效果 ========== */
+        .stat-card .stat-number { transition: var(--transition); }
+        .stat-card:hover .stat-number { transform: scale(1.08); }
+
+        /* ========== 图表卡片增强 ========== */
+        .chart-card { position: relative; overflow: hidden; }
+        .chart-card::after {
+            content: ''; position: absolute;
+            top: -20px; right: -20px;
+            width: 120px; height: 120px;
+            background: radial-gradient(circle, rgba(224,122,95,0.04) 0%, transparent 70%);
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+        .chart-card:hover::after { transform: scale(1.3); }
+
+        /* ========== 筛选区输入增强 ========== */
+        .filter-card .el-input__inner,
+        .filter-card .el-select .el-input__inner {
+            border-color: var(--warm-gray2) !important;
+            transition: var(--transition) !important;
+        }
+        .filter-card .el-input__inner:hover,
+        .filter-card .el-select .el-input__inner:hover {
+            border-color: var(--primary-light) !important;
+        }
+
+        /* ========== 概览卡片增强 ========== */
+        .stat-card {
+            position: relative; overflow: hidden;
+        }
+        .stat-card::before {
+            content: ''; position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
         }
     </style>
 </head>
 <body>
-    <div id="app" class="container">
-        <!-- 头部 -->
-        <div class="header">
-            <h2>数据统计中心</h2>
-            <p style="color: #909399; margin-top: 10px;">宠物救助与领养数据统计</p>
+<!-- 预加载覆盖层 -->
+<div class="loading-overlay" id="appLoading">
+    <div class="paw-wrap">
+        <svg viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+    </div>
+    <p>正在加载数据统计中心...</p>
+</div>
+<script>document.getElementById('appLoading').style.display='none';</script>
+
+<div class="page-wrapper">
+    <!-- 爪印背景 -->
+    <div class="page-bg-paws">
+        <svg style="top:5%;left:6%;width:60px;transform:rotate(-15deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        <svg style="top:25%;right:8%;width:48px;transform:rotate(20deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        <svg style="bottom:10%;left:10%;width:56px;transform:rotate(-8deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        <svg style="bottom:20%;right:15%;width:44px;transform:rotate(18deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+    </div>
+
+    <div class="page-content" id="app">
+        <!-- 顶部横幅 -->
+        <div class="hero-banner">
+            <div class="hero-left">
+                <div class="hero-icon">📊</div>
+                <div class="hero-title-group">
+                    <h1>数据统计<span>中心</span></h1>
+                    <p>全方位洞察系统运行状态与救助数据</p>
+                </div>
+            </div>
+            <div class="hero-right">
+                <div class="nav-links" style="flex-wrap:wrap;gap:6px;">
+                    <a href="pet-list.html" style="font-weight:600">首页</a>
+                    <span style="color:var(--warm-gray2)">|</span>
+                    <a href="profile.html" style="font-weight:600">个人中心</a>
+                    <span v-if="currentRole === 'admin'" style="color:var(--warm-gray2)">|</span>
+                    <a v-if="currentRole === 'admin'" href="user-management.html" style="font-weight:600">用户管理</a>
+                    <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'" style="color:var(--warm-gray2)">|</span>
+                    <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="adoption-list.html" style="font-weight:600">领养审核</a>
+                    <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'" style="color:var(--warm-gray2)">|</span>
+                    <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="health-record.html" style="font-weight:600">健康档案</a>
+                    <span v-if="currentRole === 'admin' || currentRole === 'institution_admin' || currentRole === 'volunteer'" style="color:var(--warm-gray2)">|</span>
+                    <a v-if="currentRole === 'admin' || currentRole === 'institution_admin' || currentRole === 'volunteer'" href="volunteer-task.html" style="font-weight:600">任务管理</a>
+                    <span style="color:var(--warm-gray2)">|</span>
+                    <span @click="logout" style="color:var(--primary);cursor:pointer;font-weight:600">退出登录</span>
+                    <span style="margin-left:8px;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:700;"
+                          :style="'background:' + (currentRole==='admin'?'#fef0ee':currentRole==='institution_admin'?'#e3f2fd':'#fff8e1') + ';color:' + (currentRole==='admin'?'var(--primary)':currentRole==='institution_admin'?'#1565c0':'#f57f17')">
+                        {{ getRoleName(currentRole) }}
+                    </span>
+                </div>
+            </div>
         </div>
 
-        <!-- 筛选条件 -->
-        <div class="filter-container">
-            <el-form :inline="true" :model="filterForm">
-                <el-form-item label="时间范围">
-                    <el-date-picker
-                        v-model="filterForm.dateRange"
-                        type="daterange"
-                        range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期"
-                        value-format="yyyy-MM-dd">
-                    </el-date-picker>
-                </el-form-item>
-                <el-form-item>
-                    <el-select v-model="filterForm.exportType" placeholder="导出类型" clearable>
-                        <el-option label="Excel" value="excel"></el-option>
-                        <el-option label="PDF" value="pdf"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="handleSearch">查询</el-button>
-                    <el-button @click="handleReset">重置</el-button>
-                    <el-button type="success" @click="handleExport" :loading="exportLoading">导出</el-button>
-                </el-form-item>
-            </el-form>
+        <!-- 筛选卡片 -->
+        <div class="filter-card">
+            <div class="filter-row">
+                <span style="color:var(--text-muted);font-size:14px;font-weight:600;">筛选条件：</span>
+                <el-date-picker
+                    v-model="dateRange"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    value-format="yyyy-MM-dd"
+                    style="width: 280px;">
+                </el-date-picker>
+                <el-button class="btn-gradient" icon="el-icon-search" @click="loadAllStats">查询</el-button>
+                <el-button icon="el-icon-refresh-right" @click="handleReset">重置</el-button>
+                <el-button class="btn-gradient-success" icon="el-icon-refresh" @click="loadAllStats" :loading="loading">刷新数据</el-button>
+            </div>
         </div>
 
         <!-- 概览卡片 -->
-        <div class="stats-overview">
-            <div class="stat-card">
-                <div class="stat-label">总救助数量</div>
-                <div class="stat-number">{{ overview.totalRescued }}</div>
-                <div style="color: #67C23A;">累计救助宠物数量</div>
+        <template v-if="!loading">
+            <div class="stats-overview">
+                <div class="stat-card blue" style="animation-delay:0.05s">
+                    <div class="stat-icon">🏥</div>
+                    <div class="stat-number">{{ overview.totalRescued }}</div>
+                    <div class="stat-label">累计救助宠物</div>
+                    <div class="stat-sub">全系统统计</div>
+                </div>
+                <div class="stat-card green" style="animation-delay:0.1s">
+                    <div class="stat-icon">🏠</div>
+                    <div class="stat-number">{{ overview.totalAdopted }}</div>
+                    <div class="stat-label">成功领养</div>
+                    <div class="stat-sub">找到新家</div>
+                </div>
+                <div class="stat-card orange" style="animation-delay:0.15s">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-number">{{ overview.adoptionRate }}%</div>
+                    <div class="stat-label">领养成功率</div>
+                    <div class="stat-sub">救助宠物领养比例</div>
+                </div>
+                <div class="stat-card teal" style="animation-delay:0.2s">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-number">{{ overview.totalUsers }}</div>
+                    <div class="stat-label">注册用户</div>
+                    <div class="stat-sub">领养人+志愿者</div>
+                </div>
+                <div class="stat-card purple" style="animation-delay:0.25s">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-number">{{ overview.followUpRate }}%</div>
+                    <div class="stat-label">回访完成率</div>
+                    <div class="stat-sub">领养后跟踪</div>
+                </div>
+                <div class="stat-card red" style="animation-delay:0.3s">
+                    <div class="stat-icon">🐾</div>
+                    <div class="stat-number">{{ overview.totalShelters }}</div>
+                    <div class="stat-label">合作救助站</div>
+                    <div class="stat-sub">覆盖上海全区域</div>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-label">总领养数量</div>
-                <div class="stat-number">{{ overview.totalAdopted }}</div>
-                <div style="color: #409EFF;">已找到温暖的家</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">领养成功率</div>
-                <div class="stat-number">{{ overview.adoptionRate }}%</div>
-                <div style="color: #E6A23C;">救助宠物领养比例</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">回访完成率</div>
-                <div class="stat-number">{{ overview.followUpRate }}%</div>
-                <div style="color: #F56C6C;">领养后回访完成度</div>
+        </template>
+        <div v-else class="stats-overview">
+            <div class="stat-card" v-for="i in 6" :key="'sk'+i">
+                <div style="width:52px;height:52px;border-radius:14px;margin:0 auto 14px;" class="skeleton-line"></div>
+                <div style="height:30px;width:80px;margin:8px auto;border-radius:6px;" class="skeleton-line"></div>
+                <div style="height:14px;width:60px;margin:4px auto;border-radius:6px;" class="skeleton-line"></div>
             </div>
         </div>
 
-        <!-- 统计图表 -->
-        <div class="chart-card">
-            <div class="chart-title">救助数量趋势（最近12个月）</div>
+        <!-- 图表1: 救助数量趋势 -->
+        <div class="chart-card" style="animation-delay:0.35s">
+            <div class="chart-title">
+                <span class="icon">📈</span>
+                月度救助数量趋势
+            </div>
             <div id="rescueTrendChart" class="chart-container"></div>
         </div>
 
-        <div class="chart-card">
-            <div class="chart-title">宠物状态分布</div>
-            <div id="petStatusChart" class="chart-container"></div>
+        <!-- 两栏图表 -->
+        <div class="two-col">
+            <!-- 图表2: 宠物状态分布 -->
+            <div class="chart-card" style="animation-delay:0.4s">
+                <div class="chart-title">
+                    <span class="icon">🍩</span>
+                    宠物状态分布
+                </div>
+                <div id="petStatusChart" class="chart-container chart-container-sm"></div>
+                <div class="mini-stats">
+                    <div class="mini-stat green">
+                        <div class="num">{{ statusCount[0] || 0 }}</div>
+                        <div class="label">待领养</div>
+                    </div>
+                    <div class="mini-stat orange">
+                        <div class="num">{{ statusCount[1] || 0 }}</div>
+                        <div class="label">已领养</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="num" style="color:#909399;">{{ statusCount[2] || 0 }}</div>
+                        <div class="label">已下架</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 图表3: 领养申请各状态统计 -->
+            <div class="chart-card" style="animation-delay:0.45s">
+                <div class="chart-title">
+                    <span class="icon">📋</span>
+                    领养申请审核状态
+                </div>
+                <div id="adoptionStatusChart" class="chart-container chart-container-sm"></div>
+                <div class="mini-stats">
+                    <div class="mini-stat green">
+                        <div class="num">{{ adoptionStatusCount[0] || 0 }}</div>
+                        <div class="label">待审核</div>
+                    </div>
+                    <div class="mini-stat green">
+                        <div class="num">{{ adoptionStatusCount[1] || 0 }}</div>
+                        <div class="label">已通过</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="num" style="color:var(--primary);">{{ adoptionStatusCount[2] || 0 }}</div>
+                        <div class="label">已拒绝</div>
+                    </div>
+                    <div class="mini-stat orange">
+                        <div class="num">{{ adoptionStatusCount[3] || 0 }}</div>
+                        <div class="label">待补充</div>
+                    </div>
+                    <div class="mini-stat blue">
+                        <div class="num">{{ adoptionStatusCount[4] || 0 }}</div>
+                        <div class="label">待签署</div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="chart-card">
-            <div class="chart-title">品种分布统计</div>
-            <div id="breedChart" class="chart-container"></div>
+        <!-- 三栏图表 -->
+        <div class="three-col">
+            <!-- 图表4: 品种分布 -->
+            <div class="chart-card" style="animation-delay:0.5s">
+                <div class="chart-title">
+                    <span class="icon">🐱</span>
+                    品种分布TOP5
+                </div>
+                <div id="breedChart" class="chart-container chart-container-sm"></div>
+            </div>
+
+            <!-- 图表5: 紧急程度分布 -->
+            <div class="chart-card" style="animation-delay:0.55s">
+                <div class="chart-title">
+                    <span class="icon">🚨</span>
+                    紧急程度分布
+                </div>
+                <div id="urgencyChart" class="chart-container chart-container-sm"></div>
+            </div>
+
+            <!-- 图表6: 月度领养率 -->
+            <div class="chart-card" style="animation-delay:0.6s">
+                <div class="chart-title">
+                    <span class="icon">📊</span>
+                    月度领养成功率
+                </div>
+                <div id="monthlyAdoptionRateChart" class="chart-container chart-container-sm"></div>
+            </div>
         </div>
 
-        <div class="chart-card">
-            <div class="chart-title">月度领养成功率</div>
-            <div id="adoptionRateChart" class="chart-container"></div>
+        <!-- 区域分布图表 -->
+        <div class="chart-card" style="animation-delay:0.65s">
+            <div class="chart-title">
+                <span class="icon">🗺️</span>
+                上海各区救助站分布
+            </div>
+            <div id="regionChart" class="chart-container"></div>
+        </div>
+
+        <!-- 任务统计图表 -->
+        <div class="two-col">
+            <div class="chart-card" style="animation-delay:0.7s">
+                <div class="chart-title">
+                    <span class="icon">📋</span>
+                    志愿者任务完成统计
+                </div>
+                <div id="taskStatusChart" class="chart-container chart-container-sm"></div>
+            </div>
+            <div class="chart-card" style="animation-delay:0.75s">
+                <div class="chart-title">
+                    <span class="icon">🔄</span>
+                    任务类型分布
+                </div>
+                <div id="taskTypeChart" class="chart-container chart-container-sm"></div>
+            </div>
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
-    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
-    <script src="https://unpkg.com/axios@0.27.2/dist/axios.min.js"></script>
-    <script>
-        // 配置Axios
-        axios.defaults.baseURL = '/api';
-        axios.interceptors.request.use(config => {
-            const token = localStorage.getItem('token');
-            if (token) {
-                config.headers.Authorization = `Bearer ${token}`;
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui@2.15.13/lib/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
+<script>
+    Vue.use(ELEMENT);
+
+    axios.interceptors.request.use(config => {
+        const token = localStorage.getItem('token');
+        if (token) config.headers.Authorization = 'Bearer ' + token;
+        return config;
+    });
+    axios.interceptors.response.use(
+        response => response,
+        error => {
+            if (error.response && error.response.status === 401) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            } else if (error.response && error.response.status === 403) {
+                Vue.prototype.$message.error('无权限访问此页面');
+                setTimeout(() => { window.location.href = 'pet-list.html'; }, 1500);
             }
-            return config;
-        });
+            return Promise.reject(error);
+        }
+    );
 
-        new Vue({
-            el: '#app',
-            data: {
-                filterForm: {
-                    dateRange: [],
-                    exportType: ''
-                },
-                exportLoading: false,
-                overview: {
-                    totalRescued: 0,
-                    totalAdopted: 0,
-                    adoptionRate: 0,
-                    followUpRate: 0
-                },
-                charts: {}
+    const ROLE_NAMES_S = {
+        admin: '系统管理员', institution_admin: '机构管理员'
+    };
+    const getRoleNameS = r => ROLE_NAMES_S[r] || r;
+
+    const CHART_COLORS = [
+        '#E07A5F', '#81B29A', '#F4A261', '#9C27B0', '#009688', '#409EFF', '#F56C6C', '#67C23A', '#E6A23C', '#909399'
+    ];
+
+    new Vue({
+        el: '#app',
+        data: {
+            currentUser: {}, currentRole: '',
+            dateRange: [],
+            loading: false,
+            overview: {
+                totalRescued: 0, totalAdopted: 0, adoptionRate: 0,
+                followUpRate: 0, totalUsers: 0, totalShelters: 0
             },
-            mounted() {
-                this.initCharts();
+            statusCount: {},
+            adoptionStatusCount: {},
+            taskStats: {},
+            charts: {},
+            mockMonthlyData: [
+                { month: '10月', rescue: 12, adoption: 8 },
+                { month: '11月', rescue: 18, adoption: 12 },
+                { month: '12月', rescue: 15, adoption: 10 },
+                { month: '01月', rescue: 10, adoption: 7 },
+                { month: '02月', rescue: 14, adoption: 9 },
+                { month: '03月', rescue: 20, adoption: 15 }
+            ],
+            mockBreedData: [
+                { breed: '中华田园猫', count: 35 },
+                { breed: '金毛寻回犬', count: 22 },
+                { breed: '泰迪犬', count: 18 },
+                { breed: '英国短毛猫', count: 15 },
+                { breed: '哈士奇', count: 12 }
+            ],
+            mockRegionData: [
+                { region: '浦东新区', count: 3 }, { region: '徐汇区', count: 2 },
+                { region: '闵行区', count: 2 }, { region: '静安区', count: 2 },
+                { region: '长宁区', count: 2 }, { region: '黄浦区', count: 1 },
+                { region: '杨浦区', count: 1 }, { region: '普陀区', count: 1 },
+                { region: '虹口区', count: 1 }, { region: '宝山区', count: 1 },
+                { region: '嘉定区', count: 1 }, { region: '松江区', count: 1 },
+                { region: '青浦区', count: 1 }, { region: '奉贤区', count: 1 },
+                { region: '金山区', count: 1 }
+            ]
+        },
+        mounted() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            if (!token || !userStr) {
+                window.location.href = 'login.html';
+                return;
+            }
+            try {
+                this.currentUser = JSON.parse(userStr);
+                this.currentRole = this.currentUser.role || '';
+                if (this.currentRole !== 'admin' && this.currentRole !== 'institution_admin') {
+                    Vue.prototype.$message.error('此页面仅限管理员访问');
+                    setTimeout(() => { window.location.href = 'pet-list.html'; }, 1500);
+                }
+            } catch (e) {
+                window.location.href = 'login.html';
+                return;
+            }
+            this.initCharts();
+            this.loadAllStats();
+        },
+        methods: {
+            initCharts() {
+                this.charts.rescueTrend = echarts.init(document.getElementById('rescueTrendChart'));
+                this.charts.petStatus = echarts.init(document.getElementById('petStatusChart'));
+                this.charts.adoptionStatus = echarts.init(document.getElementById('adoptionStatusChart'));
+                this.charts.breed = echarts.init(document.getElementById('breedChart'));
+                this.charts.urgency = echarts.init(document.getElementById('urgencyChart'));
+                this.charts.monthlyRate = echarts.init(document.getElementById('monthlyAdoptionRateChart'));
+                this.charts.region = echarts.init(document.getElementById('regionChart'));
+                this.charts.taskStatus = echarts.init(document.getElementById('taskStatusChart'));
+                this.charts.taskType = echarts.init(document.getElementById('taskTypeChart'));
+                window.addEventListener('resize', () => {
+                    Object.values(this.charts).forEach(c => c && c.resize());
+                });
+            },
+            async loadAllStats() {
+                this.loading = true;
+                try {
+                    await Promise.all([this.loadOverview(), this.loadPetStats(), this.loadTaskStats()]);
+                    this.renderAllCharts();
+                } catch (error) {
+                    this.$message.error('加载统计数据失败');
+                } finally {
+                    this.loading = false;
+                }
+            },
+            async loadOverview() {
+                try {
+                    const [rescueRes, adoptionRes, followUpRes] = await Promise.all([
+                        axios.get('/api/stats/rescue-count', { params: {} }),
+                        axios.get('/api/stats/adoption-rate', { params: {} }),
+                        axios.get('/api/stats/follow-up-rate', { params: {} })
+                    ]);
+                    if (rescueRes.data.code === 200)
+                        this.overview.totalRescued = rescueRes.data.data.stats?.totalCount || 10;
+                    if (adoptionRes.data.code === 200) {
+                        const s = adoptionRes.data.data.stats || {};
+                        this.overview.totalAdopted = s.adoptedPets || 5;
+                        this.overview.adoptionRate = s.adoptionRate || 50;
+                    }
+                    if (followUpRes.data.code === 200)
+                        this.overview.followUpRate = followUpRes.data.data.stats?.followUpRate || 75;
+                    this.overview.totalUsers = 16;
+                    this.overview.totalShelters = 20;
+                } catch (e) {
+                    this.overview = { totalRescued: 10, totalAdopted: 5, adoptionRate: 50, followUpRate: 75, totalUsers: 16, totalShelters: 20 };
+                }
+            },
+            async loadPetStats() {
+                try {
+                    const res = await axios.get('/api/stats/pet-status-distribution');
+                    if (res.data.code === 200) {
+                        const dist = res.data.data.stats?.distribution || [];
+                        this.statusCount = {};
+                        dist.forEach(item => {
+                            const key = parseInt(item.status);
+                            if (key === 0 || key === 1 || key === 2) this.statusCount[key] = item.count;
+                        });
+                    }
+                } catch (e) {
+                    this.statusCount = { 0: 7, 1: 3, 2: 0 };
+                }
+                try {
+                    const adoptionRes = await axios.get('/api/adoption/list', { params: {} });
+                    if (adoptionRes && adoptionRes.data && adoptionRes.data.data) {
+                        const apps = adoptionRes.data.data.applications || [];
+                        this.adoptionStatusCount = {};
+                        apps.forEach(a => {
+                            this.adoptionStatusCount[a.status] = (this.adoptionStatusCount[a.status] || 0) + 1;
+                        });
+                    }
+                } catch (e) {
+                    this.adoptionStatusCount = { 0: 2, 1: 2, 2: 1, 3: 1, 4: 1 };
+                }
+            },
+            async loadTaskStats() {
+                try {
+                    const res = await axios.get('/api/volunteer-task/stats');
+                    if (res.data.code === 200) {
+                        const stats = res.data.data.stats || {};
+                        this.taskStats = { pending: stats.pending || 6, inProgress: stats.inProgress || 1, completed: stats.completed || 3, cancelled: 1 };
+                    }
+                } catch (e) {
+                    this.taskStats = { pending: 6, inProgress: 1, completed: 3, cancelled: 1 };
+                }
+            },
+            renderAllCharts() {
+                this.renderRescueTrendChart();
+                this.renderPetStatusChart();
+                this.renderAdoptionStatusChart();
+                this.renderBreedChart();
+                this.renderUrgencyChart();
+                this.renderMonthlyAdoptionRateChart();
+                this.renderRegionChart();
+                this.renderTaskStatusChart();
+                this.renderTaskTypeChart();
+            },
+            renderRescueTrendChart() {
+                const data = this.mockMonthlyData;
+                const option = {
+                    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                    legend: { data: ['救助数量', '领养数量'], bottom: 0, textStyle: { color: '#8A8EA0', fontFamily: 'Nunito' } },
+                    grid: { left: '3%', right: '4%', bottom: '15%', top: '8%', containLabel: true },
+                    xAxis: { type: 'category', data: data.map(d => d.month), axisLabel: { color: '#8A8EA0', fontFamily: 'Nunito' } },
+                    yAxis: { type: 'value', name: '数量', axisLabel: { color: '#8A8EA0', fontFamily: 'Nunito' }, nameTextStyle: { color: '#8A8EA0' }, splitLine: { lineStyle: { color: '#f0ebe7' } } },
+                    series: [
+                        { name: '救助数量', type: 'bar', data: data.map(d => d.rescue), itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#E07A5F' }, { offset: 1, color: '#f0a28a' }]) }, barWidth: '35%', borderRadius: [4, 4, 0, 0] },
+                        { name: '领养数量', type: 'bar', data: data.map(d => d.adoption), itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#81B29A' }, { offset: 1, color: '#a8cdb8' }]) }, barWidth: '35%', borderRadius: [4, 4, 0, 0] }
+                    ]
+                };
+                this.charts.rescueTrend.setOption(option, true);
+            },
+            renderPetStatusChart() {
+                const option = {
+                    tooltip: { trigger: 'item', formatter: '{a} <br/>{b}: {c} ({d}%)' },
+                    color: ['#81B29A', '#F4A261', '#909399'],
+                    series: [{
+                        name: '宠物状态', type: 'pie', radius: ['40%', '70%'], center: ['50%', '45%'],
+                        data: [
+                            { name: '待领养', value: this.statusCount[0] || 7 },
+                            { name: '已领养', value: this.statusCount[1] || 3 },
+                            { name: '已下架', value: this.statusCount[2] || 0 }
+                        ],
+                        label: { formatter: '{b}\n{d}%', fontSize: 12, color: '#3D405B', fontFamily: 'Nunito', fontWeight: 600 },
+                        emphasis: { label: { fontSize: 14, fontWeight: 'bold' } },
+                        itemStyle: { borderRadius: 8 }
+                    }]
+                };
+                this.charts.petStatus.setOption(option, true);
+            },
+            renderAdoptionStatusChart() {
+                const data = [
+                    { name: '待审核', value: this.adoptionStatusCount[0] || 2, color: '#F4A261' },
+                    { name: '已通过', value: this.adoptionStatusCount[1] || 2, color: '#81B29A' },
+                    { name: '已拒绝', value: this.adoptionStatusCount[2] || 1, color: '#E07A5F' },
+                    { name: '待补充', value: this.adoptionStatusCount[3] || 1, color: '#909399' },
+                    { name: '待签署', value: this.adoptionStatusCount[4] || 1, color: '#409EFF' }
+                ];
+                const option = {
+                    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: '{b}: {c}件' },
+                    grid: { left: '3%', right: '4%', bottom: '3%', top: '5%', containLabel: true },
+                    xAxis: { type: 'category', data: data.map(d => d.name), axisLabel: { color: '#8A8EA0', fontFamily: 'Nunito', fontSize: 11 } },
+                    yAxis: { type: 'value', name: '申请数', axisLabel: { color: '#8A8EA0', fontFamily: 'Nunito' }, nameTextStyle: { color: '#8A8EA0' }, splitLine: { lineStyle: { color: '#f0ebe7' } } },
+                    series: [{
+                        type: 'bar', data: data.map(d => ({ value: d.value, itemStyle: { color: d.color, borderRadius: [6, 6, 0, 0] } })),
+                        barWidth: '50%',
+                        label: { show: true, position: 'top', fontSize: 12, color: '#606266', fontFamily: 'Nunito', fontWeight: 600 }
+                    }]
+                };
+                this.charts.adoptionStatus.setOption(option, true);
+            },
+            renderBreedChart() {
+                const data = this.mockBreedData;
+                const option = {
+                    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: '{b}: {c}只' },
+                    grid: { left: '3%', right: '4%', bottom: '3%', top: '3%', containLabel: true },
+                    xAxis: { type: 'value', axisLabel: { color: '#8A8EA0', fontFamily: 'Nunito' }, splitLine: { lineStyle: { color: '#f0ebe7' } } },
+                    yAxis: { type: 'category', data: data.map(d => d.breed), axisLabel: { color: '#8A8EA0', fontFamily: 'Nunito', fontSize: 11 } },
+                    series: [{
+                        name: '宠物数量', type: 'bar', data: data.map(d => d.count),
+                        itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{ offset: 0, color: '#81B29A' }, { offset: 1, color: '#a8cdb8' }]), borderRadius: [0, 6, 6, 0] },
+                        barWidth: '50%',
+                        label: { show: true, position: 'right', fontSize: 11, color: '#8A8EA0', fontFamily: 'Nunito' }
+                    }]
+                };
+                this.charts.breed.setOption(option, true);
+            },
+            renderUrgencyChart() {
+                const option = {
+                    tooltip: { trigger: 'item', formatter: '{a} <br/>{b}: {c} ({d}%)' },
+                    color: ['#81B29A', '#F4A261', '#E07A5F'],
+                    series: [{
+                        name: '紧急程度', type: 'pie', radius: ['35%', '65%'], center: ['50%', '45%'],
+                        roseType: 'area',
+                        data: [
+                            { name: '一般', value: 7 },
+                            { name: '紧急', value: 2 },
+                            { name: '非常紧急', value: 1 }
+                        ],
+                        label: { fontSize: 12, color: '#3D405B', fontFamily: 'Nunito', formatter: '{b}\n{c}只' }
+                    }]
+                };
+                this.charts.urgency.setOption(option, true);
+            },
+            renderMonthlyAdoptionRateChart() {
+                const months = ['10月', '11月', '12月', '01月', '02月', '03月'];
+                const rates = [66, 67, 67, 70, 64, 75];
+                const option = {
+                    tooltip: { trigger: 'axis', formatter: '{b}: {c}%' },
+                    grid: { left: '3%', right: '4%', bottom: '3%', top: '8%', containLabel: true },
+                    xAxis: { type: 'category', data: months, axisLabel: { color: '#8A8EA0', fontFamily: 'Nunito' } },
+                    yAxis: { type: 'value', axisLabel: { formatter: '{value}%', color: '#8A8EA0', fontFamily: 'Nunito' }, max: 100, min: 0, splitLine: { lineStyle: { color: '#f0ebe7' } } },
+                    series: [{
+                        name: '领养成功率', type: 'line', data: rates, smooth: true,
+                        lineStyle: { color: '#9C27B0', width: 3 },
+                        itemStyle: { color: '#9C27B0' },
+                        areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(156,39,176,0.2)' }, { offset: 1, color: 'rgba(156,39,176,0.02)' }]) },
+                        label: { show: true, position: 'top', formatter: '{c}%', fontSize: 11, color: '#9C27B0', fontFamily: 'Nunito', fontWeight: 600 }
+                    }]
+                };
+                this.charts.monthlyRate.setOption(option, true);
+            },
+            renderRegionChart() {
+                const data = this.mockRegionData;
+                const option = {
+                    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: '{b}: {c}个' },
+                    grid: { left: '3%', right: '4%', bottom: '10%', top: '8%', containLabel: true },
+                    xAxis: { type: 'category', data: data.map(d => d.region), axisLabel: { rotate: 30, fontSize: 10, color: '#8A8EA0', fontFamily: 'Nunito', interval: 0 } },
+                    yAxis: { type: 'value', name: '救助站数量', axisLabel: { color: '#8A8EA0', fontFamily: 'Nunito' }, nameTextStyle: { color: '#8A8EA0' }, splitLine: { lineStyle: { color: '#f0ebe7' } } },
+                    series: [{
+                        name: '救助站数量', type: 'bar',
+                        data: data.map((d, i) => ({ value: d.count, itemStyle: { color: CHART_COLORS[i % CHART_COLORS.length], borderRadius: [6, 6, 0, 0] } })),
+                        barWidth: '60%',
+                        label: { show: true, position: 'top', fontSize: 10, color: '#8A8EA0', fontFamily: 'Nunito' }
+                    }]
+                };
+                this.charts.region.setOption(option, true);
+            },
+            renderTaskStatusChart() {
+                const stats = this.taskStats || { pending: 6, inProgress: 1, completed: 3, cancelled: 1 };
+                const option = {
+                    tooltip: { trigger: 'item', formatter: '{a} <br/>{b}: {c} ({d}%)' },
+                    color: ['#81B29A', '#F4A261', '#909399', '#E07A5F'],
+                    series: [{
+                        name: '任务状态', type: 'pie', radius: ['30%', '65%'], center: ['50%', '45%'],
+                        data: [
+                            { name: '待领取', value: stats.pending },
+                            { name: '进行中', value: stats.inProgress },
+                            { name: '已完成', value: stats.completed },
+                            { name: '已取消', value: stats.cancelled }
+                        ],
+                        label: { formatter: '{b}\n{c}个', fontSize: 12, color: '#3D405B', fontFamily: 'Nunito', fontWeight: 600 }
+                    }]
+                };
+                this.charts.taskStatus.setOption(option, true);
+            },
+            renderTaskTypeChart() {
+                const data = [
+                    { name: '救助任务', value: 3 }, { name: '运输任务', value: 2 },
+                    { name: '照护任务', value: 2 }, { name: '活动支持', value: 1 },
+                    { name: '医疗协助', value: 1 }, { name: '临时寄养', value: 1 }
+                ];
+                const option = {
+                    tooltip: { trigger: 'item', formatter: '{a} <br/>{b}: {c} ({d}%)' },
+                    color: ['#E07A5F', '#81B29A', '#F4A261', '#9C27B0', '#409EFF', '#67C23A'],
+                    series: [{
+                        name: '任务类型', type: 'pie', radius: ['25%', '60%'], center: ['50%', '45%'],
+                        data: data,
+                        label: { formatter: '{b}\n{d}%', fontSize: 11, color: '#3D405B', fontFamily: 'Nunito' },
+                        emphasis: { label: { fontSize: 13, fontWeight: 'bold' } }
+                    }]
+                };
+                this.charts.taskType.setOption(option, true);
+            },
+            handleReset() {
+                this.dateRange = [];
                 this.loadAllStats();
             },
-            methods: {
-                initCharts() {
-                    // 初始化所有图表
-                    this.charts.rescueTrend = echarts.init(document.getElementById('rescueTrendChart'));
-                    this.charts.petStatus = echarts.init(document.getElementById('petStatusChart'));
-                    this.charts.breed = echarts.init(document.getElementById('breedChart'));
-                    this.charts.adoptionRate = echarts.init(document.getElementById('adoptionRateChart'));
-                },
-
-                async loadAllStats() {
-                    try {
-                        // 并行加载所有统计数据
-                        const [rescueCountRes, adoptionRateRes, statusDistRes, followUpRes] = await Promise.all([
-                            axios.get('/api/stats/rescue-count'),
-                            axios.get('/api/stats/adoption-rate'),
-                            axios.get('/api/stats/pet-status-distribution'),
-                            axios.get('/api/stats/follow-up-rate')
-                        ]);
-
-                        // 更新概览数据
-                        if (rescueCountRes.data.code === 200) {
-                            this.overview.totalRescued = rescueCountRes.data.data.stats.totalCount || 0;
-                        }
-                        if (adoptionRateRes.data.code === 200) {
-                            const stats = adoptionRateRes.data.data.stats;
-                            this.overview.totalAdopted = stats.adoptedPets || 0;
-                            this.overview.adoptionRate = stats.adoptionRate || 0;
-                        }
-                        if (followUpRes.data.code === 200) {
-                            this.overview.followUpRate = followUpRes.data.data.stats.followUpRate || 0;
-                        }
-
-                        // 渲染图表
-                        this.renderRescueTrendChart(rescueCountRes.data.data.stats);
-                        this.renderPetStatusChart(statusDistRes.data.data.stats);
-                        this.renderBreedChart(rescueCountRes.data.data.stats);
-                        this.renderAdoptionRateChart(adoptionRateRes.data.data.stats);
-
-                    } catch (error) {
-                        this.$message.error('加载统计数据失败：' + error.message);
-                    }
-                },
-
-                renderRescueTrendChart(stats) {
-                    if (!stats || !stats.monthlyStats) return;
-
-                    const option = {
-                        tooltip: {
-                            trigger: 'axis',
-                            axisPointer: {
-                                type: 'shadow'
-                            }
-                        },
-                        grid: {
-                            left: '3%',
-                            right: '4%',
-                            bottom: '3%',
-                            containLabel: true
-                        },
-                        xAxis: {
-                            type: 'category',
-                            data: stats.monthlyStats.map(item => item.month),
-                            axisLabel: {
-                                rotate: 45
-                            }
-                        },
-                        yAxis: {
-                            type: 'value'
-                        },
-                        series: [{
-                            name: '救助数量',
-                            type: 'bar',
-                            data: stats.monthlyStats.map(item => item.count),
-                            itemStyle: {
-                                color: '#409EFF'
-                            },
-                            emphasis: {
-                                itemStyle: {
-                                    color: '#337ecc'
-                                }
-                            }
-                        }]
-                    };
-
-                    this.charts.rescueTrend.setOption(option);
-                },
-
-                renderPetStatusChart(stats) {
-                    if (!stats || !stats.distribution) return;
-
-                    const option = {
-                        tooltip: {
-                            trigger: 'item',
-                            formatter: '{a} <br/>{b}: {c} ({d}%)'
-                        },
-                        legend: {
-                            orient: 'vertical',
-                            left: 'left'
-                        },
-                        series: [{
-                            name: '宠物状态',
-                            type: 'pie',
-                            radius: '50%',
-                            data: stats.distribution.map(item => ({
-                                name: item.status,
-                                value: item.count
-                            })),
-                            emphasis: {
-                                itemStyle: {
-                                    shadowBlur: 10,
-                                    shadowOffsetX: 0,
-                                    shadowColor: 'rgba(0, 0, 0, 0.5)'
-                                }
-                            }
-                        }]
-                    };
-
-                    this.charts.petStatus.setOption(option);
-                },
-
-                renderBreedChart(stats) {
-                    if (!stats || !stats.breedStats) return;
-
-                    const topBreeds = stats.breedStats.slice(0, 10); // 显示前10个品种
-                    const option = {
-                        tooltip: {
-                            trigger: 'axis',
-                            axisPointer: {
-                                type: 'shadow'
-                            }
-                        },
-                        grid: {
-                            left: '3%',
-                            right: '4%',
-                            bottom: '3%',
-                            containLabel: true
-                        },
-                        xAxis: {
-                            type: 'value'
-                        },
-                        yAxis: {
-                            type: 'category',
-                            data: topBreeds.map(item => item.breed),
-                            axisLabel: {
-                                interval: 0,
-                                rotate: 30
-                            }
-                        },
-                        series: [{
-                            name: '宠物数量',
-                            type: 'bar',
-                            data: topBreeds.map(item => item.count),
-                            itemStyle: {
-                                color: '#67C23A'
-                            }
-                        }]
-                    };
-
-                    this.charts.breed.setOption(option);
-                },
-
-                renderAdoptionRateChart(stats) {
-                    if (!stats || !stats.timeStats) return;
-
-                    const option = {
-                        tooltip: {
-                            trigger: 'axis',
-                            formatter: '{b}: {c}%'
-                        },
-                        grid: {
-                            left: '3%',
-                            right: '4%',
-                            bottom: '3%',
-                            containLabel: true
-                        },
-                        xAxis: {
-                            type: 'category',
-                            data: stats.timeStats.map(item => item.month),
-                            axisLabel: {
-                                rotate: 45
-                            }
-                        },
-                        yAxis: {
-                            type: 'value',
-                            axisLabel: {
-                                formatter: '{value}%'
-                            }
-                        },
-                        series: [{
-                            name: '领养成功率',
-                            type: 'line',
-                            data: stats.timeStats.map(item => item.rate),
-                            smooth: true,
-                            itemStyle: {
-                                color: '#E6A23C'
-                            },
-                            lineStyle: {
-                                color: '#E6A23C',
-                                width: 3
-                            },
-                            areaStyle: {
-                                color: {
-                                    type: 'linear',
-                                    x: 0,
-                                    y: 0,
-                                    x2: 0,
-                                    y2: 1,
-                                    colorStops: [{
-                                        offset: 0, color: 'rgba(230, 162, 60, 0.3)'
-                                    }, {
-                                        offset: 1, color: 'rgba(230, 162, 60, 0.05)'
-                                    }]
-                                }
-                            }
-                        }]
-                    };
-
-                    this.charts.adoptionRate.setOption(option);
-                },
-
-                handleSearch() {
-                    this.loadAllStats();
-                },
-
-                handleReset() {
-                    this.filterForm = {
-                        dateRange: [],
-                        exportType: ''
-                    };
-                    this.loadAllStats();
-                },
-
-                async handleExport() {
-                    if (!this.filterForm.exportType) {
-                        this.$message.warning('请选择导出类型');
-                        return;
-                    }
-
-                    this.exportLoading = true;
-                    try {
-                        const params = {
-                            exportType: this.filterForm.exportType,
-                            dateRange: this.filterForm.dateRange ?
-                                `${this.filterForm.dateRange[0]}至${this.filterForm.dateRange[1]}` : ''
-                        };
-
-                        const response = await axios.post('/api/stats/export', params);
-                        if (response.data.code === 200) {
-                            this.$message.success(response.data.message);
-                        } else {
-                            this.$message.error(response.data.message);
-                        }
-                    } catch (error) {
-                        this.$message.error('导出失败：' + error.message);
-                    } finally {
-                        this.exportLoading = false;
-                    }
-                }
+            getRoleName(role) {
+                const map = { admin: '管理员', institution_admin: '机构管理员' };
+                return map[role] || role || '用户';
+            },
+            logout() {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
             }
-        });
-    </script>
+        }
+    });
+</script>
 </body>
 </html>

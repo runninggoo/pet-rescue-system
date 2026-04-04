@@ -1,7 +1,9 @@
 package com.pet.rescue.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.pet.rescue.dto.ShelterRecommendationRequest;
 import com.pet.rescue.entity.Shelter;
+import com.pet.rescue.vo.ShelterRecommendationVO;
 
 import java.util.List;
 import java.util.Map;
@@ -112,4 +114,10 @@ public interface ShelterService extends IService<Shelter> {
      * 获取救助所列表（带权限过滤）
      */
     List<Shelter> getSheltersWithPermission(Map<String, Object> params);
+
+    /**
+     * 智能推荐附近可用的救助站
+     * 根据用户位置和容量需求推荐合适的救助站
+     */
+    List<ShelterRecommendationVO> recommendShelters(ShelterRecommendationRequest request);
 }

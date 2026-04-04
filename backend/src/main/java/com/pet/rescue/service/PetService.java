@@ -1,5 +1,6 @@
 package com.pet.rescue.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.pet.rescue.entity.Pet;
 
@@ -8,9 +9,9 @@ import java.util.Map;
 
 public interface PetService extends IService<Pet> {
     /**
-     * 根据条件查询宠物列表
+     * 根据条件查询宠物列表（分页）
      */
-    List<Pet> findPetsByCondition(Map<String, Object> params);
+    IPage<Pet> findPetsByCondition(Map<String, Object> params);
 
     /**
      * 查询宠物详情

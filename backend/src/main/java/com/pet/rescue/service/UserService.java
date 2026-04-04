@@ -1,6 +1,7 @@
 package com.pet.rescue.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.pet.rescue.dto.RegisterRequest;
 import com.pet.rescue.entity.User;
 
 import java.util.List;
@@ -28,4 +29,9 @@ public interface UserService extends IService<User> {
      * 根据ID删除用户
      */
     boolean deleteById(Long userId);
+
+    /**
+     * 用户注册
+     */
+    User register(RegisterRequest request);
 }

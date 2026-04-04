@@ -14,6 +14,16 @@ import java.util.Map;
 @Component
 public class JwtTokenUtil {
 
+    /**
+     * 生成token（重载，直接传username、userId、role）
+     */
+    public String generateToken(String username, Long userId, String role) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", userId);
+        claims.put("role", role);
+        return doGenerateToken(claims, username);
+    }
+
     @Value("${jwt.secret}")
     private String secret;
 

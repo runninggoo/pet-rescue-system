@@ -1,80 +1,75 @@
-# 忽略IDE配置文件
+# ============================================================
+# Gitignore for 宠物救助收养系统
+# ============================================================
+
+# IDE配置文件
 .idea/
 .vscode/
 *.iml
 *.ipr
 *.iws
 
-# 忽略编译输出
+# 编译输出
 target/
 build/
 out/
 *.class
 
-# 忽略依赖目录
+# 依赖目录
 node_modules/
 frontend/node_modules/
 
-# 忽略配置文件（包含敏感信息）
-application.yml
-application.properties
+# 日志文件
 *.log
 
-# 忽略数据库文件
-*.sql
-*.db
-
-# 忽略系统文件
+# 系统文件
 .DS_Store
 Thumbs.db
 
-# 忽略临时文件
+# 临时文件
 *.tmp
 *.temp
 *.swp
 *~
+*.bak
 
-# 忽略上传的文件（如果有）
+# 上传的文件目录
 upload/
 uploads/
 
-# 忽略测试输出
+# 测试输出
 test-output/
 reports/
 
-# 忽略Maven本地仓库
+# Maven本地仓库
 .mvn/
 .mvn/*
 
-# 忽略前端构建输出
+# 前端构建输出
 frontend/dist/
 frontend/build/
 
-# 忽略环境变量文件
+# 环境变量文件
 .env
 .env.local
 
-# 忽略IDEA工作空间配置
+# IDEA工作空间配置
 .idea/workspace.xml
 .idea/tasks.xml
 
-# 忽略JAR包（大文件）
+# JAR包（大文件）
 *.jar
 
-# 忽略压缩文件
+# 压缩文件
 *.zip
 *.rar
 *.7z
 
-# 忽略PDF文档（大文件）
+# PDF文档
 *.pdf
 *.caj
 
-# 忽略Word文档
-*.docx
-*.doc
-
-# 忽略图片（大文件，可选择性上传）
+# 图片（大文件）
 *.jpg
 *.jpeg
 *.png
@@ -82,8 +77,41 @@ frontend/build/
 *.bmp
 *.ico
 
-# 保留这些重要文件
-!pom.xml
+# ============================================================
+# ⚠️ 重要：不忽略以下文件
+# （因为它们仅含占位符或模板，无真实敏感信息）
+# ============================================================
+
+# SQL建表脚本（仅结构+虚构测试数据，必须保留）
+!sql/
+
+# 配置文件模板（仅占位符，已移除真实密码）
+# application.yml 使用 ${DB_PASSWORD:CHANGE_ME} 环境变量占位符
+# application-example.yml 是模板，pom.xml 和 vite.config.js 无敏感信息
+
+# 保留项目文档
 !README.md
 !RUNNING_GUIDE.md
 !TESTING_GUIDE.md
+!CLAUDE.md
+!毕业设计开发计划V3.md
+!开发进展汇报文档.md
+!项目状态保存文档.md
+!截图管理文档.md
+
+# ============================================================
+# ⚠️ 不发布的文件
+# ============================================================
+
+# 交接备忘（可能含内部信息）
+HANDOVER.md
+
+# 截图目录（本地截图，可能含个人标注）
+screenshots/
+
+# 前端node_modules和锁文件（让clone者自己npm install）
+frontend/package-lock.json
+
+# 临时脚本和笔记文档（不参与构建）
+*.ps1
+临时*.md

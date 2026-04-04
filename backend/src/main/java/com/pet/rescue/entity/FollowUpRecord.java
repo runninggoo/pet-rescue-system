@@ -1,5 +1,6 @@
 package com.pet.rescue.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.pet.rescue.entity.BaseEntity;
 import java.util.Date;
@@ -39,6 +40,12 @@ public class FollowUpRecord extends BaseEntity {
      * 照片URL，多个用逗号分隔
      */
     private String images;
+
+    /**
+     * 逻辑删除标志：0-未删除，1-已删除
+     */
+    @TableField("deleted")
+    private Integer deleted;
 
     /**
      * 无参构造函数
@@ -107,6 +114,9 @@ public class FollowUpRecord extends BaseEntity {
     public void setImages(String images) {
         this.images = images;
     }
+
+    public Integer getDeleted() { return deleted; }
+    public void setDeleted(Integer deleted) { this.deleted = deleted; }
 
     @Override
     public String toString() {

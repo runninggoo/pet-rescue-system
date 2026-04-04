@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>任务管理 - 宠物救助收养系统</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.15.13/lib/theme-chalk/index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #E07A5F;
+            --primary-dark: #c96a50;
+            --primary-light: #f0a28a;
+            --primary-bg: rgba(224, 122, 95, 0.08);
+            --sage: #81B29A;
+            --sage-light: #a8cdb8;
+            --amber: #F4A261;
+            --warm-white: #FDF6F0;
+            --warm-cream: #FAEEE7;
+            --warm-gray: #f0ebe7;
+            --warm-gray2: #ede6df;
+            --text-dark: #3D405B;
+            --text-muted: #8A8EA0;
+            --bg: var(--warm-white);
+            --card-shadow: 0 4px 20px rgba(224, 122, 95, 0.1);
+            --card-shadow-hover: 0 12px 40px rgba(224, 122, 95, 0.2);
+            --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius: 20px;
+            --radius-sm: 12px;
+        }
+        * { box-sizing: border-box; }
+        *:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+        body {
+            margin: 0; padding: 0;
+            background: var(--bg);
+            font-family: "Nunito", "PingFang SC", "Microsoft YaHei", sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--warm-gray); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* Element UI 暖色覆盖 */
+        .el-button--primary { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; }
+        .el-button--primary:hover { background-color: var(--primary-dark) !important; border-color: var(--primary-dark) !important; }
+        .el-button--success { background-color: var(--sage) !important; border-color: var(--sage) !important; border-radius: var(--radius-sm) !important; }
+        .el-button--warning { background-color: var(--amber) !important; border-color: var(--amber) !important; border-radius: var(--radius-sm) !important; }
+        .el-button--danger { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; }
+        .el-button { border-radius: var(--radius-sm) !important; }
+        .el-input__inner:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(224,122,95,0.12) !important; }
+        .el-textarea__inner:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(224,122,95,0.12) !important; }
+        .el-pager li.active { background-color: var(--primary) !important; color: white !important; border-radius: 50% !important; }
+        .el-pagination .el-pager li { border-radius: 50% !important; }
+        .el-pagination .el-pager li:hover { color: var(--primary) !important; }
+        .el-tag--success { background-color: #e8f5ee !important; border-color: var(--sage-light) !important; color: #5a8a6e !important; }
+        .el-tag--warning { background-color: #fef3e8 !important; border-color: #f5c48a !important; color: #d98a32 !important; }
+        .el-tag--danger { background-color: #fce8e2 !important; border-color: var(--primary-light) !important; color: var(--primary) !important; }
+        .el-tag--info { background-color: var(--warm-cream) !important; border-color: var(--warm-gray2) !important; color: var(--text-muted) !important; }
+        .el-tabs__item:hover { color: var(--primary) !important; }
+        .el-tabs__item.is-active { color: var(--primary) !important; }
+        .el-tabs__active-bar { background-color: var(--primary) !important; }
+        .el-dialog { border-radius: var(--radius) !important; overflow: hidden; }
+        .el-dialog__header { background: linear-gradient(135deg, var(--warm-cream) 0%, var(--warm-white) 100%); padding: 20px 24px 16px; }
+        .el-dialog__title { font-weight: 700; color: var(--text-dark); font-size: 17px; }
+        .el-dialog__body { padding: 24px; }
+        .el-dialog__footer { padding: 12px 24px 20px; border-top: 1px solid var(--warm-gray); }
+        .el-form-item__label { color: var(--text-dark); font-weight: 600; }
+        .el-input__inner { border-radius: var(--radius-sm) !important; }
+        .el-textarea__inner { border-radius: var(--radius-sm) !important; }
+        .el-input-number { border-radius: var(--radius-sm) !important; }
+        .el-select { border-radius: var(--radius-sm) !important; }
+        .el-date-editor.el-input { border-radius: var(--radius-sm) !important; }
+        .el-radio__input.is-checked .el-radio__inner { background-color: var(--primary) !important; border-color: var(--primary) !important; }
+        .el-radio__input.is-checked + .el-radio__label { color: var(--primary) !important; }
+        .el-descriptions { border-radius: var(--radius-sm) !important; }
+        .el-descriptions th { background: var(--warm-cream) !important; color: var(--text-dark) !important; font-weight: 700 !important; }
+        .el-descriptions td { color: var(--text-dark) !important; }
+
+        @keyframes fadeSlideDown {
+            from { opacity: 0; transform: translateY(-16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        @keyframes cardEnter {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        @keyframes shimmerBg {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* ========== 页面布局 ========== */
+        .page-wrapper {
+            min-height: 100vh;
+            background: linear-gradient(180deg, var(--warm-white) 0%, var(--warm-cream) 100%);
+            position: relative; overflow: hidden;
+        }
+        .page-bg-paws { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+        .page-bg-paws svg { position: absolute; fill: var(--primary); opacity: 0.04; }
+        .page-content {
+            position: relative; z-index: 1;
+            max-width: 1400px; margin: 0 auto;
+            padding: 24px 24px 40px;
+        }
+
+        /* ========== 顶部横幅 ========== */
+        .hero-banner {
+            background: white;
+            border-radius: var(--radius);
+            padding: 32px 36px;
+            margin-bottom: 24px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            justify-content: space-between; align-items: center;
+            animation: fadeSlideDown 0.5s ease;
+            position: relative; overflow: hidden;
+        }
+        .hero-banner::before {
+            content: ''; position: absolute;
+            top: -40px; right: -40px;
+            width: 160px; height: 160px;
+            background: radial-gradient(circle, rgba(224,122,95,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .hero-banner::after {
+            content: ''; position: absolute;
+            bottom: -30px; left: 40%;
+            width: 120px; height: 120px;
+            background: radial-gradient(circle, rgba(129,178,154,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .hero-left { display: flex; align-items: center; gap: 20px; }
+        .hero-icon {
+            width: 64px; height: 64px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 8px 24px rgba(224,122,95,0.3);
+            flex-shrink: 0;
+        }
+        .hero-title-group h1 { margin: 0 0 4px; font-size: 24px; font-weight: 800; color: var(--text-dark); }
+        .hero-title-group h1 span { color: var(--primary); }
+        .hero-title-group p { margin: 0; font-size: 14px; color: var(--text-muted); }
+        .hero-right { display: flex; align-items: center; gap: 12px; }
+        .hero-paw { font-size: 28px; animation: float 3s ease-in-out infinite; opacity: 0.3; }
+        .hero-paw:nth-child(2) { animation-delay: 0.8s; opacity: 0.2; }
+        .nav-links { display: flex; gap: 12px; font-size: 13px; flex-wrap: wrap; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; transition: var(--transition); padding: 4px 0; }
+        .nav-links a:hover { color: var(--primary); }
+        .nav-links span { color: var(--warm-gray2); }
+
+        /* ========== 角色提示 ========== */
+        .role-hint {
+            background: linear-gradient(135deg, rgba(224,122,95,0.06), rgba(244,162,97,0.06));
+            border: 1px solid var(--primary-light);
+            border-radius: var(--radius-sm);
+            padding: 12px 20px;
+            margin-bottom: 24px;
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 600;
+            animation: fadeSlideDown 0.5s ease 0.1s both;
+        }
+
+        /* ========== 统计概览 ========== */
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 22px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            transition: var(--transition);
+            animation: cardEnter 0.5s ease both;
+            position: relative; overflow: hidden;
+        }
+        .stat-card::before {
+            content: ''; position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+        .stat-card.total::before { background: linear-gradient(90deg, #409EFF, #66B1FF); }
+        .stat-card.pending::before { background: linear-gradient(90deg, var(--sage), var(--sage-light)); }
+        .stat-card.inprogress::before { background: linear-gradient(90deg, var(--amber), #f5c48a); }
+        .stat-card.completed::before { background: linear-gradient(90deg, var(--text-muted), #c0c4cc); }
+        .stat-icon {
+            width: 48px; height: 48px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; margin: 0 auto 12px;
+        }
+        .stat-card.total .stat-icon { background: #ecf5ff; }
+        .stat-card.pending .stat-icon { background: #e8f5ee; }
+        .stat-card.inprogress .stat-icon { background: #fef3e8; }
+        .stat-card.completed .stat-icon { background: var(--warm-cream); }
+        .stat-num {
+            font-size: 30px; font-weight: 800; margin: 4px 0;
+        }
+        .stat-card.total .stat-num { color: #409EFF; }
+        .stat-card.pending .stat-num { color: var(--sage); }
+        .stat-card.inprogress .stat-num { color: var(--amber); }
+        .stat-card.completed .stat-num { color: var(--text-muted); }
+        .stat-label { color: var(--text-muted); font-size: 13px; font-weight: 600; }
+
+        /* ========== 标签页卡片 ========== */
+        .tab-card {
+            background: white;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            animation: fadeSlideDown 0.5s ease 0.15s both;
+        }
+        .tab-card .el-tabs__header { margin: 0; }
+
+        /* ========== 筛选卡片 ========== */
+        .filter-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 16px 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            animation: fadeSlideDown 0.5s ease 0.08s both;
+        }
+        .filter-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+
+        /* ========== 任务列表 ========== */
+        .task-list { display: flex; flex-direction: column; gap: 16px; }
+        .task-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 22px 24px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border-left: 4px solid var(--warm-gray2);
+            animation: cardEnter 0.5s ease both;
+        }
+        .task-card:hover {
+            box-shadow: var(--card-shadow-hover);
+            transform: translateX(4px);
+        }
+        .task-card.status-0 { border-left-color: var(--sage); }
+        .task-card.status-1 { border-left-color: var(--amber); }
+        .task-card.status-2 { border-left-color: var(--text-muted); }
+        .task-card.status-3 { border-left-color: var(--primary); }
+        .task-card-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 12px; gap: 12px;
+        }
+        .task-tags { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; flex: 1; }
+        .task-type-tag {
+            display: inline-flex; align-items: center;
+            padding: 4px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 700;
+        }
+        .type-rescue { background: #fce8e2; color: var(--primary); }
+        .type-transport { background: #ecf5ff; color: #409EFF; }
+        .type-care { background: #e8f5ee; color: #5a8a6e; }
+        .type-event { background: #fef3e8; color: #d98a32; }
+        .type-medical { background: #f3e5f5; color: #9C27B0; }
+        .type-foster { background: #e0f2f1; color: #009688; }
+        .type-other { background: var(--warm-cream); color: var(--text-muted); }
+        .priority-tag {
+            display: inline-flex; align-items: center;
+            padding: 3px 10px; border-radius: 20px;
+            font-size: 11px; font-weight: 700;
+        }
+        .priority-0 { background: var(--warm-gray); color: var(--text-muted); }
+        .priority-1 { background: #fef3e8; color: #d98a32; }
+        .priority-2 { background: #fce8e2; color: var(--primary); }
+        .task-title {
+            font-size: 16px; font-weight: 800; color: var(--text-dark);
+            margin-bottom: 10px;
+        }
+        .task-meta {
+            display: flex; flex-wrap: wrap; gap: 16px;
+            color: var(--text-muted); font-size: 13px;
+            margin-bottom: 10px;
+        }
+        .task-meta-item { display: flex; align-items: center; gap: 4px; font-weight: 600; }
+        .task-desc {
+            color: #606266; font-size: 13px;
+            margin-bottom: 12px; line-height: 1.5;
+            overflow: hidden; text-overflow: ellipsis;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+        }
+        .task-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        /* ========== 空状态 ========== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white; border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            animation: fadeSlideDown 0.5s ease;
+        }
+        .empty-state .icon { font-size: 64px; margin-bottom: 16px; animation: float 3s ease-in-out infinite; display: block; }
+        .empty-state .title { font-size: 16px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; }
+        .empty-state .desc { font-size: 13px; color: var(--text-muted); }
+
+        /* ========== 响应式 ========== */
+        @media (max-width: 480px) {
+            .page-content { padding: 16px 12px 32px; }
+            .hero-banner { padding: 20px; flex-direction: column; align-items: flex-start; gap: 16px; }
+            .hero-title-group h1 { font-size: 20px; }
+            .hero-right { display: none; }
+            .stats-overview { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .stat-card { padding: 16px; }
+            .stat-num { font-size: 24px; }
+            .filter-row { flex-direction: column; align-items: stretch; }
+            .filter-row .el-select, .filter-row .el-input { width: 100% !important; }
+            .task-card { padding: 16px; }
+            .task-meta { gap: 10px; font-size: 12px; }
+            .task-desc { font-size: 12px; }
+            .task-title { font-size: 15px; }
+        }
+        @media (hover: none) {
+            .stat-card:hover { transform: none; box-shadow: var(--card-shadow); }
+            .task-card:hover { transform: none; box-shadow: var(--card-shadow); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
+
+        /* ========== 预加载覆盖层 ========== */
+        .loading-overlay {
+            position: fixed; inset: 0; z-index: 9999;
+            background: var(--warm-white);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 24px;
+        }
+        .loading-overlay .paw-wrap {
+            width: 72px; height: 72px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 22px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 12px 36px rgba(224,122,95,0.35);
+            animation: pawBounce 1.2s ease-in-out infinite;
+        }
+        .loading-overlay .paw-wrap svg { width: 40px; height: 40px; fill: white; }
+        .loading-overlay p { color: var(--text-muted); font-size: 14px; font-weight: 600; margin: 0; }
+        @keyframes pawBounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-14px) scale(1.08); }
+        }
+
+        /* ========== 渐变主按钮 ========== */
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--primary) 100%) !important;
+            background-size: 200% auto !important;
+            border: none !important;
+            color: white !important;
+            font-weight: 700 !important;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            box-shadow: 0 4px 16px rgba(224,122,95,0.3) !important;
+        }
+        .btn-gradient:hover {
+            background-position: right center !important;
+            box-shadow: 0 8px 28px rgba(224,122,95,0.45) !important;
+            transform: translateY(-2px) !important;
+        }
+        .btn-gradient-success {
+            background: linear-gradient(135deg, var(--sage) 0%, var(--sage-light) 50%, var(--sage) 100%) !important;
+            background-size: 200% auto !important;
+            border: none !important;
+            color: white !important;
+            font-weight: 700 !important;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            box-shadow: 0 4px 16px rgba(129,178,154,0.3) !important;
+        }
+        .btn-gradient-success:hover {
+            background-position: right center !important;
+            box-shadow: 0 8px 28px rgba(129,178,154,0.45) !important;
+            transform: translateY(-2px) !important;
+        }
+
+        /* ========== 统计卡片数字动画 ========== */
+        .stat-card .stat-num { transition: var(--transition); display: block; }
+        .stat-card:hover .stat-num { transform: scale(1.08); }
+
+        /* ========== 统计骨架屏 ========== */
+        .skeleton-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .skeleton-stat-card {
+            background: white; border-radius: var(--radius);
+            padding: 22px; box-shadow: var(--card-shadow);
+        }
+        .skeleton-line {
+            background: linear-gradient(90deg, #f0ebe7 25%, #faeee7 50%, #f0ebe7 75%);
+            background-size: 400% 100%;
+            animation: shimmer 1.8s ease infinite;
+            border-radius: 6px;
+        }
+        @keyframes shimmer {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+
+        /* ========== 任务卡片增强 ========== */
+        .task-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 22px 24px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border-left: 4px solid var(--warm-gray2);
+            animation: cardEnter 0.5s ease both;
+            position: relative; overflow: hidden;
+        }
+        .task-card::after {
+            content: ''; position: absolute;
+            top: 0; right: 0;
+            width: 80px; height: 80px;
+            background: radial-gradient(circle, rgba(224,122,95,0.04) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(30%, -30%);
+            transition: var(--transition);
+        }
+        .task-card:hover { box-shadow: var(--card-shadow-hover); transform: translateX(6px); }
+        .task-card:hover::after { transform: translate(20%, -20%) scale(1.3); }
+
+        /* ========== 任务类型标签渐变版本 ========== */
+        .task-type-tag {
+            display: inline-flex; align-items: center;
+            padding: 4px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 700;
+            border: 1px solid transparent;
+        }
+        .type-rescue { background: linear-gradient(135deg, #fce8e2, #fce8e2); color: var(--primary); border-color: var(--primary-light); }
+        .type-transport { background: linear-gradient(135deg, #ecf5ff, #ecf5ff); color: #409EFF; border-color: #b3d7ff; }
+        .type-care { background: linear-gradient(135deg, #e8f5ee, #e8f5ee); color: #5a8a6e; border-color: var(--sage-light); }
+        .type-event { background: linear-gradient(135deg, #fef3e8, #fef3e8); color: #d98a32; border-color: #f5c48a; }
+        .type-medical { background: linear-gradient(135deg, #f3e5f5, #f3e5f5); color: #9C27B0; border-color: #ce93d8; }
+        .type-foster { background: linear-gradient(135deg, #e0f2f1, #e0f2f1); color: #009688; border-color: #80cbc4; }
+        .type-other { background: var(--warm-cream); color: var(--text-muted); border-color: var(--warm-gray2); }
+
+        /* ========== 标签页样式 ========== */
+        .el-tabs__item { font-weight: 600; font-size: 14px; }
+        .el-tabs__item.is-active { color: var(--primary) !important; }
+        .el-tabs__active-bar { background-color: var(--primary) !important; }
+        .el-tabs__item:hover { color: var(--primary) !important; }
+
+        /* ========== 筛选区输入增强 ========== */
+        .filter-card .el-input__inner,
+        .filter-card .el-select .el-input__inner {
+            border-color: var(--warm-gray2) !important;
+            transition: var(--transition) !important;
+        }
+        .filter-card .el-input__inner:hover,
+        .filter-card .el-select .el-input__inner:hover {
+            border-color: var(--primary-light) !important;
+        }
+
+        /* ========== 积分卡片 ========== */
+        .points-card {
+            background: linear-gradient(135deg, var(--amber) 0%, #f5c48a 100%);
+            color: white;
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 16px rgba(244,162,97,0.3);
+            min-width: 160px;
+        }
+        .points-card:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(244,162,97,0.4); }
+        .points-card-icon { font-size: 28px; }
+        .points-card-info {}
+        .points-card-label { font-size: 11px; opacity: 0.9; font-weight: 600; margin-bottom: 2px; }
+        .points-card-value { font-size: 22px; font-weight: 800; }
+        .points-card-level {
+            font-size: 12px; font-weight: 700;
+            padding: 2px 10px; background: rgba(255,255,255,0.25); border-radius: 20px;
+        }
+
+        /* ========== 积分动画 ========== */
+        .points-toast {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            text-align: center;
+            pointer-events: none;
+        }
+        .points-toast-inner {
+            background: linear-gradient(135deg, #ffe082, #ffca28);
+            color: #795548;
+            padding: 20px 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 40px rgba(244,162,97,0.5);
+            animation: pointsPop 2s ease forwards;
+        }
+        .points-toast-icon { font-size: 48px; margin-bottom: 8px; }
+        .points-toast-num { font-size: 36px; font-weight: 800; }
+        .points-toast-label { font-size: 14px; font-weight: 600; opacity: 0.8; }
+        .points-toast-levelup {
+            margin-top: 8px; padding: 6px 16px;
+            background: var(--primary); color: white;
+            border-radius: 20px; font-size: 14px; font-weight: 700;
+            display: inline-block;
+            animation: levelupPulse 0.8s ease infinite;
+        }
+        @keyframes pointsPop {
+            0% { transform: scale(0.3) translate(-50%, -50%); opacity: 0; }
+            20% { transform: scale(1.1) translate(-50%, -50%); opacity: 1; }
+            40% { transform: scale(1) translate(-50%, -50%); }
+            70% { transform: scale(1) translate(-50%, -50%); opacity: 1; }
+            100% { transform: scale(0.8) translate(-50%, -80%); opacity: 0; }
+        }
+        @keyframes levelupPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        .levelup-banner {
+            background: linear-gradient(135deg, var(--primary) 0%, #ff8a65 100%);
+            color: white; padding: 20px;
+            border-radius: var(--radius); text-align: center;
+            margin-bottom: 20px;
+            animation: fadeSlideDown 0.5s ease;
+        }
+        .levelup-banner-icon { font-size: 48px; margin-bottom: 8px; }
+        .levelup-banner-title { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+        .levelup-banner-desc { font-size: 14px; opacity: 0.85; }
+    </style>
+</head>
+<body>
+<!-- 预加载覆盖层 -->
+<div class="loading-overlay" id="appLoading">
+    <div class="paw-wrap">
+        <svg viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+    </div>
+    <p>正在加载任务管理...</p>
+</div>
+<script>document.getElementById('appLoading').style.display='none';</script>
+
+<div class="page-wrapper">
+    <!-- 爪印背景 -->
+    <div class="page-bg-paws">
+        <svg style="top:8%;left:5%;width:60px;transform:rotate(-18deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        <svg style="top:40%;right:8%;width:48px;transform:rotate(12deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        <svg style="bottom:12%;left:10%;width:56px;transform:rotate(-10deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        <svg style="bottom:5%;right:12%;width:40px;transform:rotate(25deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+    </div>
+
+    <div class="page-content" id="app">
+        <!-- 顶部横幅 -->
+        <div class="hero-banner">
+            <div class="hero-left">
+                <div class="hero-icon">📋</div>
+                <div class="hero-title-group">
+                    <h1>志愿<span>任务</span>管理</h1>
+                    <p>协同救助，传递爱心与温暖</p>
+                </div>
+            </div>
+        <div class="hero-right">
+            <div class="nav-links">
+                <a href="pet-list.html">首页</a>
+                <span>|</span>
+                <a href="profile.html">个人中心</a>
+                <span v-if="currentRole === 'admin'">|</span>
+                <a v-if="currentRole === 'admin'" href="user-management.html">用户管理</a>
+                <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'">|</span>
+                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="adoption-list.html">领养审核</a>
+                <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'">|</span>
+                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="stats.html">数据统计</a>
+                <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'">|</span>
+                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="health-record.html">健康档案</a>
+                <span>|</span>
+                <span @click="logout" style="color:var(--primary);cursor:pointer;font-weight:600">退出登录</span>
+                <span style="margin-left:8px;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:700;"
+                      :style="'background:' + (currentRole==='admin'?'#fef0ee':currentRole==='institution_admin'?'#e3f2fd':currentRole==='volunteer'?'#fff8e1':'#e8f5e9') + ';color:' + (currentRole==='admin'?'var(--primary)':currentRole==='institution_admin'?'#1565c0':currentRole==='volunteer'?'#f57f17':'#2e7d32')">
+                    {{ getRoleName(currentRole) }}
+                </span>
+            </div>
+        <!-- 积分卡片（志愿者可见） -->
+        <div v-if="currentRole === 'volunteer'" class="points-card" @click="goProfile" style="margin-left:12px">
+            <div class="points-card-icon">⭐</div>
+            <div class="points-card-info">
+                <div class="points-card-label">我的积分</div>
+                <div class="points-card-value">{{ myPoints }}</div>
+            </div>
+            <div class="points-card-level">{{ currentLevelName || 'Lv.1' }}</div>
+        </div>
+        </div><!-- end hero-right -->
+        </div><!-- end hero-banner -->
+
+        <!-- 角色提示 -->
+        <div class="role-hint" v-if="currentRole === 'volunteer'">
+            👋 您好，志愿者！您可以在下方查看可领取的任务，领取后可在「我的任务」中查看和管理。
+        </div>
+        <div class="role-hint" v-else-if="currentRole === 'admin' || currentRole === 'institution_admin'">
+            👋 管理员您好！您可以发布和管理志愿任务，点击右上角「发布任务」开始创建。
+        </div>
+
+        <!-- 等级提升动画横幅 -->
+        <div class="levelup-banner" v-if="showLevelupBanner">
+            <div class="levelup-banner-icon">{{ levelupBadge }}</div>
+            <div class="levelup-banner-title">🎉 恭喜升至 Lv.{{ levelupNewLevel }} {{ levelupName }}</div>
+            <div class="levelup-banner-desc">{{ levelupDesc }}</div>
+        </div>
+
+        <!-- 统计概览 -->
+        <div class="stats-overview">
+            <!-- 志愿者积分卡片 -->
+            <div class="stat-card" style="animation-delay:0.0;background:linear-gradient(135deg,#fff8e1,#fff3cd);border-top:3px solid var(--amber)" v-if="currentRole === 'volunteer'">
+                <div class="stat-icon" style="background:#fff3cd">⭐</div>
+                <div class="stat-num" style="color:var(--amber)">{{ myPoints }}</div>
+                <div class="stat-label">可用积分</div>
+            </div>
+            <div class="stat-card total" style="animation-delay:0.05s">
+                <div class="stat-icon">📋</div>
+                <div class="stat-num">{{ taskStats.total || 0 }}</div>
+                <div class="stat-label">全部任务</div>
+            </div>
+            <div class="stat-card pending" style="animation-delay:0.1s">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-num">{{ taskStats.pending || 0 }}</div>
+                <div class="stat-label">待领取</div>
+            </div>
+            <div class="stat-card inprogress" style="animation-delay:0.15s">
+                <div class="stat-icon">🚀</div>
+                <div class="stat-num">{{ taskStats.inProgress || 0 }}</div>
+                <div class="stat-label">进行中</div>
+            </div>
+            <div class="stat-card completed" style="animation-delay:0.2s">
+                <div class="stat-icon">✅</div>
+                <div class="stat-num">{{ taskStats.completed || 0 }}</div>
+                <div class="stat-label">已完成</div>
+            </div>
+        </div>
+
+        <!-- 骨架屏：统计卡片 -->
+        <div class="skeleton-stats" v-if="loading && !taskStats.total">
+            <div class="skeleton-stat-card" v-for="i in 4" :key="'sk'+i">
+                <div class="skeleton-line" style="width:48px;height:48px;border-radius:12px;margin:0 auto 12px;"></div>
+                <div class="skeleton-line" style="height:30px;width:60%;margin:0 auto 8px;"></div>
+                <div class="skeleton-line" style="height:13px;width:70%;margin:0 auto;"></div>
+            </div>
+        </div>
+
+        <!-- 任务标签页 -->
+        <div class="tab-card">
+            <el-tabs v-model="activeTab" @tab-click="handleTabClick">
+                <el-tab-pane label="全部任务" name="all"></el-tab-pane>
+                <el-tab-pane label="待领取" name="0"></el-tab-pane>
+                <el-tab-pane label="进行中" name="1"></el-tab-pane>
+                <el-tab-pane label="已完成" name="2"></el-tab-pane>
+                <el-tab-pane label="已取消" name="3"></el-tab-pane>
+                <el-tab-pane label="我的任务" name="mine" v-if="currentRole === 'volunteer'"></el-tab-pane>
+            </el-tabs>
+        </div>
+
+        <!-- 筛选区域 -->
+        <div class="filter-card">
+            <div class="filter-row">
+                <el-input
+                    v-model="filters.keyword"
+                    placeholder="搜索任务标题或地点"
+                    style="width: 220px;"
+                    clearable
+                    @keyup.enter.native="loadTasks">
+                    <i slot="prefix" class="el-input__icon el-icon-search"></i>
+                </el-input>
+                <el-select v-model="filters.taskType" placeholder="任务类型" clearable @change="loadTasks" style="width: 160px;">
+                    <el-option label="全部类型" value=""></el-option>
+                    <el-option label="🚑 救助任务" value="rescue"></el-option>
+                    <el-option label="🚚 运输任务" value="transport"></el-option>
+                    <el-option label="💚 照护任务" value="care"></el-option>
+                    <el-option label="🎉 活动支持" value="event"></el-option>
+                    <el-option label="🏥 医疗协助" value="medical"></el-option>
+                    <el-option label="🏠 临时寄养" value="foster"></el-option>
+                    <el-option label="📋 其他" value="other"></el-option>
+                </el-select>
+                <el-select v-model="filters.priority" placeholder="紧急程度" clearable @change="loadTasks" style="width: 150px;">
+                    <el-option label="全部" value=""></el-option>
+                    <el-option label="普通" :value="0"><span style="color:#909399;">普通</span></el-option>
+                    <el-option label="紧急" :value="1"><span style="color:#d98a32;">紧急</span></el-option>
+                    <el-option label="非常紧急" :value="2"><span style="color:var(--primary);">非常紧急</span></el-option>
+                </el-select>
+                <el-button type="primary" icon="el-icon-search" @click="loadTasks">查询</el-button>
+                <el-button icon="el-icon-refresh-right" @click="handleReset">重置</el-button>
+                <el-button
+                    v-if="currentRole === 'admin' || currentRole === 'institution_admin'"
+                    class="btn-gradient-success"
+                    icon="el-icon-plus"
+                    @click="handleCreate"
+                    style="margin-left: auto;">
+                    发布任务
+                </el-button>
+            </div>
+        </div>
+
+        <!-- 任务列表 -->
+        <div class="task-list" v-loading="loading">
+            <div v-if="loading">
+                <div class="task-card" v-for="i in 4" :key="'sk'+i">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+                        <div style="display:flex;gap:8px;">
+                            <div style="width:80px;height:22px;border-radius:20px;" class="skeleton-line"></div>
+                            <div style="width:60px;height:22px;border-radius:20px;" class="skeleton-line"></div>
+                        </div>
+                    </div>
+                    <div style="height:16px;width:60%;border-radius:6px;margin-bottom:10px;" class="skeleton-line"></div>
+                    <div style="display:flex;gap:16px;margin-bottom:10px;">
+                        <div style="height:13px;width:120px;border-radius:4px;" class="skeleton-line"></div>
+                        <div style="height:13px;width:100px;border-radius:4px;" class="skeleton-line"></div>
+                    </div>
+                    <div style="height:13px;width:80%;border-radius:4px;" class="skeleton-line"></div>
+                </div>
+            </div>
+
+            <div v-if="tasks.length === 0 && !loading" class="empty-state">
+                <span class="icon">📋</span>
+                <div class="title">暂无任务</div>
+                <div class="desc" v-if="currentRole === 'admin' || currentRole === 'institution_admin'">
+                    点击右上角「发布任务」创建第一个任务
+                </div>
+                <div class="desc" v-else>当前没有符合筛选条件的任务</div>
+            </div>
+
+            <div
+                v-for="(task, idx) in tasks"
+                :key="task.id"
+                class="task-card"
+                :class="'status-' + task.status"
+                :style="'animation-delay:' + (0.05 * idx) + 's'">
+
+                <div class="task-card-header">
+                    <div class="task-tags">
+                        <span class="task-type-tag" :class="'type-' + task.taskType">
+                            {{ getTaskTypeText(task.taskType) }}
+                        </span>
+                        <span class="priority-tag" :class="'priority-' + task.priority">
+                            {{ getPriorityText(task.priority) }}
+                        </span>
+                    </div>
+                    <el-tag :type="getStatusType(task.status)" size="small" style="font-weight:700;">
+                        {{ getStatusText(task.status) }}
+                    </el-tag>
+                </div>
+
+                <div class="task-title">{{ task.title }}</div>
+
+                <div class="task-meta">
+                    <span class="task-meta-item">📍 {{ task.location || '未指定地点' }}</span>
+                    <span class="task-meta-item" v-if="task.shelterName">🏠 {{ task.shelterName }}</span>
+                    <span class="task-meta-item" v-if="task.expectedDate">📅 {{ formatDate(task.expectedDate) }}</span>
+                    <span class="task-meta-item" v-if="task.estimatedHours">⏱️ {{ task.estimatedHours }}小时</span>
+                    <span class="task-meta-item" v-if="task.rewardPoints">⭐ {{ task.rewardPoints }}积分</span>
+                    <span class="task-meta-item" v-if="task.requiredPeople">👥 需{{ task.requiredPeople }}人</span>
+                </div>
+
+                <div class="task-desc">{{ task.description }}</div>
+
+                <div class="task-actions">
+                    <el-button type="text" size="small" style="color:var(--primary);font-weight:700;" @click="handleDetail(task)">查看详情</el-button>
+                    <template v-if="task.status === 0 && currentRole === 'volunteer'">
+                        <el-button type="success" size="small" icon="el-icon-check" @click="handleClaim(task)">立即领取</el-button>
+                    </template>
+                    <template v-if="task.status === 1 && (currentRole === 'volunteer' || currentRole === 'admin')">
+                        <el-button type="warning" size="small" icon="el-icon-circle-check" @click="handleComplete(task)">标记完成</el-button>
+                    </template>
+                    <template v-if="(currentRole === 'admin' || currentRole === 'institution_admin') && task.status !== 2">
+                        <el-button type="text" size="small" style="color:var(--sage);font-weight:700;" @click="handleEdit(task)">编辑</el-button>
+                        <el-button type="text" size="small" style="color:#d98a32;font-weight:700;" @click="handleCancel(task)">取消</el-button>
+                        <el-button type="text" size="small" style="color:var(--primary);font-weight:700;" @click="handleDelete(task)">删除</el-button>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <el-pagination
+            v-if="total > 0"
+            @current-change="handlePageChange"
+            :current-page="currentPage"
+            :page-size="pageSize"
+            layout="total, prev, pager, next"
+            :total="total"
+            style="margin-top:24px;">
+        </el-pagination>
+
+        <!-- 详情对话框 -->
+        <el-dialog title="任务详情" :visible.sync="detailDialogVisible" width="650px" top="8vh" append-to-body>
+            <el-descriptions :column="2" border v-if="currentTask">
+                <el-descriptions-item label="任务标题" :span="2" style="font-weight:700;">{{ currentTask.title }}</el-descriptions-item>
+                <el-descriptions-item label="任务类型">
+                    <span class="task-type-tag" :class="'type-' + currentTask.taskType">
+                        {{ getTaskTypeText(currentTask.taskType) }}
+                    </span>
+                </el-descriptions-item>
+                <el-descriptions-item label="紧急程度">
+                    <span class="priority-tag" :class="'priority-' + currentTask.priority">
+                        {{ getPriorityText(currentTask.priority) }}
+                    </span>
+                </el-descriptions-item>
+                <el-descriptions-item label="任务状态">
+                    <el-tag :type="getStatusType(currentTask.status)" style="font-weight:700;">{{ getStatusText(currentTask.status) }}</el-tag>
+                </el-descriptions-item>
+                <el-descriptions-item label="奖励积分">
+                    <span style="color:var(--amber);font-weight:700;">⭐ {{ currentTask.rewardPoints || 0 }} 积分</span>
+                </el-descriptions-item>
+                <el-descriptions-item label="任务地点">{{ currentTask.location || '-' }}</el-descriptions-item>
+                <el-descriptions-item label="关联救助站">{{ currentTask.shelterName || '-' }}</el-descriptions-item>
+                <el-descriptions-item label="期望完成">{{ formatDate(currentTask.expectedDate) }}</el-descriptions-item>
+                <el-descriptions-item label="联系电话">{{ currentTask.contactPhone || '-' }}</el-descriptions-item>
+                <el-descriptions-item label="预计耗时">{{ currentTask.estimatedHours ? currentTask.estimatedHours + '小时' : '-' }}</el-descriptions-item>
+                <el-descriptions-item label="发布时间" :span="2">{{ formatDateTime(currentTask.publishDate) }}</el-descriptions-item>
+                <el-descriptions-item label="任务描述" :span="2">
+                    <div style="white-space:pre-wrap;">{{ currentTask.description || '无' }}</div>
+                </el-descriptions-item>
+                <el-descriptions-item label="任务总结" :span="2" v-if="currentTask.result">
+                    <div style="white-space:pre-wrap;">{{ currentTask.result }}</div>
+                </el-descriptions-item>
+            </el-descriptions>
+            <div slot="footer">
+                <el-button @click="detailDialogVisible = false">关闭</el-button>
+                <el-button type="success" v-if="currentTask && currentTask.status === 0 && currentRole === 'volunteer'" icon="el-icon-check" @click="detailDialogVisible = false; handleClaim(currentTask)">领取任务</el-button>
+                <el-button type="warning" v-if="currentTask && currentTask.status === 1 && (currentRole === 'volunteer' || currentRole === 'admin')" icon="el-icon-circle-check" @click="detailDialogVisible = false; handleComplete(currentTask)">标记完成</el-button>
+            </div>
+        </el-dialog>
+
+        <!-- 发布/编辑任务对话框 -->
+        <el-dialog :title="editForm.id ? '编辑任务' : '发布新任务'" :visible.sync="editDialogVisible" width="700px" top="8vh" append-to-body>
+            <el-form :model="editForm" :rules="editRules" ref="editFormRef" label-width="110px">
+                <el-form-item label="任务标题" prop="title">
+                    <el-input v-model="editForm.title" placeholder="请输入任务标题"></el-input>
+                </el-form-item>
+                <el-form-item label="任务类型" prop="taskType">
+                    <el-select v-model="editForm.taskType" placeholder="请选择类型" style="width: 100%;">
+                        <el-option label="🚑 救助任务" value="rescue"></el-option>
+                        <el-option label="🚚 运输任务" value="transport"></el-option>
+                        <el-option label="💚 照护任务" value="care"></el-option>
+                        <el-option label="🎉 活动支持" value="event"></el-option>
+                        <el-option label="🏥 医疗协助" value="medical"></el-option>
+                        <el-option label="🏠 临时寄养" value="foster"></el-option>
+                        <el-option label="📋 其他" value="other"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="紧急程度" prop="priority">
+                    <el-radio-group v-model="editForm.priority">
+                        <el-radio :label="0">普通</el-radio>
+                        <el-radio :label="1">紧急</el-radio>
+                        <el-radio :label="2">非常紧急</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="任务地点" prop="location">
+                    <el-input v-model="editForm.location" placeholder="请输入任务地点"></el-input>
+                </el-form-item>
+                <el-form-item label="关联救助站">
+                    <el-select v-model="editForm.shelterId" placeholder="请选择救助站（可选）" clearable filterable style="width: 100%;">
+                        <el-option v-for="s in shelterOptions" :key="s.id" :label="s.name + ' - ' + (s.regionName || s.regionCode || '')" :value="s.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="期望完成日期">
+                    <el-date-picker v-model="editForm.expectedDate" type="date" placeholder="选择日期"
+                        value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+                </el-form-item>
+                <el-form-item label="联系电话">
+                    <el-input v-model="editForm.contactPhone" placeholder="请输入联系电话"></el-input>
+                </el-form-item>
+                <el-form-item label="奖励积分">
+                    <el-input-number v-model="editForm.rewardPoints" :min="0" :max="1000" style="width: 100%;"></el-input-number>
+                </el-form-item>
+                <el-form-item label="预计耗时(小时)">
+                    <el-input-number v-model="editForm.estimatedHours" :min="0" :max="720" :precision="1" :step="0.5" style="width: 100%;"></el-input-number>
+                </el-form-item>
+                <el-form-item label="所需人数">
+                    <el-input-number v-model="editForm.requiredPeople" :min="1" :max="100" style="width: 100%;"></el-input-number>
+                </el-form-item>
+                <el-form-item label="任务描述" prop="description">
+                    <el-input type="textarea" v-model="editForm.description" :rows="4" placeholder="请详细描述任务内容"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer">
+                <el-button @click="editDialogVisible = false">取消</el-button>
+                <el-button type="primary" icon="el-icon-check" @click="handleSave" :loading="saveLoading">{{ editForm.id ? '更新' : '发布' }}</el-button>
+            </div>
+        </el-dialog>
+
+        <!-- 完成任务对话框 -->
+        <el-dialog title="完成任务" :visible.sync="completeDialogVisible" width="500px" top="8vh" append-to-body>
+            <el-form>
+                <el-form-item label="任务总结">
+                    <el-input type="textarea" v-model="completeResult" :rows="4" placeholder="请输入任务完成总结"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer">
+                <el-button @click="completeDialogVisible = false">取消</el-button>
+                <el-button type="primary" icon="el-icon-circle-check" @click="confirmComplete" :loading="completeLoading">确认完成</el-button>
+            </div>
+        </el-dialog>
+        <!-- 积分获得动画 -->
+        <div class="points-toast" v-if="showPointsToast">
+            <div class="points-toast-inner">
+                <div class="points-toast-icon">⭐</div>
+                <div class="points-toast-num">+{{ toastPoints }}</div>
+                <div class="points-toast-label">积分已到账</div>
+                <div class="points-toast-levelup" v-if="toastLeveledUp">
+                    🎉 升至 Lv.{{ toastNewLevel }} {{ toastLevelName }}
+                </div>
+            </div>
+        </div>
+    </div><!-- end #app -->
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui@2.15.13/lib/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
+<script>
+    Vue.use(ELEMENT);
+
+    axios.interceptors.request.use(config => {
+        const token = localStorage.getItem('token');
+        if (token) config.headers.Authorization = 'Bearer ' + token;
+        return config;
+    });
+    axios.interceptors.response.use(
+        response => response,
+        error => {
+            if (error.response && error.response.status === 401) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            }
+            return Promise.reject(error);
+        }
+    );
+
+    new Vue({
+        el: '#app',
+        data: {
+            tasks: [], shelterOptions: [],
+            loading: false, saveLoading: false, completeLoading: false,
+            total: 0, currentPage: 1, pageSize: 10,
+            taskStats: {},
+            activeTab: 'all', currentRole: '', currentUser: {},
+            detailDialogVisible: false, editDialogVisible: false, completeDialogVisible: false,
+            currentTask: null, completeResult: '', completeTaskId: null,
+            filters: { keyword: '', taskType: '', priority: '' },
+            // 成长中心数据
+            myPoints: 0,
+            currentLevelName: 'Lv.1',
+            showPointsToast: false,
+            toastPoints: 0,
+            toastLeveledUp: false,
+            toastNewLevel: 0,
+            toastLevelName: '',
+            showLevelupBanner: false,
+            levelupBadge: '🌱',
+            levelupNewLevel: 1,
+            levelupName: '新手上路',
+            levelupDesc: '继续加油！',
+            editForm: {
+                id: null, title: '', taskType: '', priority: 0, location: '',
+                shelterId: null, expectedDate: '', contactPhone: '',
+                rewardPoints: 20, estimatedHours: 2, requiredPeople: 1, description: ''
+            },
+            editRules: {
+                title: [{ required: true, message: '请输入任务标题', trigger: 'blur' }],
+                taskType: [{ required: true, message: '请选择任务类型', trigger: 'change' }],
+                location: [{ required: true, message: '请输入任务地点', trigger: 'blur' }],
+                description: [{ required: true, message: '请输入任务描述', trigger: 'blur' }]
+            }
+        },
+        mounted() {
+            this.loadUserInfo();
+            this.loadTasks();
+            this.loadStats();
+            this.loadShelters();
+            this.loadGrowthData();
+        },
+        methods: {
+            loadUserInfo() {
+                const userStr = localStorage.getItem('user') || '{}';
+                const user = JSON.parse(userStr);
+                this.currentUser = user;
+                this.currentRole = user.role || '';
+            },
+            loadTasks() {
+                this.loading = true;
+                const params = {
+                    page: this.currentPage, pageSize: this.pageSize,
+                    keyword: this.filters.keyword, taskType: this.filters.taskType,
+                    priority: this.filters.priority !== '' ? this.filters.priority : null,
+                    status: this.activeTab !== 'all' ? this.activeTab : null
+                };
+                const url = this.activeTab === 'mine'
+                    ? '/api/volunteer-task/my-tasks'
+                    : '/api/volunteer-task/available';
+                axios.get(url, { params: params })
+                    .then(res => {
+                        this.loading = false;
+                        if (res.data.code === 200) {
+                            this.tasks = res.data.data.tasks || [];
+                            this.total = this.tasks.length;
+                        } else {
+                            this.$message.error(res.data.message || '加载失败');
+                        }
+                    })
+                    .catch(() => { this.loading = false; });
+            },
+            loadStats() {
+                axios.get('/api/volunteer-task/stats')
+                    .then(res => {
+                        if (res.data.code === 200) this.taskStats = res.data.data.stats || {};
+                    });
+            },
+            loadShelters() {
+                axios.get('/api/shelter/list', { params: { page: 1, pageSize: 100 } })
+                    .then(res => {
+                        if (res.data.code === 200) {
+                            const shelters = res.data.data.shelters || [];
+                            this.shelterOptions = shelters.map(s => ({ ...s, regionName: s.regionName || s.regionCode || '' }));
+                        }
+                    });
+            },
+            loadGrowthData() {
+                axios.get('/api/volunteer/profile')
+                    .then(res => {
+                        if (res.data.code === 200) {
+                            const profile = res.data.data?.profile || {};
+                            this.myPoints = profile.profile ? profile.profile.availablePoints || 0 : 0;
+                            const lvl = profile.currentLevelInfo || {};
+                            this.currentLevelName = 'Lv.' + (lvl.level || 1) + ' ' + (lvl.levelName || '');
+                        }
+                    })
+                    .catch(() => {});
+            },
+            goProfile() { window.location.href = 'profile.html'; },
+            handleTabClick() { this.currentPage = 1; this.loadTasks(); },
+            handleReset() { this.filters = { keyword: '', taskType: '', priority: '' }; this.currentPage = 1; this.loadTasks(); },
+            handlePageChange(page) {
+                this.currentPage = page; this.loadTasks();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
+            handleDetail(task) { this.currentTask = task; this.detailDialogVisible = true; },
+            handleCreate() {
+                this.editForm = { id: null, title: '', taskType: '', priority: 0, location: '', shelterId: null, expectedDate: '', contactPhone: '', rewardPoints: 20, estimatedHours: 2, requiredPeople: 1, description: '' };
+                this.$nextTick(() => { this.$refs.editFormRef && this.$refs.editFormRef.clearValidate(); });
+                this.editDialogVisible = true;
+            },
+            handleEdit(task) {
+                this.editForm = {
+                    id: task.id, title: task.title, taskType: task.taskType, priority: task.priority,
+                    location: task.location || '', shelterId: task.shelterId,
+                    expectedDate: this.formatDateForEdit(task.expectedDate),
+                    contactPhone: task.contactPhone || '',
+                    rewardPoints: task.rewardPoints || 20,
+                    estimatedHours: task.estimatedHours || 2,
+                    requiredPeople: task.requiredPeople || 1,
+                    description: task.description || ''
+                };
+                this.$nextTick(() => { this.$refs.editFormRef && this.$refs.editFormRef.clearValidate(); });
+                this.editDialogVisible = true;
+            },
+            handleSave() {
+                this.$refs.editFormRef.validate(valid => {
+                    if (!valid) return;
+                    this.saveLoading = true;
+                    const url = this.editForm.id ? '/api/volunteer-task/update' : '/api/volunteer-task/create';
+                    const method = this.editForm.id ? 'put' : 'post';
+                    axios[method](url, this.editForm)
+                        .then(res => {
+                            this.saveLoading = false;
+                            if (res.data.code === 200) {
+                                this.$message.success(this.editForm.id ? '更新成功' : '发布成功');
+                                this.editDialogVisible = false;
+                                this.loadTasks(); this.loadStats();
+                            } else {
+                                this.$message.error(res.data.message || '操作失败');
+                            }
+                        })
+                        .catch(() => { this.saveLoading = false; });
+                });
+            },
+            handleClaim(task) {
+                this.$confirm('确认领取任务「' + task.title + '」？', '领取确认', { type: 'info' })
+                    .then(() => {
+                        axios.post('/api/volunteer-task/claim/' + task.id)
+                            .then(res => {
+                                if (res.data.code === 200) {
+                                    this.$message.success('领取成功！请按时完成任务');
+                                    this.loadTasks(); this.loadStats();
+                                } else {
+                                    this.$message.error(res.data.message || '领取失败');
+                                }
+                            });
+                    });
+            },
+            handleComplete(task) { this.completeTaskId = task.id; this.completeResult = ''; this.completeDialogVisible = true; },
+            confirmComplete() {
+                this.completeLoading = true;
+                axios.post('/api/volunteer-task/complete/' + this.completeTaskId, { result: this.completeResult })
+                    .then(res => {
+                        this.completeLoading = false;
+                        if (res.data.code === 200) {
+                            this.completeDialogVisible = false;
+                            this.loadTasks(); this.loadStats();
+
+                            // 处理积分发放结果
+                            const growthResult = res.data.data?.growthResult || {};
+                            const points = growthResult.pointsEarned || 0;
+                            const leveledUp = growthResult.leveledUp || false;
+                            const newLevel = growthResult.newLevel || 1;
+                            const levelInfo = growthResult.levelInfo || {};
+
+                            if (points > 0) {
+                                // 显示积分动画
+                                this.toastPoints = points;
+                                this.toastLeveledUp = leveledUp;
+                                this.toastNewLevel = newLevel;
+                                this.toastLevelName = levelInfo.levelName || '';
+                                this.showPointsToast = true;
+                                // 更新本地积分显示
+                                this.myPoints = (this.myPoints || 0) + points;
+                                // 3秒后隐藏动画
+                                setTimeout(() => { this.showPointsToast = false; }, 2500);
+                            }
+
+                            // 如果升级，显示横幅
+                            if (leveledUp) {
+                                this.levelupBadge = levelInfo.badge || '🏆';
+                                this.levelupNewLevel = newLevel;
+                                this.levelupName = levelInfo.levelName || '';
+                                this.levelupDesc = levelInfo.privilegeDesc || '恭喜达到新等级！';
+                                this.currentLevelName = 'Lv.' + newLevel;
+                                this.showLevelupBanner = true;
+                                setTimeout(() => { this.showLevelupBanner = false; }, 4000);
+                                this.$message.success('🎉 恭喜升至 Lv.' + newLevel + ' ' + (levelInfo.levelName || '') + '！');
+                            } else {
+                                this.$message.success('任务已完成！获得 ' + points + ' 积分');
+                            }
+                        } else {
+                            this.$message.error(res.data.message || '操作失败');
+                        }
+                    })
+                    .catch(() => { this.completeLoading = false; });
+            },
+            handleCancel(task) {
+                this.$confirm('确认取消任务「' + task.title + '」？', '取消确认', { type: 'warning' })
+                    .then(() => {
+                        axios.post('/api/volunteer-task/cancel/' + task.id)
+                            .then(res => {
+                                if (res.data.code === 200) { this.$message.success('任务已取消'); this.loadTasks(); this.loadStats(); }
+                                else { this.$message.error(res.data.message || '操作失败'); }
+                            });
+                    });
+            },
+            handleDelete(task) {
+                this.$confirm('确认删除任务「' + task.title + '」？此操作不可恢复', '删除确认', { type: 'error' })
+                    .then(() => {
+                        axios.delete('/api/volunteer-task/delete/' + task.id)
+                            .then(res => {
+                                if (res.data.code === 200) { this.$message.success('删除成功'); this.loadTasks(); this.loadStats(); }
+                                else { this.$message.error(res.data.message || '删除失败'); }
+                            });
+                    });
+            },
+            getTaskTypeText(type) {
+                const map = { rescue: '救助', transport: '运输', care: '照护', event: '活动', medical: '医疗', foster: '寄养', other: '其他' };
+                return map[type] || '其他';
+            },
+            getStatusText(status) { const map = { 0: '待领取', 1: '进行中', 2: '已完成', 3: '已取消' }; return map[status] || '未知'; },
+            getStatusType(status) { const map = { 0: 'success', 1: 'warning', 2: 'info', 3: 'danger' }; return map[status] || 'info'; },
+            getPriorityText(priority) { const map = { 0: '普通', 1: '紧急', 2: '非常紧急' }; return map[priority] || '普通'; },
+            formatDate(date) {
+                if (!date) return '-';
+                if (typeof date === 'string') return date.substring(0, 10);
+                if (date.time) return new Date(date.time).toISOString().substring(0, 10);
+                return String(date).substring(0, 10);
+            },
+            formatDateTime(date) {
+                if (!date) return '-';
+                if (typeof date === 'string') return date.replace('T', ' ').substring(0, 19);
+                if (date.time) return new Date(date.time).toLocaleString('zh-CN').replace(/\//g, '-');
+                return String(date);
+            },
+            formatDateForEdit(date) { return this.formatDate(date); },
+            getRoleName(role) {
+                const map = { admin: '管理员', adopter: '领养人', volunteer: '志愿者', institution_admin: '机构管理员', hospital: '宠物医院' };
+                return map[role] || role || '用户';
+            },
+            logout() {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            }
+        }
+    });
+</script>
+</body>
+</html>
+

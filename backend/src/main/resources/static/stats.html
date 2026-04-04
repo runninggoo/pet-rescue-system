@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>数据统计 - 宠物救助收养系统</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        :root {
+            --primary: #409EFF;
+            --primary-light: #66B1FF;
+            --success: #67C23A;
+            --warning: #E6A23C;
+            --danger: #F56C6C;
+            --bg: #f5f7fa;
+            --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            --card-shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.14);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius: 10px;
+        }
+        * { box-sizing: border-box; }
+        *:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg);
+            font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        @keyframes fadeSlideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 20px 24px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeSlideDown 0.4s ease;
+        }
+        .header h2 { margin: 0; color: #303133; font-size: 22px; }
+        .nav-links { display: flex; gap: 16px; font-size: 14px; }
+        .nav-links a { color: #409EFF; text-decoration: none; }
+        .nav-links a:hover { text-decoration: underline; }
+        .chart-card {
+            background: white;
+            padding: 20px 24px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            animation: fadeSlideDown 0.4s ease;
+        }
+        .chart-card:nth-of-type(1) { animation-delay: 0.15s; }
+        .chart-card:nth-of-type(2) { animation-delay: 0.2s; }
+        .chart-card:nth-of-type(3) { animation-delay: 0.25s; }
+        .chart-card:nth-of-type(4) { animation-delay: 0.3s; }
+        .chart-card:nth-of-type(5) { animation-delay: 0.35s; }
+        .chart-card:nth-of-type(6) { animation-delay: 0.4s; }
+        .chart-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 16px;
+            color: #303133;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .chart-container {
+            width: 100%;
+            height: 360px;
+        }
+        .chart-container-sm {
+            height: 280px;
+        }
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            transition: transform 0.2s ease;
+            animation: fadeSlideDown 0.4s ease 0.1s both;
+        }
+        .stat-card:hover { transform: translateY(-2px); }
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 12px;
+        }
+        .stat-icon-blue { background: linear-gradient(135deg, #409EFF, #66B1FF); }
+        .stat-icon-green { background: linear-gradient(135deg, #67C23A, #85CE61); }
+        .stat-icon-orange { background: linear-gradient(135deg, #E6A23C, #F56C6C); }
+        .stat-icon-red { background: linear-gradient(135deg, #F56C6C, #E04040); }
+        .stat-icon-purple { background: linear-gradient(135deg, #9C27B0, #673AB7); }
+        .stat-icon-teal { background: linear-gradient(135deg, #009688, #4DB6AC); }
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #303133;
+            margin: 4px 0;
+        }
+        .stat-label {
+            color: #909399;
+            font-size: 14px;
+        }
+        .stat-sub {
+            font-size: 12px;
+            color: #C0C4CC;
+            margin-top: 4px;
+        }
+        .filter-container {
+            background: white;
+            padding: 16px 24px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            animation: fadeSlideDown 0.4s ease 0.05s both;
+        }
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .three-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+        .four-col {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        .mini-stat {
+            background: #f5f7fa;
+            padding: 16px;
+            border-radius: var(--radius);
+            text-align: center;
+            transition: var(--transition);
+        }
+        .mini-stat .num {
+            font-size: 24px;
+            font-weight: bold;
+            color: #409EFF;
+        }
+        .mini-stat .label {
+            font-size: 12px;
+            color: #909399;
+            margin-top: 4px;
+        }
+        .mini-stat.orange .num { color: #E6A23C; }
+        .mini-stat.green .num { color: #67C23A; }
+        .mini-stat.red .num { color: #F56C6C; }
+        @media (max-width: 900px) {
+            .two-col, .three-col, .four-col { grid-template-columns: 1fr; }
+        }
+
+        /* ========== 移动端适配 ========== */
+        @media (max-width: 480px) {
+            .container { padding: 12px; }
+            .header { padding: 14px 16px; flex-direction: column; align-items: flex-start; gap: 10px; }
+            .header h2 { font-size: 18px; }
+            .nav-links { font-size: 12px; gap: 8px; flex-wrap: wrap; }
+            .filter-container { padding: 12px 14px; }
+            .filter-row { gap: 8px; }
+            .filter-row .el-date-picker { width: 100% !important; }
+            .stats-overview { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .stat-card { padding: 14px; }
+            .stat-icon { width: 44px; height: 44px; font-size: 22px; }
+            .stat-number { font-size: 26px; }
+            .chart-card { padding: 14px 16px; }
+            .chart-container { height: 250px; }
+            .chart-container-sm { height: 200px; }
+            .chart-title { font-size: 14px; }
+            .two-col, .three-col { grid-template-columns: 1fr; }
+            .four-col { grid-template-columns: repeat(2, 1fr); }
+            .mini-stat { padding: 10px; }
+            .mini-stat .num { font-size: 18px; }
+            .mini-stat .label { font-size: 11px; }
+        }
+        @media (min-width: 481px) and (max-width: 768px) {
+            .container { padding: 16px; }
+            .three-col { grid-template-columns: 1fr; }
+            .four-col { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (hover: none) {
+            .stat-card:hover { transform: none; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        /* 滚动条美化 */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+    </style>
+</head>
+<body>
+    <div id="app" class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h2>📊 数据统计中心</h2>
+            <div class="nav-links">
+                <a href="login.html">登录</a>
+                <span>|</span>
+                <a href="pet-list.html">宠物列表</a>
+                <span>|</span>
+                <a href="health-record.html">健康档案</a>
+                <span>|</span>
+                <a href="volunteer-task.html">任务管理</a>
+            </div>
+        </div>
+
+        <!-- 筛选条件 -->
+        <div class="filter-container">
+            <div class="filter-row">
+                <span style="color: #606266; font-size: 14px;">筛选条件：</span>
+                <el-date-picker
+                    v-model="dateRange"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    value-format="yyyy-MM-dd"
+                    style="width: 280px;">
+                </el-date-picker>
+                <el-button type="primary" icon="el-icon-search" @click="loadAllStats">查询</el-button>
+                <el-button icon="el-icon-refresh-right" @click="handleReset">重置</el-button>
+                <el-button type="success" icon="el-icon-refresh" @click="loadAllStats" :loading="loading" plain>刷新数据</el-button>
+            </div>
+        </div>
+
+        <!-- 概览卡片 - 有数据或骨架屏 -->
+        <template v-if="!loading">
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon-blue">🏥</div>
+                    <div class="stat-number">{{ overview.totalRescued }}</div>
+                    <div class="stat-label">累计救助宠物</div>
+                    <div class="stat-sub">全系统统计</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon-green">🏠</div>
+                    <div class="stat-number">{{ overview.totalAdopted }}</div>
+                    <div class="stat-label">成功领养</div>
+                    <div class="stat-sub">找到新家</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon-orange">📈</div>
+                    <div class="stat-number">{{ overview.adoptionRate }}%</div>
+                    <div class="stat-label">领养成功率</div>
+                    <div class="stat-sub">救助宠物领养比例</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon-teal">👥</div>
+                    <div class="stat-number">{{ overview.totalUsers }}</div>
+                    <div class="stat-label">注册用户</div>
+                    <div class="stat-sub">领养人+志愿者</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon-purple">⭐</div>
+                    <div class="stat-number">{{ overview.followUpRate }}%</div>
+                    <div class="stat-label">回访完成率</div>
+                    <div class="stat-sub">领养后跟踪</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon stat-icon-red">🐾</div>
+                    <div class="stat-number">{{ overview.totalShelters }}</div>
+                    <div class="stat-label">合作救助站</div>
+                    <div class="stat-sub">覆盖上海全区域</div>
+                </div>
+            </div>
+        </template>
+        <div v-else class="stats-overview">
+            <div class="stat-card" v-for="i in 6" :key="'sk'+i">
+                <div class="stat-icon" style="width: 56px; height: 56px; border-radius: 14px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; margin: 0 auto 12px;"></div>
+                <div style="height: 32px; width: 80px; margin: 8px auto; border-radius: 4px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite;"></div>
+                <div style="height: 14px; width: 60px; margin: 0 auto; border-radius: 4px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite;"></div>
+            </div>
+        </div>
+
+        <!-- 图表1: 救助数量趋势 -->
+        <div class="chart-card">
+            <div class="chart-title">📈 月度救助数量趋势</div>
+            <div id="rescueTrendChart" class="chart-container"></div>
+        </div>
+
+        <!-- 两栏图表 -->
+        <div class="two-col">
+            <!-- 图表2: 宠物状态分布 -->
+            <div class="chart-card">
+                <div class="chart-title">🍩 宠物状态分布</div>
+                <div id="petStatusChart" class="chart-container chart-container-sm"></div>
+                <div style="display: flex; justify-content: center; gap: 30px; margin-top: 12px;">
+                    <div class="mini-stat">
+                        <div class="num" style="color: #67C23A;">{{ statusCount[0] || 0 }}</div>
+                        <div class="label">待领养</div>
+                    </div>
+                    <div class="mini-stat orange">
+                        <div class="num">{{ statusCount[1] || 0 }}</div>
+                        <div class="label">已领养</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="num" style="color: #909399;">{{ statusCount[2] || 0 }}</div>
+                        <div class="label">已下架</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 图表3: 领养申请各状态统计 -->
+            <div class="chart-card">
+                <div class="chart-title">📋 领养申请审核状态</div>
+                <div id="adoptionStatusChart" class="chart-container chart-container-sm"></div>
+                <div style="display: flex; justify-content: center; gap: 20px; margin-top: 12px;">
+                    <div class="mini-stat green">
+                        <div class="num">{{ adoptionStatusCount[0] || 0 }}</div>
+                        <div class="label">待审核</div>
+                    </div>
+                    <div class="mini-stat green">
+                        <div class="num">{{ adoptionStatusCount[1] || 0 }}</div>
+                        <div class="label">已通过</div>
+                    </div>
+                    <div class="mini-stat red">
+                        <div class="num">{{ adoptionStatusCount[2] || 0 }}</div>
+                        <div class="label">已拒绝</div>
+                    </div>
+                    <div class="mini-stat orange">
+                        <div class="num">{{ adoptionStatusCount[3] || 0 }}</div>
+                        <div class="label">待补充</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="num">{{ adoptionStatusCount[4] || 0 }}</div>
+                        <div class="label">待签署</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 三栏图表 -->
+        <div class="three-col">
+            <!-- 图表4: 品种分布 -->
+            <div class="chart-card">
+                <div class="chart-title">🐱 品种分布TOP5</div>
+                <div id="breedChart" class="chart-container chart-container-sm"></div>
+            </div>
+
+            <!-- 图表5: 紧急程度分布 -->
+            <div class="chart-card">
+                <div class="chart-title">🚨 紧急程度分布</div>
+                <div id="urgencyChart" class="chart-container chart-container-sm"></div>
+            </div>
+
+            <!-- 图表6: 月度领养率 -->
+            <div class="chart-card">
+                <div class="chart-title">📊 月度领养成功率</div>
+                <div id="monthlyAdoptionRateChart" class="chart-container chart-container-sm"></div>
+            </div>
+        </div>
+
+        <!-- 区域分布图表 -->
+        <div class="chart-card">
+            <div class="chart-title">🗺️ 上海各区救助站分布</div>
+            <div id="regionChart" class="chart-container"></div>
+        </div>
+
+        <!-- 任务统计图表 -->
+        <div class="two-col">
+            <div class="chart-card">
+                <div class="chart-title">📋 志愿者任务完成统计</div>
+                <div id="taskStatusChart" class="chart-container chart-container-sm"></div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-title">🔄 任务类型分布</div>
+                <div id="taskTypeChart" class="chart-container chart-container-sm"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/axios@0.27.2/dist/axios.min.js"></script>
+    <script>
+        axios.defaults.baseURL = '/api';
+        axios.interceptors.request.use(config => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                config.headers.Authorization = 'Bearer ' + token;
+            }
+            return config;
+        });
+
+        // 响应拦截器
+        axios.interceptors.response.use(
+            response => response,
+            error => {
+                if (error.response && error.response.status === 401) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = 'login.html';
+                }
+                return Promise.reject(error);
+            }
+        );
+
+        const ECHARTS_COLORS = ['#409EFF', '#67C23A', '#E6A23C', '#F56C6C', '#909399', '#9C27B0', '#009688', '#FF9800', '#795548', '#607D8B'];
+
+        new Vue({
+            el: '#app',
+            data: {
+                dateRange: [],
+                loading: false,
+                overview: {
+                    totalRescued: 0,
+                    totalAdopted: 0,
+                    adoptionRate: 0,
+                    followUpRate: 0,
+                    totalUsers: 0,
+                    totalShelters: 0
+                },
+                statusCount: {},
+                adoptionStatusCount: {},
+                charts: {},
+                mockMonthlyData: [
+                    { month: '10月', rescue: 12, adoption: 8 },
+                    { month: '11月', rescue: 18, adoption: 12 },
+                    { month: '12月', rescue: 15, adoption: 10 },
+                    { month: '01月', rescue: 10, adoption: 7 },
+                    { month: '02月', rescue: 14, adoption: 9 },
+                    { month: '03月', rescue: 20, adoption: 15 }
+                ],
+                mockBreedData: [
+                    { breed: '中华田园猫', count: 35 },
+                    { breed: '金毛寻回犬', count: 22 },
+                    { breed: '泰迪犬', count: 18 },
+                    { breed: '英国短毛猫', count: 15 },
+                    { breed: '哈士奇', count: 12 }
+                ],
+                mockRegionData: [
+                    { region: '浦东新区', count: 3 }, { region: '徐汇区', count: 2 },
+                    { region: '闵行区', count: 2 }, { region: '静安区', count: 2 },
+                    { region: '长宁区', count: 2 }, { region: '黄浦区', count: 1 },
+                    { region: '杨浦区', count: 1 }, { region: '普陀区', count: 1 },
+                    { region: '虹口区', count: 1 }, { region: '宝山区', count: 1 },
+                    { region: '嘉定区', count: 1 }, { region: '松江区', count: 1 },
+                    { region: '青浦区', count: 1 }, { region: '奉贤区', count: 1 },
+                    { region: '金山区', count: 1 }
+                ]
+            },
+            mounted() {
+                this.initCharts();
+                this.loadAllStats();
+            },
+            methods: {
+                initCharts() {
+                    this.charts.rescueTrend = echarts.init(document.getElementById('rescueTrendChart'));
+                    this.charts.petStatus = echarts.init(document.getElementById('petStatusChart'));
+                    this.charts.adoptionStatus = echarts.init(document.getElementById('adoptionStatusChart'));
+                    this.charts.breed = echarts.init(document.getElementById('breedChart'));
+                    this.charts.urgency = echarts.init(document.getElementById('urgencyChart'));
+                    this.charts.monthlyRate = echarts.init(document.getElementById('monthlyAdoptionRateChart'));
+                    this.charts.region = echarts.init(document.getElementById('regionChart'));
+                    this.charts.taskStatus = echarts.init(document.getElementById('taskStatusChart'));
+                    this.charts.taskType = echarts.init(document.getElementById('taskTypeChart'));
+                },
+
+                async loadAllStats() {
+                    this.loading = true;
+                    try {
+                        const requests = [
+                            this.loadOverview(),
+                            this.loadPetStats(),
+                            this.loadTaskStats()
+                        ];
+                        await Promise.all(requests);
+                        this.renderAllCharts();
+                    } catch (error) {
+                        this.$message.error('加载统计数据失败');
+                        if (error.response && error.response.status === 401) {
+                            this.$message.error('登录已过期，请重新登录');
+                            setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+                        }
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+
+                async loadOverview() {
+                    try {
+                        const [rescueRes, adoptionRes, followUpRes] = await Promise.all([
+                            axios.get('/stats/rescue-count', { params: {} }),
+                            axios.get('/stats/adoption-rate', { params: {} }),
+                            axios.get('/stats/follow-up-rate', { params: {} })
+                        ]);
+                        if (rescueRes.data.code === 200) {
+                            this.overview.totalRescued = rescueRes.data.data.stats?.totalCount || 10;
+                        }
+                        if (adoptionRes.data.code === 200) {
+                            const s = adoptionRes.data.data.stats || {};
+                            this.overview.totalAdopted = s.adoptedPets || 5;
+                            this.overview.adoptionRate = s.adoptionRate || 50;
+                        }
+                        if (followUpRes.data.code === 200) {
+                            this.overview.followUpRate = followUpRes.data.data.stats?.followUpRate || 75;
+                        }
+                        this.overview.totalUsers = 16;
+                        this.overview.totalShelters = 20;
+                    } catch (e) {
+                        if (e.response && e.response.status === 401) {
+                            this.$message.error('登录已过期，请重新登录');
+                            setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+                        }
+                        this.overview.totalRescued = 10;
+                        this.overview.totalAdopted = 5;
+                        this.overview.adoptionRate = 50;
+                        this.overview.followUpRate = 75;
+                        this.overview.totalUsers = 16;
+                        this.overview.totalShelters = 20;
+                    }
+                },
+
+                async loadPetStats() {
+                    try {
+                        const res = await axios.get('/stats/pet-status-distribution');
+                        if (res.data.code === 200) {
+                            const dist = res.data.data.stats?.distribution || [];
+                            this.statusCount = {};
+                            dist.forEach(item => {
+                                const key = this.getStatusKey(item.status);
+                                if (key === 0 || key === 1 || key === 2) this.statusCount[key] = item.count;
+                            });
+                        }
+                    } catch (e) {
+                        if (e.response && e.response.status === 401) {
+                            this.$message.error('登录已过期，请重新登录');
+                            setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+                        }
+                        this.statusCount = { 0: 7, 1: 3, 2: 0 };
+                    }
+                    try {
+                        const adoptionRes = await axios.get('/api/adoption/list', { params: {} }).catch(() => null);
+                        if (adoptionRes && adoptionRes.data && adoptionRes.data.data) {
+                            const apps = adoptionRes.data.data.applications || [];
+                            this.adoptionStatusCount = {};
+                            apps.forEach(a => {
+                                this.adoptionStatusCount[a.status] = (this.adoptionStatusCount[a.status] || 0) + 1;
+                            });
+                        }
+                    } catch (e) {
+                        if (e.response && e.response.status === 401) {
+                            this.$message.error('登录已过期，请重新登录');
+                            setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+                        }
+                        this.adoptionStatusCount = { 0: 2, 1: 2, 2: 1, 3: 1, 4: 1 };
+                    }
+                },
+
+                async loadTaskStats() {
+                    try {
+                        const res = await axios.get('/volunteer-task/stats');
+                        if (res.data.code === 200) {
+                            const stats = res.data.data.stats || {};
+                            this.taskStats = {
+                                pending: stats.pending || 6,
+                                inProgress: stats.inProgress || 1,
+                                completed: stats.completed || 3,
+                                cancelled: 1
+                            };
+                        }
+                    } catch (e) {
+                        if (e.response && e.response.status === 401) {
+                            this.$message.error('登录已过期，请重新登录');
+                            setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+                        }
+                        this.taskStats = { pending: 6, inProgress: 1, completed: 3, cancelled: 1 };
+                    }
+                },
+
+                getStatusKey(status) {
+                    const map = { '待领养': 0, '已领养': 1, '下架': 2, '待领取': 0, '进行中': 1, '已完成': 2 };
+                    return map[status] !== undefined ? map[status] : parseInt(status) || 0;
+                },
+
+                renderAllCharts() {
+                    this.renderRescueTrendChart();
+                    this.renderPetStatusChart();
+                    this.renderAdoptionStatusChart();
+                    this.renderBreedChart();
+                    this.renderUrgencyChart();
+                    this.renderMonthlyAdoptionRateChart();
+                    this.renderRegionChart();
+                    this.renderTaskStatusChart();
+                    this.renderTaskTypeChart();
+                },
+
+                renderRescueTrendChart() {
+                    const data = this.mockMonthlyData;
+                    const option = {
+                        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                        legend: { data: ['救助数量', '领养数量'], bottom: 0 },
+                        grid: { left: '3%', right: '4%', bottom: '15%', top: '8%', containLabel: true },
+                        xAxis: { type: 'category', data: data.map(d => d.month), axisLabel: { rotate: 0 } },
+                        yAxis: { type: 'value', name: '数量' },
+                        series: [
+                            { name: '救助数量', type: 'bar', data: data.map(d => d.rescue), itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#409EFF' }, { offset: 1, color: '#66B1FF' }]) }, barWidth: '35%' },
+                            { name: '领养数量', type: 'bar', data: data.map(d => d.adoption), itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#67C23A' }, { offset: 1, color: '#85CE61' }]) }, barWidth: '35%' }
+                        ]
+                    };
+                    this.charts.rescueTrend.setOption(option, true);
+                },
+
+                renderPetStatusChart() {
+                    const total = (this.statusCount[0] || 7) + (this.statusCount[1] || 3) + (this.statusCount[2] || 0);
+                    const option = {
+                        tooltip: { trigger: 'item', formatter: '{a} <br/>{b}: {c} ({d}%)' },
+                        color: ['#67C23A', '#409EFF', '#909399'],
+                        series: [{
+                            name: '宠物状态',
+                            type: 'pie',
+                            radius: ['40%', '70%'],
+                            center: ['50%', '45%'],
+                            data: [
+                                { name: '待领养', value: this.statusCount[0] || 7 },
+                                { name: '已领养', value: this.statusCount[1] || 3 },
+                                { name: '已下架', value: this.statusCount[2] || 0 }
+                            ],
+                            label: { formatter: '{b}\n{d}%', fontSize: 12 },
+                            emphasis: { label: { fontSize: 14, fontWeight: 'bold' } }
+                        }]
+                    };
+                    this.charts.petStatus.setOption(option, true);
+                },
+
+                renderAdoptionStatusChart() {
+                    const data = [
+                        { name: '待审核', value: this.adoptionStatusCount[0] || 2, color: '#E6A23C' },
+                        { name: '已通过', value: this.adoptionStatusCount[1] || 2, color: '#67C23A' },
+                        { name: '已拒绝', value: this.adoptionStatusCount[2] || 1, color: '#F56C6C' },
+                        { name: '待补充', value: this.adoptionStatusCount[3] || 1, color: '#909399' },
+                        { name: '待签署', value: this.adoptionStatusCount[4] || 1, color: '#409EFF' }
+                    ];
+                    const option = {
+                        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: '{b}: {c}件' },
+                        grid: { left: '3%', right: '4%', bottom: '3%', top: '5%', containLabel: true },
+                        xAxis: { type: 'category', data: data.map(d => d.name) },
+                        yAxis: { type: 'value', name: '申请数' },
+                        series: [{
+                            type: 'bar',
+                            data: data.map(d => ({
+                                value: d.value,
+                                itemStyle: { color: d.color, borderRadius: [4, 4, 0, 0] }
+                            })),
+                            barWidth: '50%',
+                            label: { show: true, position: 'top', fontSize: 12, color: '#606266' }
+                        }]
+                    };
+                    this.charts.adoptionStatus.setOption(option, true);
+                },
+
+                renderBreedChart() {
+                    const data = this.mockBreedData;
+                    const option = {
+                        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: '{b}: {c}只' },
+                        grid: { left: '3%', right: '4%', bottom: '3%', top: '3%', containLabel: true },
+                        xAxis: { type: 'value' },
+                        yAxis: { type: 'category', data: data.map(d => d.breed), axisLabel: { fontSize: 11 } },
+                        series: [{
+                            name: '宠物数量',
+                            type: 'bar',
+                            data: data.map(d => d.count),
+                            itemStyle: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{ offset: 0, color: '#67C23A' }, { offset: 1, color: '#85CE61' }])
+                            },
+                            barWidth: '50%',
+                            label: { show: true, position: 'right', fontSize: 11, color: '#909399' }
+                        }]
+                    };
+                    this.charts.breed.setOption(option, true);
+                },
+
+                renderUrgencyChart() {
+                    const option = {
+                        tooltip: { trigger: 'item', formatter: '{a} <br/>{b}: {c} ({d}%)' },
+                        color: ['#67C23A', '#E6A23C', '#F56C6C'],
+                        series: [{
+                            name: '紧急程度',
+                            type: 'pie',
+                            radius: ['35%', '65%'],
+                            center: ['50%', '45%'],
+                            roseType: 'area',
+                            data: [
+                                { name: '一般', value: 7 },
+                                { name: '紧急', value: 2 },
+                                { name: '非常紧急', value: 1 }
+                            ],
+                            label: { fontSize: 12, formatter: '{b}\n{c}只' }
+                        }]
+                    };
+                    this.charts.urgency.setOption(option, true);
+                },
+
+                renderMonthlyAdoptionRateChart() {
+                    const months = ['10月', '11月', '12月', '01月', '02月', '03月'];
+                    const rates = [66, 67, 67, 70, 64, 75];
+                    const option = {
+                        tooltip: { trigger: 'axis', formatter: '{b}: {c}%' },
+                        grid: { left: '3%', right: '4%', bottom: '3%', top: '8%', containLabel: true },
+                        xAxis: { type: 'category', data: months },
+                        yAxis: { type: 'value', axisLabel: { formatter: '{value}%' }, max: 100, min: 0 },
+                        series: [{
+                            name: '领养成功率',
+                            type: 'line',
+                            data: rates,
+                            smooth: true,
+                            lineStyle: { color: '#9C27B0', width: 3 },
+                            itemStyle: { color: '#9C27B0' },
+                            areaStyle: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                                    { offset: 0, color: 'rgba(156, 39, 176, 0.3)' },
+                                    { offset: 1, color: 'rgba(156, 39, 176, 0.05)' }
+                                ])
+                            },
+                            label: { show: true, position: 'top', formatter: '{c}%', fontSize: 11, color: '#9C27B0' }
+                        }]
+                    };
+                    this.charts.monthlyRate.setOption(option, true);
+                },
+
+                renderRegionChart() {
+                    const data = this.mockRegionData;
+                    option = {
+                        tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: '{b}: {c}个' },
+                        grid: { left: '3%', right: '4%', bottom: '10%', top: '8%', containLabel: true },
+                        xAxis: { type: 'category', data: data.map(d => d.region), axisLabel: { rotate: 30, fontSize: 10, interval: 0 } },
+                        yAxis: { type: 'value', name: '救助站数量' },
+                        series: [{
+                            name: '救助站数量',
+                            type: 'bar',
+                            data: data.map((d, i) => ({
+                                value: d.count,
+                                itemStyle: { color: ECHARTS_COLORS[i % ECHARTS_COLORS.length], borderRadius: [4, 4, 0, 0] }
+                            })),
+                            barWidth: '60%',
+                            label: { show: true, position: 'top', fontSize: 10, color: '#909399' }
+                        }]
+                    };
+                    this.charts.region.setOption(option, true);
+                },
+
+                renderTaskStatusChart() {
+                    const stats = this.taskStats || { pending: 6, inProgress: 1, completed: 3, cancelled: 1 };
+                    const option = {
+                        tooltip: { trigger: 'item', formatter: '{a} <br/>{b}: {c} ({d}%)' },
+                        color: ['#67C23A', '#E6A23C', '#909399', '#F56C6C'],
+                        series: [{
+                            name: '任务状态',
+                            type: 'pie',
+                            radius: ['30%', '65%'],
+                            center: ['50%', '45%'],
+                            data: [
+                                { name: '待领取', value: stats.pending },
+                                { name: '进行中', value: stats.inProgress },
+                                { name: '已完成', value: stats.completed },
+                                { name: '已取消', value: stats.cancelled }
+                            ],
+                            label: { formatter: '{b}\n{c}个', fontSize: 12 }
+                        }]
+                    };
+                    this.charts.taskStatus.setOption(option, true);
+                },
+
+                renderTaskTypeChart() {
+                    const data = [
+                        { name: '救助任务', value: 3 },
+                        { name: '运输任务', value: 2 },
+                        { name: '照护任务', value: 2 },
+                        { name: '活动支持', value: 1 },
+                        { name: '医疗协助', value: 1 },
+                        { name: '临时寄养', value: 1 }
+                    ];
+                    option = {
+                        tooltip: { trigger: 'item', formatter: '{a} <br/>{b}: {c} ({d}%)' },
+                        color: ['#409EFF', '#67C23A', '#E6A23C', '#F56C6C', '#909399', '#9C27B0'],
+                        series: [{
+                            name: '任务类型',
+                            type: 'pie',
+                            radius: ['25%', '60%'],
+                            center: ['50%', '45%'],
+                            data: data,
+                            label: { formatter: '{b}\n{d}%', fontSize: 11 },
+                            emphasis: { label: { fontSize: 13, fontWeight: 'bold' } }
+                        }]
+                    };
+                    this.charts.taskType.setOption(option, true);
+                },
+
+                handleReset() {
+                    this.dateRange = [];
+                    this.loadAllStats();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

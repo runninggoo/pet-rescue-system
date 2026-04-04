@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>领养申请管理 - 宠物救助收养系统</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.15.13/lib/theme-chalk/index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #E07A5F;
+            --primary-dark: #c96a50;
+            --primary-light: #f0a28a;
+            --primary-bg: rgba(224, 122, 95, 0.08);
+            --sage: #81B29A;
+            --sage-light: #a8cdb8;
+            --amber: #F4A261;
+            --warm-white: #FDF6F0;
+            --warm-cream: #FAEEE7;
+            --warm-gray: #f0ebe7;
+            --warm-gray2: #ede6df;
+            --text-dark: #3D405B;
+            --text-muted: #8A8EA0;
+            --bg: var(--warm-white);
+            --card-shadow: 0 4px 20px rgba(224, 122, 95, 0.1);
+            --card-shadow-hover: 0 12px 40px rgba(224, 122, 95, 0.2);
+            --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius: 20px;
+            --radius-sm: 12px;
+        }
+        * { box-sizing: border-box; }
+        *:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+        body {
+            margin: 0; padding: 0;
+            background: var(--bg);
+            font-family: "Nunito", "PingFang SC", "Microsoft YaHei", sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--warm-gray); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* Element UI 暖色覆盖 */
+        .el-button--primary { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; }
+        .el-button--primary:hover { background-color: var(--primary-dark) !important; border-color: var(--primary-dark) !important; }
+        .el-button--success { background-color: var(--sage) !important; border-color: var(--sage) !important; border-radius: var(--radius-sm) !important; }
+        .el-button--warning { background-color: var(--amber) !important; border-color: var(--amber) !important; border-radius: var(--radius-sm) !important; }
+        .el-button--danger { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; }
+        .el-button { border-radius: var(--radius-sm) !important; }
+        .el-input__inner:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(224,122,95,0.12) !important; }
+        .el-pager li.active { background-color: var(--primary) !important; color: white !important; border-radius: 50% !important; }
+        .el-pagination .el-pager li { border-radius: 50% !important; }
+        .el-pagination .el-pager li:hover { color: var(--primary) !important; }
+        .el-drawer__header { background: linear-gradient(135deg, var(--warm-cream) 0%, var(--warm-white) 100%); padding: 20px 24px 16px; border-bottom: 1px solid var(--warm-gray); }
+        .el-drawer__title { font-weight: 700; color: var(--text-dark); font-size: 17px; }
+        .el-drawer__body { padding: 24px; }
+        .el-descriptions th { background: var(--warm-cream) !important; color: var(--text-dark) !important; font-weight: 700 !important; }
+        .el-descriptions td { color: var(--text-dark) !important; }
+        .el-radio--small.is-bordered { border-radius: var(--radius-sm) !important; }
+        .el-radio__input.is-checked .el-radio__inner { background-color: var(--primary) !important; border-color: var(--primary) !important; }
+        .el-radio__input.is-checked + .el-radio__label { color: var(--primary) !important; }
+        .el-radio--success.is-checked .el-radio__inner { background-color: var(--sage) !important; border-color: var(--sage) !important; }
+        .el-radio--warning.is-checked .el-radio__inner { background-color: var(--amber) !important; border-color: var(--amber) !important; }
+
+        @keyframes fadeSlideDown {
+            from { opacity: 0; transform: translateY(-16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes cardEnter {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        @keyframes shimmerBg {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* ========== 页面布局 ========== */
+        .page-wrapper {
+            min-height: 100vh;
+            background: linear-gradient(180deg, var(--warm-white) 0%, var(--warm-cream) 100%);
+            position: relative; overflow: hidden;
+        }
+        .page-bg-paws { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+        .page-bg-paws svg { position: absolute; fill: var(--primary); opacity: 0.04; }
+        .page-content {
+            position: relative; z-index: 1;
+            max-width: 1200px; margin: 0 auto;
+            padding: 24px 24px 40px;
+        }
+
+        /* ========== 顶部横幅 ========== */
+        .hero-banner {
+            background: white;
+            border-radius: var(--radius);
+            padding: 32px 36px;
+            margin-bottom: 24px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            justify-content: space-between; align-items: center;
+            animation: fadeSlideDown 0.5s ease;
+            position: relative; overflow: hidden;
+        }
+        .hero-banner::before {
+            content: ''; position: absolute;
+            top: -40px; right: -40px;
+            width: 160px; height: 160px;
+            background: radial-gradient(circle, rgba(224,122,95,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .hero-left { display: flex; align-items: center; gap: 20px; }
+        .hero-icon {
+            width: 64px; height: 64px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 8px 24px rgba(224,122,95,0.3);
+            flex-shrink: 0;
+        }
+        .hero-title-group h1 { margin: 0 0 4px; font-size: 24px; font-weight: 800; color: var(--text-dark); }
+        .hero-title-group h1 span { color: var(--primary); }
+        .hero-title-group p { margin: 0; font-size: 14px; color: var(--text-muted); }
+        .hero-right { display: flex; align-items: center; gap: 12px; }
+        .hero-paw { font-size: 28px; animation: float 3s ease-in-out infinite; opacity: 0.3; }
+        .hero-paw:nth-child(2) { animation-delay: 0.8s; opacity: 0.2; }
+        .nav-links { display: flex; gap: 12px; font-size: 13px; flex-wrap: wrap; align-items: center; }
+        .nav-links a { color: var(--text-muted); text-decoration: none; transition: var(--transition); padding: 4px 0; font-weight: 600; }
+        .nav-links a:hover { color: var(--primary); }
+        .nav-links span { color: var(--warm-gray2); }
+        .nav-user-chip {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 12px; border-radius: 20px;
+            background: var(--warm-cream); border: 1px solid var(--warm-gray2);
+            font-size: 12px; font-weight: 600; color: var(--text-dark); cursor: pointer;
+        }
+        .nav-user-chip:hover { border-color: var(--primary-light); }
+        .nav-user-chip .role-badge {
+            padding: 1px 7px; border-radius: 10px; font-size: 11px; font-weight: 700;
+        }
+        .role-badge-admin { background: #fef0ee; color: var(--primary); }
+        .role-badge-adopter { background: #e8f5e9; color: #2e7d32; }
+        .role-badge-institution_admin { background: #e3f2fd; color: #1565c0; }
+
+        /* ========== 状态标签栏 ========== */
+        .status-tabs {
+            background: white;
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            animation: fadeSlideDown 0.5s ease 0.08s both;
+        }
+        .status-tabs-inner { display: flex; gap: 8px; flex-wrap: wrap; }
+        .status-tab-btn {
+            padding: 7px 16px;
+            border-radius: 20px;
+            border: 2px solid var(--warm-gray2);
+            background: white;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+            display: flex; align-items: center; gap: 6px;
+            font-family: inherit;
+        }
+        .status-tab-btn:hover { border-color: var(--primary-light); color: var(--primary); }
+        .status-tab-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        .tab-count {
+            background: rgba(255,255,255,0.25);
+            border-radius: 10px;
+            padding: 1px 7px;
+            font-size: 11px;
+        }
+        .status-tab-btn:not(.active) .tab-count { background: var(--warm-cream); color: var(--text-muted); }
+
+        /* ========== 申请卡片 ========== */
+        .app-list { display: flex; flex-direction: column; gap: 16px; }
+        .app-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            display: flex; gap: 16px; align-items: flex-start;
+            animation: cardEnter 0.5s ease both;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+        .app-card:hover { box-shadow: var(--card-shadow-hover); transform: translateX(4px); }
+        .app-card[data-status="0"] { border-left-color: var(--amber); }
+        .app-card[data-status="1"] { border-left-color: var(--sage); }
+        .app-card[data-status="2"] { border-left-color: var(--primary); }
+        .app-card[data-status="3"] { border-left-color: var(--text-muted); }
+        .app-card[data-status="4"] { border-left-color: #409EFF; }
+        .app-card[data-status="5"] { border-left-color: var(--sage); }
+
+        .app-pet-image {
+            width: 88px; height: 88px;
+            border-radius: var(--radius-sm);
+            overflow: hidden; flex-shrink: 0;
+            background: var(--warm-cream);
+            display: flex; align-items: center; justify-content: center;
+            transition: var(--transition);
+            box-shadow: 0 2px 8px rgba(224,122,95,0.1);
+        }
+        .app-card:hover .app-pet-image { transform: scale(1.05); }
+        .app-pet-image img { width: 100%; height: 100%; object-fit: cover; }
+
+        .app-content { flex: 1; min-width: 0; }
+        .app-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+        .app-pet-name { font-size: 16px; font-weight: 800; color: var(--text-dark); }
+        .app-meta {
+            font-size: 13px; color: var(--text-muted);
+            margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 12px;
+        }
+        .app-meta-item { display: flex; align-items: center; gap: 3px; font-weight: 600; }
+        .app-reason {
+            font-size: 13px; color: #606266; margin-bottom: 10px;
+            overflow: hidden; text-overflow: ellipsis;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+        }
+        .app-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white; border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            animation: fadeSlideUp 0.5s ease;
+        }
+        .empty-icon { font-size: 64px; margin-bottom: 16px; animation: float 3s ease-in-out infinite; display: block; }
+        .empty-state .title { font-size: 16px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; }
+        .empty-state .desc { font-size: 13px; color: var(--text-muted); }
+
+        /* 骨架屏 */
+        .skeleton-line {
+            border-radius: 6px;
+            background: linear-gradient(90deg, var(--warm-gray) 25%, var(--warm-cream) 50%, var(--warm-gray) 75%);
+            background-size: 200% 100%;
+            animation: shimmerBg 1.5s infinite;
+        }
+        .shake { animation: shake 0.4s ease; }
+
+        /* ========== 预加载覆盖层 ========== */
+        .loading-overlay {
+            position: fixed; inset: 0; z-index: 9999;
+            background: var(--warm-white);
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 24px;
+        }
+        .loading-overlay .paw-wrap {
+            width: 72px; height: 72px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 22px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 12px 36px rgba(224,122,95,0.35);
+            animation: pawBounce 1.2s ease-in-out infinite;
+        }
+        .loading-overlay .paw-wrap svg { width: 40px; height: 40px; fill: white; }
+        .loading-overlay p { color: var(--text-muted); font-size: 14px; font-weight: 600; margin: 0; }
+        @keyframes pawBounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-14px) scale(1.08); }
+        }
+
+        /* ========== 渐变按钮 ========== */
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 50%, var(--primary) 100%) !important;
+            background-size: 200% auto !important;
+            border: none !important;
+            color: white !important;
+            font-weight: 700 !important;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            box-shadow: 0 4px 16px rgba(224,122,95,0.3) !important;
+        }
+        .btn-gradient:hover {
+            background-position: right center !important;
+            box-shadow: 0 8px 28px rgba(224,122,95,0.45) !important;
+            transform: translateY(-2px) !important;
+        }
+
+        /* ========== 申请卡片增强 ========== */
+        .app-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            box-shadow: var(--card-shadow);
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; gap: 16px; align-items: flex-start;
+            animation: cardEnter 0.5s ease both;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+            position: relative; overflow: hidden;
+        }
+        .app-card::after {
+            content: ''; position: absolute;
+            top: 0; right: 0;
+            width: 80px; height: 80px;
+            background: radial-gradient(circle, rgba(224,122,95,0.04) 0%, transparent 70%);
+            border-radius: 50%;
+            transform: translate(30%, -30%);
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .app-card:hover { box-shadow: var(--card-shadow-hover); transform: translateX(6px); }
+        .app-card:hover::after { transform: translate(20%, -20%) scale(1.4); }
+
+        /* ========== 状态标签栏增强 ========== */
+        .status-tab-btn {
+            padding: 7px 16px;
+            border-radius: 20px;
+            border: 2px solid var(--warm-gray2);
+            background: white;
+            color: var(--text-muted);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            white-space: nowrap;
+            display: flex; align-items: center; gap: 6px;
+            font-family: inherit;
+        }
+        .status-tab-btn:hover { border-color: var(--primary-light); color: var(--primary); transform: translateY(-2px); }
+        .status-tab-btn.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%) !important;
+            border-color: var(--primary) !important;
+            color: white !important;
+            box-shadow: 0 4px 16px rgba(224,122,95,0.3) !important;
+        }
+
+        /* ========== 骨架屏增强 ========== */
+        .skeleton-overlay {
+            background: rgba(253,246,240,0.92);
+            backdrop-filter: blur(6px);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .skeleton-app-card {
+            background: white; border-radius: var(--radius-sm);
+            padding: 20px; margin-bottom: 12px;
+            display: flex; gap: 16px; align-items: flex-start;
+            box-shadow: 0 2px 12px rgba(224,122,95,0.06);
+        }
+        .skeleton-line {
+            border-radius: 6px;
+            background: linear-gradient(90deg, #f0ebe7 25%, #faeee7 50%, #f0ebe7 75%);
+            background-size: 400% 100%;
+            animation: shimmer 1.8s ease infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+
+        /* ========== 侧边抽屉增强 ========== */
+        .el-drawer__body { padding: 24px; }
+        .drawer-section {
+            background: var(--warm-cream);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .drawer-section-title {
+            font-size: 13px; font-weight: 700; color: var(--text-muted);
+            margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+
+        /* ========== 自定义对话框遮罩层 ========== */
+        .custom-modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(61, 64, 91, 0.55);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            display: flex; align-items: flex-start; justify-content: center;
+            padding-top: 10vh;
+            overflow-y: auto;
+        }
+        .custom-dialog-box {
+            background: white;
+            border-radius: var(--radius);
+            width: 520px;
+            max-width: calc(100vw - 40px);
+            box-shadow: 0 24px 64px rgba(61, 64, 91, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+        .custom-dialog-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 18px 24px 16px;
+            background: linear-gradient(135deg, var(--warm-cream) 0%, var(--warm-white) 100%);
+            border-bottom: 1px solid var(--warm-gray);
+        }
+        .custom-dialog-title {
+            font-size: 17px; font-weight: 800; color: var(--text-dark);
+        }
+        .custom-dialog-close {
+            font-size: 24px; line-height: 1; color: var(--text-muted);
+            cursor: pointer; padding: 0 4px;
+            transition: color 0.2s;
+        }
+        .custom-dialog-close:hover { color: var(--primary); }
+        .custom-dialog-body {
+            padding: 20px 24px 24px;
+            max-height: calc(90vh - 70px);
+            overflow-y: auto;
+        }
+
+        /* 过渡动画 */
+        .fade-overlay-enter-active, .fade-overlay-leave-active { transition: opacity 0.25s ease; }
+        .fade-overlay-enter, .fade-overlay-leave-to { opacity: 0; }
+
+        .slide-up-dialog-enter-active { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .slide-up-dialog-leave-active { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .slide-up-dialog-enter, .slide-up-dialog-leave-to { opacity: 0; transform: translateY(30px) scale(0.97); }
+    </style>
+</head>
+<body>
+<!-- 预加载覆盖层 -->
+<div class="loading-overlay" id="appLoading">
+    <div class="paw-wrap">
+        <svg viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+    </div>
+    <p>正在加载领养申请管理...</p>
+</div>
+<script>document.getElementById('appLoading').style.display='none';</script>
+
+<div class="page-wrapper">
+    <!-- 爪印背景 -->
+    <div class="page-bg-paws">
+        <svg style="top:8%;left:5%;width:60px;transform:rotate(-15deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        <svg style="top:40%;right:8%;width:48px;transform:rotate(12deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        <svg style="bottom:12%;left:10%;width:56px;transform:rotate(-10deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+    </div>
+
+    <div class="page-content" id="app">
+        <!-- 顶部横幅 -->
+        <div class="hero-banner">
+            <div class="hero-left">
+                <div class="hero-icon">📋</div>
+                <div class="hero-title-group">
+                    <h1>领养申请<span>管理</span></h1>
+                    <p>规范审核流程，为流浪宠物找到温暖的家</p>
+                </div>
+            </div>
+        <div class="hero-right">
+            <div class="nav-links">
+                <a href="pet-list.html">首页</a>
+                <span>|</span>
+                <a href="profile.html">个人中心</a>
+                <span v-if="currentRole === 'admin'">|</span>
+                <a v-if="currentRole === 'admin'" href="user-management.html">用户管理</a>
+                <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'">|</span>
+                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="stats.html">数据统计</a>
+                <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'">|</span>
+                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="health-record.html">健康档案</a>
+                <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'">|</span>
+                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin' || currentRole === 'volunteer'" href="volunteer-task.html">任务管理</a>
+                <span>|</span>
+                <span @click="logout" style="color:var(--primary);cursor:pointer;font-weight:600">退出登录</span>
+                <span style="margin-left:8px;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:700;"
+                      :style="'background:' + (currentRole==='admin'?'#fef0ee':currentRole==='institution_admin'?'#e3f2fd':currentRole==='volunteer'?'#fff8e1':'#e8f5e9') + ';color:' + (currentRole==='admin'?'var(--primary)':currentRole==='institution_admin'?'#1565c0':currentRole==='volunteer'?'#f57f17':'#2e7d32')">
+                    {{ getRoleName(currentRole) }}
+                </span>
+            </div>
+        </div>
+</div>
+
+        <!-- 状态标签栏 -->
+        <div class="status-tabs">
+            <div class="status-tabs-inner">
+                <button
+                    v-for="tab in statusTabs"
+                    :key="tab.value"
+                    class="status-tab-btn"
+                    :class="{ active: currentStatus === tab.value }"
+                    @click="switchTab(tab.value)">
+                    {{ tab.label }}
+                    <span class="tab-count">{{ getTabCount(tab.value) }}</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 骨架屏 -->
+        <div class="app-list" v-if="loading">
+            <div class="app-card" v-for="i in 4" :key="'sk'+i">
+                <div style="width:88px;height:88px;border-radius:var(--radius-sm);flex-shrink:0;" class="skeleton-line"></div>
+                <div style="flex:1;">
+                    <div style="height:16px;width:60%;border-radius:6px;margin-bottom:8px;" class="skeleton-line"></div>
+                    <div style="height:13px;width:80%;border-radius:6px;margin-bottom:8px;" class="skeleton-line"></div>
+                    <div style="height:13px;width:50%;border-radius:6px;" class="skeleton-line"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 申请列表 -->
+        <div class="app-list" v-else-if="applications.length > 0">
+            <div
+                v-for="(app, index) in applications"
+                :key="app.id"
+                class="app-card"
+                :data-status="app.status"
+                :style="'animation-delay:' + (index * 0.05) + 's'"
+                @click="openDetail(app)">
+
+                <div class="app-pet-image">
+                    <img v-if="app.petImage" :src="app.petImage" :alt="app.petName || '宠物'" @error="e => e.target.style.display='none'">
+                    <span v-else style="font-size:36px;">🐾</span>
+                </div>
+
+                <div class="app-content">
+                    <div class="app-header">
+                        <span class="app-pet-name">{{ app.petName || '宠物 #' + app.petId }}</span>
+                        <el-tag :type="getStatusType(app.status)" size="small" style="font-weight:700;">{{ getStatusText(app.status) }}</el-tag>
+                        <el-tag v-if="app.urgencyLevel && app.urgencyLevel > 0" type="danger" size="small" effect="plain">紧急</el-tag>
+                    </div>
+                    <div class="app-meta">
+                        <span class="app-meta-item">👤 {{ app.applicantName || '申请人 #' + app.applicantId }}</span>
+                        <span class="app-meta-item">📅 {{ formatDate(app.applyDate) }}</span>
+                        <span class="app-meta-item" v-if="app.reviewTime">✅ {{ formatDate(app.reviewTime) }}</span>
+                    </div>
+                    <div class="app-reason" v-if="app.reason">💬 {{ app.reason }}</div>
+                    <div class="app-actions" @click.stop>
+                        <el-button type="text" size="small" style="color:var(--primary);font-weight:700;" @click.stop="openDetail(app)">查看详情</el-button>
+                        <template v-if="currentRole !== 'adopter' && app.status === 0">
+                            <el-button type="success" size="small" @click.stop="handleApprove(app)">通过</el-button>
+                            <el-button type="warning" size="small" @click.stop="handleNeedMore(app)">待补充</el-button>
+                            <el-button type="danger" size="small" @click.stop="handleReject(app)">拒绝</el-button>
+                        </template>
+                        <el-button v-if="app.status === 4" type="primary" size="small" @click.stop="handleSignContract(app)">签署协议</el-button>
+                        <el-tag v-if="app.status === 5" type="success" size="small" style="font-weight:700;">已完成</el-tag>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 空状态 -->
+        <div v-else class="empty-state">
+            <span class="empty-icon">📋</span>
+            <div class="title">暂无申请记录</div>
+            <div class="desc">选择其他状态标签查看，或等待新的领养申请</div>
+        </div>
+
+        <el-pagination
+            v-if="total > pageSize"
+            @current-change="handlePageChange"
+            :current-page="currentPage"
+            :page-size="pageSize"
+            layout="total, prev, pager, next"
+            :total="total"
+            style="margin-top:24px;">
+        </el-pagination>
+
+        <!-- 详情对话框（完全自建遮罩层，绕过 Element UI el-dialog/el-drawer 的 display 同步 bug） -->
+        <!-- 自定义遮罩层 -->
+        <transition name="fade-overlay">
+            <div v-if="drawerVisible" class="custom-modal-overlay" @click.self="drawerVisible = false">
+                <!-- 自定义对话框 -->
+                <transition name="slide-up-dialog">
+                    <div v-if="drawerVisible" class="custom-dialog-box" @click.stop>
+                        <div class="custom-dialog-header">
+                            <span class="custom-dialog-title">申请详情</span>
+                            <span class="custom-dialog-close" @click="drawerVisible = false">&times;</span>
+                        </div>
+                        <div class="custom-dialog-body">
+                            <div v-if="currentApp">
+                                <el-descriptions :column="1" border style="margin-bottom: 20px;">
+                                    <el-descriptions-item label="宠物名称">{{ currentApp.petName || '宠物 #' + currentApp.petId }}</el-descriptions-item>
+                                    <el-descriptions-item label="申请人">{{ currentApp.applicantName || '申请人 #' + currentApp.applicantId }}</el-descriptions-item>
+                                    <el-descriptions-item label="申请日期">{{ formatDate(currentApp.applyDate) }}</el-descriptions-item>
+                                    <el-descriptions-item label="申请状态">
+                                        <el-tag :type="getStatusType(currentApp.status)" style="font-weight:700;">{{ getStatusText(currentApp.status) }}</el-tag>
+                                    </el-descriptions-item>
+                                    <el-descriptions-item label="家庭成员">{{ currentApp.familyMembers || '-' }}</el-descriptions-item>
+                                    <el-descriptions-item label="居住条件">{{ currentApp.livingConditions || '-' }}</el-descriptions-item>
+                                    <el-descriptions-item label="工作情况">{{ currentApp.workStatus || '-' }}</el-descriptions-item>
+                                    <el-descriptions-item label="养宠经验">{{ currentApp.experience || '-' }}</el-descriptions-item>
+                                    <el-descriptions-item label="申请理由">{{ currentApp.reason || '-' }}</el-descriptions-item>
+                                    <el-descriptions-item label="审核时间" v-if="currentApp.reviewTime">{{ formatDate(currentApp.reviewTime) }}</el-descriptions-item>
+                                    <el-descriptions-item label="审核意见" v-if="currentApp.reviewComment">
+                                        <span style="color:var(--primary);">{{ currentApp.reviewComment }}</span>
+                                    </el-descriptions-item>
+                                </el-descriptions>
+
+                                <!-- 审核操作（待审核状态显示） -->
+                                <template v-if="currentRole !== 'adopter' && currentApp.status === 0">
+                                    <el-form :model="reviewForm" :rules="reviewRules" ref="reviewFormRef" label-width="90px">
+                                        <el-form-item label="审核状态" prop="status">
+                                            <el-radio-group v-model="reviewForm.status" size="small">
+                                                <el-radio :label="1" border>通过</el-radio>
+                                                <el-radio :label="2" border>拒绝</el-radio>
+                                                <el-radio :label="3" border>待补充</el-radio>
+                                            </el-radio-group>
+                                        </el-form-item>
+                                        <el-form-item label="审核意见" prop="reviewComment" :required="reviewForm.status === 2 || reviewForm.status === 3">
+                                            <el-input
+                                                v-model="reviewForm.reviewComment"
+                                                type="textarea" :rows="3"
+                                                :placeholder="getCommentPlaceholder()"
+                                                :class="{ shake: commentShake }"
+                                                @animationend="commentShake = false">
+                                            </el-input>
+                                            <div style="font-size:12px;color:var(--primary);margin-top:4px;" v-if="reviewForm.status === 2">拒绝时必须填写意见</div>
+                                            <div style="font-size:12px;color:var(--amber);margin-top:4px;" v-if="reviewForm.status === 3">请详细说明需要补充的材料</div>
+                                        </el-form-item>
+                                        <el-form-item>
+                                            <el-button class="btn-gradient" @click="handleReview" :loading="reviewLoading" style="width:100%;">提交审核</el-button>
+                                        </el-form-item>
+                                    </el-form>
+                                </template>
+
+                                <!-- 待签署：领养人签署协议 -->
+                                <template v-if="currentApp.status === 4 && currentRole === 'adopter'">
+                                    <div style="background:linear-gradient(135deg,rgba(224,122,95,0.06),rgba(244,162,97,0.06));border-radius:var(--radius-sm);padding:20px;margin-bottom:16px;border:1px solid var(--primary-light);">
+                                        <div style="font-size:16px;font-weight:700;color:var(--primary);margin-bottom:12px;">📝 领养协议签署</div>
+                                        <div style="font-size:13px;color:#606266;line-height:1.8;margin-bottom:16px;">
+                                            恭喜您通过审核！请仔细阅读以下领养协议，确认无误后点击下方"签署协议"按钮完成领养流程。
+                                        </div>
+                                        <div style="background:white;border-radius:var(--radius-sm);padding:14px;font-size:13px;color:#606266;line-height:1.8;margin-bottom:16px;">
+                                            <p style="margin:0 0 8px 0;font-weight:700;color:var(--text-dark);">《宠物领养协议》</p>
+                                            <p style="margin:0 0 6px 0;">一、领养人承诺为宠物提供安全、舒适的居住环境。</p>
+                                            <p style="margin:0 0 6px 0;">二、领养人承诺定期为宠物进行健康检查和疫苗接种。</p>
+                                            <p style="margin:0 0 6px 0;">三、领养人承诺不遗弃、不虐待宠物，如因特殊原因无法继续抚养，应及时联系救助站。</p>
+                                            <p style="margin:0;">四、领养人同意接受救助站的定期回访。</p>
+                                        </div>
+                                        <el-button class="btn-gradient" @click="confirmSignContract" :loading="signLoading" style="width:100%;">我已阅读并同意签署领养协议</el-button>
+                                    </div>
+                                </template>
+
+                                <!-- 已完成 -->
+                                <template v-if="currentApp.status === 5">
+                                    <div style="text-align:center;padding:24px 0;">
+                                        <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--sage),var(--sage-light));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 8px 24px rgba(129,178,154,0.3);">
+                                            <span style="font-size:32px;">✅</span>
+                                        </div>
+                                        <div style="font-size:18px;font-weight:700;color:var(--text-dark);margin-bottom:8px;">领养流程已完成</div>
+                                        <div style="font-size:13px;color:var(--text-muted);">恭喜您正式成为这只可爱宠物的新主人！</div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
+            </div>
+        </transition>
+    </div><!-- end #app -->
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui@2.15.13/lib/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
+<script>
+    Vue.use(ELEMENT);
+
+    axios.interceptors.request.use(config => {
+        const token = localStorage.getItem('token');
+        if (token) config.headers.Authorization = 'Bearer ' + token;
+        return config;
+    });
+    axios.interceptors.response.use(
+        response => response,
+        error => {
+            if (error.response && error.response.status === 401) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            } else if (error.response && error.response.status === 403) {
+                Vue.prototype.$message.error('无权限访问此页面');
+            }
+            return Promise.reject(error);
+        }
+    );
+
+    // 全局 Vue 错误处理：防止未捕获异常导致页面卡死
+    Vue.config.errorHandler = function(err, vm, info) {
+        console.error('Vue Error:', err, info);
+        // 不再强制操作 DOM，避免破坏 Element UI 的 drawer 状态
+    };
+
+    const ROLE_NAMES = {
+        admin: '系统管理员', adopter: '领养人',
+        volunteer: '志愿者', institution_admin: '机构管理员'
+    };
+    const getRoleName = r => ROLE_NAMES[r] || r;
+
+    new Vue({
+        el: '#app',
+        data: {
+            currentUser: {}, currentRole: '',
+            applications: [], loading: false, total: 0, currentPage: 1, pageSize: 20,
+            currentStatus: -1, drawerVisible: false, currentApp: null,
+            reviewLoading: false, signLoading: false, commentShake: false,
+            statusCounts: {},
+            reviewForm: { status: 1, reviewComment: '' },
+            reviewRules: {
+                status: [{ required: true, message: '请选择审核结果', trigger: 'change' }],
+                reviewComment: [{
+                    validator: (rule, value, callback) => {
+                        if ((this.reviewForm.status === 2 || this.reviewForm.status === 3) && !value) {
+                            callback(new Error(this.getCommentPlaceholder()));
+                        } else { callback(); }
+                    }, trigger: 'blur'
+                }]
+            },
+            statusTabs: [
+                { label: '全部', value: -1 },
+                { label: '待审核', value: 0 },
+                { label: '已通过', value: 1 },
+                { label: '已拒绝', value: 2 },
+                { label: '待补充', value: 3 },
+                { label: '待签署', value: 4 },
+                { label: '已完成', value: 5 }
+            ]
+        },
+        mounted() {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            if (!token || !userStr) {
+                window.location.href = 'login.html';
+                return;
+            }
+            try {
+                this.currentUser = JSON.parse(userStr);
+                this.currentRole = this.currentUser.role || '';
+            } catch (e) {
+                window.location.href = 'login.html';
+                return;
+            }
+            this.loadApplications();
+        },
+        methods: {
+            loadApplications() {
+                this.loading = true;
+                const params = { page: this.currentPage, pageSize: this.pageSize };
+                let apiCall;
+                if (this.currentRole === 'adopter') {
+                    // 领养人调用自己的申请列表
+                    apiCall = axios.get('/api/adoption/my-applications');
+                } else {
+                    // 管理员/机构管理员调用全部列表
+                    const url = this.currentStatus !== -1
+                        ? '/api/adoption/list/' + this.currentStatus
+                        : '/api/adoption/list';
+                    apiCall = axios.get(url, { params });
+                }
+                apiCall
+                    .then(res => {
+                        this.loading = false;
+                        if (res.data.code === 200) {
+                            this.applications = this.currentRole === 'adopter'
+                                ? (res.data.data?.applications || [])
+                                : (res.data.data?.applications || []);
+                            this.total = this.currentRole === 'adopter'
+                                ? this.applications.length
+                                : (res.data.data?.total || 0);
+                            // 仅管理员/机构管理员调用统计接口，领养人直接用当前页数据计算
+                            if (this.currentRole !== 'adopter') {
+                                this.updateCounts();
+                            } else {
+                                this.countFromCurrentPage();
+                            }
+                        } else if (res.data.code === 401) {
+                            this.$message.error('登录已过期，请重新登录');
+                            setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+                        } else {
+                            this.$message.error(res.data.message || '加载失败');
+                        }
+                    })
+                    .catch(() => { this.loading = false; });
+            },
+            updateCounts() {
+                axios.get('/api/adoption/stats/counts')
+                    .then(res => {
+                        if (res.data.code === 200) {
+                            const rawCounts = res.data.data.counts || {};
+                            const counts = {};
+                            this.statusTabs.forEach(t => {
+                                counts[t.value] = rawCounts[String(t.value)] || 0;
+                            });
+                            this.statusCounts = counts;
+                        } else {
+                            this.countFromCurrentPage();
+                        }
+                    })
+                    .catch(() => { this.countFromCurrentPage(); });
+            },
+            countFromCurrentPage() {
+                const counts = {};
+                this.statusTabs.forEach(t => { counts[t.value] = 0; });
+                this.applications.forEach(a => { if (counts[a.status] !== undefined) counts[a.status]++; });
+                this.statusCounts = counts;
+            },
+            getTabCount(value) {
+                if (value === -1) return Object.values(this.statusCounts).reduce((a, b) => a + b, 0);
+                return this.statusCounts[value] || 0;
+            },
+            switchTab(status) { this.currentStatus = status; this.currentPage = 1; this.loadApplications(); },
+            handlePageChange(page) {
+                this.currentPage = page; this.loadApplications();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            },
+            openDetail(app) {
+                // 切换到不同申请时重置表单，同一申请再次打开时保留用户已填写的内容
+                if (!this.currentApp || this.currentApp.id !== app.id) {
+                    this.reviewForm = { status: 1, reviewComment: '' };
+                }
+                this.currentApp = app;
+                this.drawerVisible = true;
+            },
+            getStatusText(status) { const map = { 0: '待审核', 1: '已通过', 2: '已拒绝', 3: '待补充', 4: '待签署', 5: '已完成' }; return map[status] || '未知'; },
+            getStatusType(status) { const map = { 0: 'warning', 1: 'success', 2: 'danger', 3: 'info', 4: 'primary', 5: 'success' }; return map[status] || 'info'; },
+            formatDate(date) {
+                if (!date) return '-';
+                if (typeof date === 'string') return date.substring(0, 10);
+                if (date.time) return new Date(date.time).toISOString().substring(0, 10);
+                return String(date).substring(0, 10);
+            },
+            handleApprove(app) {
+                // 直接提交审核（通过），无需打开抽屉确认
+                this.$confirm('确认通过该领养申请？', '审核确认', { type: 'success' })
+                    .then(() => {
+                        this.reviewLoading = true;
+                        axios.put('/api/adoption/review/' + app.id, null, { params: { status: 1, reviewComment: '材料审核通过，欢迎领养' } })
+                            .then(res => {
+                                this.reviewLoading = false;
+                                if (res.data.code === 200) {
+                                    this.$message.success('已通过审核');
+                                    this.loadApplications();
+                                } else {
+                                    this.$message.error(res.data.message || '操作失败');
+                                }
+                            })
+                            .catch(() => { this.reviewLoading = false; });
+                    })
+                    .catch(() => {});
+            },
+            handleReject(app) {
+                // 直接提交审核（拒绝），无需打开抽屉确认
+                this.$prompt('请填写拒绝原因', '确认拒绝', {
+                    type: 'warning',
+                    confirmButtonText: '确认拒绝',
+                    cancelButtonText: '取消',
+                    inputPattern: /\S+/,
+                    inputErrorMessage: '必须填写拒绝原因'
+                }).then(({ value }) => {
+                    this.reviewLoading = true;
+                    axios.put('/api/adoption/review/' + app.id, null, { params: { status: 2, reviewComment: value } })
+                        .then(res => {
+                            this.reviewLoading = false;
+                            if (res.data.code === 200) {
+                                this.$message.success('已拒绝该申请');
+                                this.loadApplications();
+                            } else {
+                                this.$message.error(res.data.message || '操作失败');
+                            }
+                        })
+                        .catch(() => { this.reviewLoading = false; });
+                }).catch(() => {});
+            },
+            handleNeedMore(app) { this.reviewForm = { status: 3, reviewComment: '' }; this.currentApp = app; this.drawerVisible = true; },
+            getCommentPlaceholder() {
+                if (this.reviewForm.status === 2) return '请填写拒绝原因（必填）';
+                if (this.reviewForm.status === 3) return '请说明需要补充的材料（必填）';
+                return '选填，可补充审核说明';
+            },
+            handleReview() {
+                if (!this.$refs.reviewFormRef) {
+                    this.$message.error('表单加载异常，请刷新页面重试');
+                    return;
+                }
+                this.$refs.reviewFormRef.validate(valid => {
+                    if (!valid) { this.commentShake = true; setTimeout(() => { this.commentShake = false; }, 400); return; }
+                    this.submitReview(this.currentApp.id);
+                });
+            },
+            submitReview(appId) {
+                this.reviewLoading = true;
+                axios.put('/api/adoption/review/' + appId, null, { params: { status: this.reviewForm.status, reviewComment: this.reviewForm.reviewComment } })
+                    .then(res => {
+                        this.reviewLoading = false;
+                        if (res.data.code === 200) {
+                            this.$message.success(res.data.message || '审核提交成功');
+                            this.drawerVisible = false;
+                            this.loadApplications();
+                        } else {
+                            this.$message.error(res.data.message || '审核失败');
+                        }
+                    })
+                    .catch(err => {
+                        this.reviewLoading = false;
+                        // 错误时保持 drawer 打开，让用户可以重新操作，不要关闭
+                        const msg = err.response?.data?.message || err.message || '网络错误，请稍后重试';
+                        this.$message.error('审核失败：' + msg);
+                    });
+            },
+            forceCloseDrawerOverlays() {
+                try {
+                    const masks = document.querySelectorAll('.el-drawer__wrapper');
+                    masks.forEach(m => m.style.display = 'none');
+                    document.body.style.overflow = '';
+                    document.body.style.paddingRight = '';
+                } catch(e) {}
+            },
+            handleSignContract(app) {
+                this.currentApp = app;
+                this.$confirm('确认签署领养协议？签署后领养流程将完成。', '签署确认', { type: 'info' })
+                    .then(() => { this.confirmSignContract(); })
+                    .catch(() => {});
+            },
+            confirmSignContract() {
+                this.signLoading = true;
+                axios.put('/api/adoption/sign/' + this.currentApp.id)
+                    .then(res => {
+                        this.signLoading = false;
+                        if (res.data.code === 200) {
+                            this.$message.success(res.data.message || '签署成功！');
+                            this.drawerVisible = false;
+                            this.loadApplications();
+                        } else { this.$message.error(res.data.message || '签署失败'); }
+                    })
+                    .catch(() => { this.signLoading = false; });
+            },
+            getRoleName,
+            logout() {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = 'login.html';
+            }
+        }
+    });
+</script>
+</body>
+</html>

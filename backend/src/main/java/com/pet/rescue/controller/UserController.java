@@ -5,6 +5,7 @@ import com.pet.rescue.service.UserService;
 import com.pet.rescue.vo.ResponseResult;
 import com.pet.rescue.security.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class UserController {
     private final UserService userService;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserController(UserService userService, BCryptPasswordEncoder passwordEncoder) {
+    public UserController(UserService userService, @Lazy BCryptPasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
     }
@@ -151,20 +152,68 @@ public class UserController {
     }
 
     /**
+     * 获取当前用户个人信息（需登录）
+     */
+    @GetMapping("/profile")
+    public ResponseResult getProfile() {
+        try {
+            User user = UserContext.getCurrentUser();
+            if (user != null) {
+                return ResponseResult.ok().data("user", user);
+            } else {
+                return ResponseResult.error("未登录");
+            }
+        } catch (Exception e) {
+            return ResponseResult.error("获取个人信息失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 更新当前用户个人信息（需登录，只能修改自己）
+     */
+    @PutMapping("/profile")
+    public ResponseResult updateProfile(@RequestBody User userUpdate) {
+        try {
+            User currentUser = UserContext.getCurrentUser();
+            if (currentUser == null) {
+                return ResponseResult.error("未登录");
+            }
+
+            // 只允许更新部分字段，防止越权
+            currentUser.setName(userUpdate.getName());
+            currentUser.setEmail(userUpdate.getEmail());
+            currentUser.setAddress(userUpdate.getAddress());
+            if (userUpdate.getAge() != null) currentUser.setAge(userUpdate.getAge());
+            if (userUpdate.getGender() != null) currentUser.setGender(userUpdate.getGender());
+            if (userUpdate.getBirthday() != null) currentUser.setBirthday(userUpdate.getBirthday());
+
+            // 密码单独处理
+            if (userUpdate.getPassword() != null && !userUpdate.getPassword().isEmpty()) {
+                currentUser.setPassword(passwordEncoder.encode(userUpdate.getPassword()));
+            }
+
+            boolean success = userService.updateById(currentUser);
+            if (success) {
+                return ResponseResult.ok("更新成功");
+            } else {
+                return ResponseResult.error("更新失败");
+            }
+        } catch (Exception e) {
+            return ResponseResult.error("更新个人信息失败：" + e.getMessage());
+        }
+    }
+
+    /**
      * 获取当前用户ID（辅助方法）
      */
     private Long getCurrentUserId() {
-        // 实际项目中应该从安全上下文中获取
-        // 这里简化处理，实际使用时需要完善
-        return UserContext.getCurrentUserId(); // 使用UserContext获取用户ID
+        return UserContext.getCurrentUserId();
     }
 
     /**
      * 获取当前用户角色（辅助方法）
      */
     private String getCurrentUserRole() {
-        // 实际项目中应该从安全上下文中获取
-        // 这里简化处理，实际使用时需要完善
-        return UserContext.getCurrentUserRole(); // 使用UserContext获取用户角色
+        return UserContext.getCurrentUserRole();
     }
 }

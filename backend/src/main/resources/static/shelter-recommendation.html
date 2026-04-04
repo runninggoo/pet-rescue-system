@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>救助站智能推荐 - 宠物救助收养系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.15.13/lib/theme-chalk/index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #E07A5F;
+            --primary-dark: #c96a50;
+            --primary-light: #f0a28a;
+            --primary-bg: rgba(224, 122, 95, 0.08);
+            --sage: #81B29A;
+            --sage-light: #a8cdb8;
+            --amber: #F4A261;
+            --warm-white: #FDF6F0;
+            --warm-cream: #FAEEE7;
+            --warm-gray: #f0ebe7;
+            --warm-gray2: #ede6df;
+            --text-dark: #3D405B;
+            --text-muted: #8A8EA0;
+            --bg: var(--warm-white);
+            --card-shadow: 0 4px 20px rgba(224, 122, 95, 0.1);
+            --card-shadow-hover: 0 12px 40px rgba(224, 122, 95, 0.2);
+            --shadow: 0 4px 20px rgba(224, 122, 95, 0.1);
+            --shadow-hover: 0 12px 40px rgba(224, 122, 95, 0.2);
+            --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius: 20px;
+            --radius-sm: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Nunito", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: var(--bg);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--warm-gray);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-light);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        /* Element UI overrides */
+        .el-button--primary { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; }
+        .el-button--primary:hover { background-color: var(--primary-dark) !important; border-color: var(--primary-dark) !important; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(224,122,95,0.3); }
+        .el-button--success { background-color: var(--sage) !important; border-color: var(--sage) !important; border-radius: var(--radius-sm) !important; }
+        .el-button--warning { background-color: var(--amber) !important; border-color: var(--amber) !important; border-radius: var(--radius-sm) !important; }
+        .el-button { border-radius: var(--radius-sm) !important; transition: var(--transition) !important; }
+        .el-input__inner:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(224,122,95,0.12) !important; }
+        .el-pager li.active { background-color: var(--primary) !important; color: white !important; border-radius: 50% !important; }
+        .el-pagination .el-pager li { border-radius: 50% !important; }
+        .el-pagination .el-pager li:hover { color: var(--primary) !important; }
+        .el-loading-mask { background: rgba(253,246,240,0.9) !important; }
+        .el-tag { border-radius: 20px !important; }
+
+        /* Paw background SVG */
+        .page-bg-paws {
+            position: fixed; inset: 0; pointer-events: none; z-index: 0;
+            background: linear-gradient(180deg, var(--warm-white) 0%, var(--warm-cream) 100%);
+        }
+        .page-bg-paws svg { position: absolute; fill: var(--primary); opacity: 0.04; }
+
+        /* Paw floating animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        @keyframes fadeSlideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes cardEnter {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation: fadeSlideDown 0.5s ease-out;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: white;
+            text-decoration: none;
+        }
+
+        .logo i {
+            font-size: 2rem;
+        }
+
+        .logo-text h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .logo-text span {
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        .nav {
+            display: flex;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .nav-user-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 1rem;
+            border-radius: var(--radius-sm);
+            background: rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+        .nav-user-chip:hover { background: rgba(255, 255, 255, 0.25); color: white; }
+        .role-badge {
+            padding: 1px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        .role-badge-admin { background: #fef0ee; color: var(--primary); }
+        .role-badge-adopter { background: #e8f5e9; color: #2e7d32; }
+        .role-badge-volunteer { background: #fff8e1; color: #f57f17; }
+        .role-badge-institution_admin { background: #e3f2fd; color: #1565c0; }
+        .role-badge-hospital { background: #f3e5f5; color: #7b1fa2; }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeSlideDown 0.6s ease-out;
+        }
+
+        .page-title h2 {
+            font-size: 2rem;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-title p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            animation: fadeSlideDown 0.5s ease-out;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title i {
+            color: var(--primary);
+        }
+
+        .algorithm-section {
+            background: linear-gradient(135deg, var(--primary-bg) 0%, var(--warm-cream) 100%);
+            border-left: 4px solid var(--primary);
+        }
+
+        .algorithm-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .algorithm-item {
+            background: white;
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .algorithm-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .algorithm-icon i {
+            color: var(--primary);
+            font-size: 1rem;
+        }
+
+        .algorithm-text h4 {
+            font-size: 0.9375rem;
+            color: var(--text-dark);
+            margin-bottom: 0.25rem;
+        }
+
+        .algorithm-text p {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .location-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .location-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .coords-display {
+            flex: 1;
+            min-width: 200px;
+            background: var(--warm-gray);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-sm);
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .coords-display.empty {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .location-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            width: 100%;
+        }
+
+        .location-source {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8125rem;
+            color: var(--primary);
+            font-weight: 500;
+            padding: 0.25rem 0.75rem;
+            background: var(--primary-light);
+            border-radius: 50px;
+            width: fit-content;
+        }
+
+        .location-source i {
+            color: var(--primary);
+        }
+
+        .source-accuracy {
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .test-location-dropdown {
+            position: relative;
+        }
+
+        .dropdown-arrow {
+            font-size: 0.625rem;
+            transition: transform 0.2s ease;
+            margin-left: 0.25rem;
+        }
+
+        .dropdown-arrow.open {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            min-width: 220px;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            border: 1px solid var(--gray-lighter);
+            z-index: 200;
+            overflow: hidden;
+            animation: fadeSlideDown 0.2s ease-out;
+        }
+
+        .dropdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: background 0.15s ease;
+            border-bottom: 1px solid var(--gray-lighter);
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: var(--primary-light);
+        }
+
+        .loc-name {
+            font-size: 0.875rem;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .loc-district {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            background: var(--warm-gray);
+            padding: 1px 8px;
+            border-radius: 10px;
+        }
+
+        .shelter-description {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            background: var(--warm-gray);
+            border-radius: var(--radius-sm);
+            padding: 0.625rem 0.875rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .shelter-description i {
+            color: var(--primary);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.9375rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 144, 217, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--warm-gray);
+            color: var(--text-muted);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--warm-gray);
+        }
+
+        .btn-success {
+            background: var(--sage);
+            color: white;
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: #5DAF34;
+            transform: translateY(-2px);
+        }
+
+        .filter-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-size: 0.9375rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .filter-pills {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-pill {
+            padding: 0.5rem 1.25rem;
+            border: 2px solid var(--gray-lighter);
+            border-radius: 50px;
+            background: white;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-pill:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .filter-pill.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .results-count {
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        .results-count strong {
+            color: var(--primary);
+        }
+
+        .shelter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .shelter-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: var(--transition);
+            animation: cardEnter 0.5s ease-out backwards;
+        }
+
+        .shelter-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .shelter-card-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 1.25rem;
+            color: white;
+        }
+
+        .shelter-card-header h3 {
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .shelter-card-header p {
+            font-size: 0.8125rem;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .shelter-card-body {
+            padding: 1.25rem;
+        }
+
+        .shelter-score-section {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.25rem;
+            align-items: center;
+        }
+
+        .score-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-weight: 700;
+            animation: bounceIn 0.6s ease-out;
+        }
+
+        .score-circle.excellent {
+            background: linear-gradient(135deg, var(--sage) 0%, var(--sage-light) 100%);
+            color: white;
+        }
+
+        .score-circle.good {
+            background: linear-gradient(135deg, var(--amber) 0%, #e8941c 100%);
+            color: white;
+        }
+
+        .score-circle.fair {
+            background: linear-gradient(135deg, #F56C6C 0%, #E04040 100%);
+            color: white;
+        }
+
+        .score-circle.poor {
+            background: linear-gradient(135deg, #909399 0%, #606266 100%);
+            color: white;
+        }
+
+        .score-number {
+            font-size: 2rem;
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 0.6875rem;
+            opacity: 0.9;
+            margin-top: 0.25rem;
+        }
+
+        .rank-badge {
+            background: var(--amber);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        .score-breakdown {
+            flex: 1;
+        }
+
+        .breakdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .breakdown-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .breakdown-label {
+            font-size: 0.8125rem;
+            color: var(--text-muted);
+            width: 70px;
+            flex-shrink: 0;
+        }
+
+        .breakdown-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--warm-gray);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .breakdown-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.8s ease-out;
+        }
+
+        .breakdown-fill.distance {
+            background: var(--primary);
+        }
+
+        .breakdown-fill.capacity {
+            background: var(--sage);
+        }
+
+        .breakdown-fill.medical {
+            background: var(--amber);
+        }
+
+        .breakdown-value {
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            width: 40px;
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        .shelter-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .info-item i {
+            color: var(--primary);
+            width: 20px;
+            text-align: center;
+        }
+
+        .info-item span {
+            color: var(--text-muted);
+        }
+
+        .shelter-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            flex: 1;
+            min-width: 80px;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--gray-lighter);
+            border-radius: var(--radius-sm);
+            background: white;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.375rem;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .action-btn i {
+            font-size: 0.875rem;
+        }
+
+        .skeleton-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .skeleton-header {
+            background: linear-gradient(90deg, var(--gray-lighter) 25%, var(--gray-lighter) 50%, var(--gray-lighter) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            padding: 1.25rem;
+            color: transparent;
+        }
+
+        .skeleton-body {
+            padding: 1.25rem;
+        }
+
+        .skeleton-line {
+            background: linear-gradient(90deg, var(--gray-lighter) 25%, #f0f0f0 50%, var(--gray-lighter) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 4px;
+            margin-bottom: 0.75rem;
+            color: transparent;
+        }
+
+        .skeleton-line:last-child {
+            margin-bottom: 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            animation: fadeSlideDown 0.5s ease-out;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--gray-light);
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: var(--text-muted);
+            font-size: 0.9375rem;
+        }
+
+        .error-state {
+            text-align: center;
+            padding: 2rem;
+            background: #FEF0F0;
+            border-radius: var(--radius);
+            border: 1px solid #fde2e2;
+        }
+
+        .error-state i {
+            font-size: 2.5rem;
+            color: #F56C6C;
+            margin-bottom: 1rem;
+        }
+
+        .error-state h3 {
+            color: #F56C6C;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-state p {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .spinner-dark {
+            border-color: rgba(74, 144, 217, 0.3);
+            border-top-color: var(--primary);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading-overlay .spinner {
+            width: 50px;
+            height: 50px;
+            border-width: 4px;
+        }
+
+        .loading-text {
+            margin-top: 1rem;
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        .footer {
+            background: var(--text-dark);
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 3rem;
+        }
+
+        .footer p {
+            font-size: 0.875rem;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-sm);
+            color: white;
+            font-size: 0.9375rem;
+            z-index: 9999;
+            animation: fadeSlideDown 0.3s ease-out;
+        }
+
+        .toast.error {
+            background: #F56C6C;
+        }
+
+        .toast.success {
+            background: var(--sage);
+        }
+
+        .toast.info {
+            background: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav {
+                width: 100%;
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+            }
+
+            .nav-link {
+                white-space: nowrap;
+            }
+
+            .main-container {
+                padding: 1rem;
+            }
+
+            .page-title h2 {
+                font-size: 1.5rem;
+            }
+
+            .shelter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .shelter-score-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .score-circle {
+                margin: 0 auto 1rem;
+            }
+
+            .shelter-info {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-pills {
+                width: 100%;
+            }
+
+            .filter-pill {
+                flex: 1;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .btn-group {
+                width: 100%;
+            }
+
+            .btn {
+                flex: 1;
+            }
+
+            .algorithm-content {
+                grid-template-columns: 1fr;
+            }
+
+            .location-info {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .coords-display {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 爪印背景 -->
+    <div class="page-bg-paws">
+        <svg style="top:5%;left:6%;width:60px;transform:rotate(-15deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        <svg style="top:25%;right:8%;width:48px;transform:rotate(20deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        <svg style="bottom:10%;left:10%;width:56px;transform:rotate(-8deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        <svg style="bottom:20%;right:15%;width:44px;transform:rotate(18deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+    </div>
+    <div id="app">
+        <header class="header">
+            <div class="header-content">
+                <a href="pet-list.html" class="logo">
+                    <i class="fas fa-paw"></i>
+                    <div class="logo-text">
+                        <h1>宠物救助收养系统</h1>
+                        <span>智能推荐 · 温暖相伴</span>
+                    </div>
+                </a>
+                <nav class="nav">
+                    <a href="pet-list.html" class="nav-link" :class="{ 'active': currentPage === 'pets' }">
+                        <i class="fas fa-list"></i> 宠物列表
+                    </a>
+                    <a href="shelter-recommendation.html" class="nav-link active">
+                        <i class="fas fa-map-marker-alt"></i> 救助站推荐
+                    </a>
+                    <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="health-record.html" class="nav-link">
+                        <i class="fas fa-heartbeat"></i> 健康档案
+                    </a>
+                    <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="volunteer-task.html" class="nav-link">
+                        <i class="fas fa-hands-helping"></i> 任务管理
+                    </a>
+                    <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="adoption-list.html" class="nav-link">
+                        <i class="fas fa-file-alt"></i> 领养审核
+                    </a>
+                    <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="stats.html" class="nav-link">
+                        <i class="fas fa-chart-bar"></i> 数据统计
+                    </a>
+                    <a v-if="currentRole === 'admin'" href="user-management.html" class="nav-link">
+                        <i class="fas fa-users"></i> 用户管理
+                    </a>
+                    <span v-if="isLoggedIn" class="nav-user-chip" @click="logout">
+                        <i class="fas fa-user-circle"></i>
+                        {{ currentUser.name || '用户' }}
+                        <span class="role-badge" :class="'role-badge-' + currentRole">{{ getRoleName(currentRole) }}</span>
+                    </span>
+                    <a v-else href="login.html" class="nav-link">
+                        <i class="fas fa-sign-in-alt"></i> 登录
+                    </a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="main-container">
+            <div class="page-title">
+                <h2>
+                    <i class="fas fa-map-marker-alt" style="color: var(--primary); margin-right: 0.5rem;"></i>
+                    救助站智能推荐
+                </h2>
+                <p>基于位置距离、容量负荷、医疗条件的综合评分推荐</p>
+            </div>
+
+            <div class="card algorithm-section">
+                <div class="card-title">
+                    <i class="fas fa-brain"></i>
+                    推荐算法说明
+                </div>
+                <div class="algorithm-content">
+                    <div class="algorithm-item">
+                        <div class="algorithm-icon">
+                            <i class="fas fa-route"></i>
+                        </div>
+                        <div class="algorithm-text">
+                            <h4>距离评分 (40%)</h4>
+                            <p>根据当前位置到救助站的直线距离计算，距离越近分数越高</p>
+                        </div>
+                    </div>
+                    <div class="algorithm-item">
+                        <div class="algorithm-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="algorithm-text">
+                            <h4>容量评分 (30%)</h4>
+                            <p>考虑救助站当前容量负荷，空余位置越多分数越高</p>
+                        </div>
+                    </div>
+                    <div class="algorithm-item">
+                        <div class="algorithm-icon">
+                            <i class="fas fa-hospital"></i>
+                        </div>
+                        <div class="algorithm-text">
+                            <h4>医疗评分 (30%)</h4>
+                            <p>评估救助站的医疗设施等级和健康档案完善程度</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-map-marked-alt"></i>
+                    当前位置设置
+                </div>
+                <div class="location-section">
+                    <div class="location-info">
+                        <div class="coords-display" :class="{ empty: !locationText }">
+                            <i class="fas fa-crosshairs"></i>
+                            {{ locationText || '点击下方按钮获取位置或使用测试位置' }}
+                        </div>
+                    </div>
+                    <div class="location-controls">
+                        <div class="location-source" v-if="locationSource">
+                            <i class="fas fa-satellite-dish"></i>
+                            <span>{{ locationSource }}</span>
+                            <span class="source-accuracy" v-if="locationAccuracy">（精度约{{ locationAccuracy }}）</span>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-primary" @click="getUserLocation" :disabled="loadingLocation">
+                                <span v-if="loadingLocation" class="spinner"></span>
+                                <i v-else class="fas fa-crosshairs"></i>
+                                {{ loadingLocation ? '定位中...' : '自动定位' }}
+                            </button>
+                            <div class="test-location-dropdown">
+                                <button class="btn btn-secondary" @click="toggleTestDropdown" :disabled="loadingLocation">
+                                    <i class="fas fa-flask"></i>
+                                    测试位置
+                                    <i class="fas fa-chevron-down dropdown-arrow" :class="{ open: showTestDropdown }"></i>
+                                </button>
+                                <div class="dropdown-menu" v-if="showTestDropdown">
+                                    <div class="dropdown-item" v-for="loc in testLocations" :key="loc.name"
+                                         @click="setTestLocation(loc)">
+                                        <span class="loc-name">{{ loc.name }}</span>
+                                        <span class="loc-district">{{ loc.district }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">
+                    <i class="fas fa-filter"></i>
+                    筛选条件
+                </div>
+                <div class="filter-section">
+                    <span class="filter-label">最大距离：</span>
+                    <div class="filter-pills">
+                        <button 
+                            v-for="dist in distanceOptions" 
+                            :key="dist.value"
+                            class="filter-pill"
+                            :class="{ active: maxDistance === dist.value }"
+                            @click="setDistance(dist.value)"
+                        >
+                            {{ dist.label }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="results-header">
+                    <div class="card-title" style="margin-bottom: 0;">
+                        <i class="fas fa-list-ol"></i>
+                        推荐结果
+                    </div>
+                    <div class="results-count" v-if="!loading && results.length > 0">
+                        共找到 <strong>{{ results.length }}</strong> 家符合条件的救助站
+                    </div>
+                </div>
+
+                <div v-if="error" class="error-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>出错了</h3>
+                    <p>{{ error }}</p>
+                    <button class="btn btn-primary" @click="search">
+                        <i class="fas fa-redo"></i>
+                        重试
+                    </button>
+                </div>
+
+                <div v-else-if="loading" class="shelter-grid">
+                    <div v-for="n in 3" :key="n" class="skeleton-card">
+                        <div class="skeleton-header">加载中...</div>
+                        <div class="skeleton-body">
+                            <div class="skeleton-line" style="width: 60%; height: 20px;">占位</div>
+                            <div class="skeleton-line" style="width: 80%;">占位</div>
+                            <div class="skeleton-line" style="width: 70%;">占位</div>
+                            <div class="skeleton-line" style="width: 90%;">占位</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-else-if="results.length === 0 && hasSearched" class="empty-state">
+                    <i class="fas fa-search"></i>
+                    <h3>未找到符合条件的救助站</h3>
+                    <p>请尝试扩大搜索范围或调整筛选条件</p>
+                </div>
+
+                <div v-else-if="results.length === 0 && !hasSearched" class="empty-state">
+                    <i class="fas fa-hand-pointer"></i>
+                    <h3>开始搜索</h3>
+                    <p>请先设置您的位置，系统将为您推荐最近的救助站</p>
+                </div>
+
+                <div v-else class="shelter-grid">
+                    <div 
+                        v-for="(shelter, index) in results" 
+                        :key="shelter.shelterId"
+                        class="shelter-card"
+                        :style="{ animationDelay: (index * 0.1) + 's' }"
+                    >
+                        <div class="shelter-card-header">
+                            <h3>
+                                <i class="fas fa-shelter-housing"></i>
+                                {{ shelter.name || shelter.shelterName }}
+                            </h3>
+                            <p>
+                                <i class="fas fa-map-pin"></i>
+                                {{ shelter.address || '地址未知' }}
+                            </p>
+                        </div>
+                        <div class="shelter-card-body">
+                            <div class="shelter-score-section">
+                                <div class="score-circle" :class="getScoreClass(shelter.totalScore)">
+                                    <span class="score-number">{{ shelter.totalScore || 0 }}</span>
+                                    <span class="score-label">综合评分</span>
+                                </div>
+                                <div class="score-breakdown">
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">距离</span>
+                                        <div class="breakdown-bar">
+                                            <div class="breakdown-fill distance" :style="{ width: (shelter.distanceScore || 0) + '%' }"></div>
+                                        </div>
+                                        <span class="breakdown-value">{{ shelter.distanceScore || 0 }}</span>
+                                    </div>
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">容量</span>
+                                        <div class="breakdown-bar">
+                                            <div class="breakdown-fill capacity" :style="{ width: (shelter.capacityScore || 0) + '%' }"></div>
+                                        </div>
+                                        <span class="breakdown-value">{{ shelter.capacityScore || 0 }}</span>
+                                    </div>
+                                    <div class="breakdown-item">
+                                        <span class="breakdown-label">医疗</span>
+                                        <div class="breakdown-bar">
+                                            <div class="breakdown-fill medical" :style="{ width: (shelter.medicalScore || 0) + '%' }"></div>
+                                        </div>
+                                        <span class="breakdown-value">{{ shelter.medicalScore || 0 }}</span>
+                                    </div>
+                                </div>
+                                <div class="rank-badge">
+                                    <i class="fas fa-trophy"></i>
+                                    第{{ index + 1 }}名
+                                </div>
+                            </div>
+
+                            <div class="shelter-info">
+                                <div class="info-item">
+                                    <i class="fas fa-ruler-combined"></i>
+                                    <span>{{ shelter.distance ? shelter.distance.toFixed(1) : '--' }} km</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-bed"></i>
+                                    <span>剩余 {{ shelter.remainingCapacity || 0 }} 位 ({{ shelter.remainingCapacityPercent || 0 }}%)</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-hospital-alt"></i>
+                                    <span>医疗等级 {{ shelter.medicalLevel || 1 }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-paw"></i>
+                                    <span>共 {{ shelter.maxCapacity || 0 }} 位</span>
+                                </div>
+                            </div>
+
+                            <div class="shelter-description" v-if="shelter.description">
+                                <i class="fas fa-info-circle"></i>
+                                {{ shelter.description }}
+                            </div>
+
+                            <div class="shelter-actions">
+                                <a
+                                    :href="shelter.amapUrl || getGaodeUrl(shelter)"
+                                    target="_blank"
+                                    class="action-btn"
+                                >
+                                    <i class="fas fa-directions"></i>
+                                    高德导航
+                                </a>
+                                <a
+                                    :href="shelter.baiduUrl || getBaiduUrl(shelter)"
+                                    target="_blank"
+                                    class="action-btn"
+                                >
+                                    <i class="fas fa-location-arrow"></i>
+                                    百度导航
+                                </a>
+                                <a
+                                    v-if="shelter.phone"
+                                    :href="'tel:' + shelter.phone"
+                                    class="action-btn"
+                                >
+                                    <i class="fas fa-phone"></i>
+                                    拨打电话
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2026 宠物救助收养系统 · 用爱守护每一个生命</p>
+        </footer>
+
+        <div v-if="toast.show" class="toast" :class="toast.type">
+            {{ toast.message }}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.4.0/dist/axios.min.js"></script>
+    <script>
+        // 安全 localStorage 封装，防止 Tracking Prevention 抛出异常导致页面崩溃
+        const $ls = {
+            get: (key) => { try { return localStorage.getItem(key); } catch (e) { return null; } },
+            set: (key, val) => { try { localStorage.setItem(key, val); } catch (e) { /* storage blocked */ } },
+            rm: (key) => { try { localStorage.removeItem(key); } catch (e) { /* storage blocked */ } }
+        };
+
+        console.log('[DEBUG] Script tags loaded. Vue:', typeof Vue !== 'undefined' ? Vue.version : 'MISSING');
+        console.log('[DEBUG] axios:', typeof axios !== 'undefined' ? 'OK' : 'MISSING');
+        axios.interceptors.request.use(config => {
+            const token = $ls.get('token');
+            if (token) {
+                config.headers.Authorization = 'Bearer ' + token;
+            }
+            return config;
+        });
+        axios.interceptors.response.use(
+            response => {
+                console.log('[DEBUG] API response:', response.config.url, response.status);
+                return response;
+            },
+            error => {
+                console.log('[DEBUG] API error:', error.config?.url, error.response?.status, error.message);
+                if (error.response && error.response.status === 401) {
+                    $ls.rm('token');
+                    $ls.rm('user');
+                    console.log('[DEBUG] 401 detected, redirecting to login...');
+                    window.location.href = 'login.html';
+                }
+                return Promise.reject(error);
+            }
+        );
+
+        // 上海大致经纬度范围，用于判断坐标是否在合理范围
+        function isCoordinateInShanghai(lat, lon) {
+            return lat >= 30.7 && lat <= 31.5 && lon >= 120.8 && lon <= 122.0;
+        }
+
+        console.log('[DEBUG] Vue init start...');
+        new Vue({
+            el: '#app',
+            data() {
+                console.log('[DEBUG] Vue data() called');
+                return {
+                    currentUser: {},
+                    currentRole: '',
+                    currentPage: 'shelter',
+                    latitude: null,
+                    longitude: null,
+                    locationSource: '',
+                    locationAccuracy: '',
+                    maxDistance: 10,
+                    needCapacity: true,
+                    loadingLocation: false,
+                    loading: false,
+                results: [],
+                hasSearched: false,
+                error: null,
+                showTestDropdown: false,
+                _mounted: false, // 调试用
+                toast: {
+                    show: false,
+                    message: '',
+                    type: 'info'
+                },
+                    distanceOptions: [
+                        { label: '3km', value: 3 },
+                        { label: '5km', value: 5 },
+                        { label: '10km', value: 10 },
+                        { label: '20km', value: 20 }
+                    ],
+                    testLocations: [
+                        { name: '陆家嘴金融中心', lon: 121.4998, lat: 31.2397, district: '浦东新区' },
+                        { name: '徐家汇商圈', lon: 121.4333, lat: 31.2000, district: '徐汇区' },
+                        { name: '人民广场', lon: 121.4800, lat: 31.2300, district: '黄浦区' },
+                        { name: '五角场商圈', lon: 121.5180, lat: 31.3000, district: '杨浦区' },
+                        { name: '虹桥机场', lon: 121.3350, lat: 31.1980, district: '长宁区' },
+                        { name: '松江大学城', lon: 121.2280, lat: 31.0300, district: '松江区' },
+                        { name: '嘉定新城', lon: 121.1500, lat: 31.4000, district: '嘉定区' },
+                        { name: '青浦新城', lon: 121.1200, lat: 31.1500, district: '青浦区' },
+                        { name: '奉贤海湾', lon: 121.5500, lat: 30.8800, district: '奉贤区' },
+                        { name: '崇明城桥', lon: 121.4100, lat: 31.6200, district: '崇明区' }
+                    ]
+                };
+            },
+            computed: {
+                locationText() {
+                    if (this.latitude && this.longitude) {
+                        return `经度: ${this.longitude.toFixed(6)}, 纬度: ${this.latitude.toFixed(6)}`;
+                    }
+                    return '';
+                },
+                isLoggedIn() {
+                    return !!$ls.get('token');
+                }
+            },
+            methods: {
+                showToast(message, type = 'info') {
+                    this.toast.message = message;
+                    this.toast.type = type;
+                    this.toast.show = true;
+                    setTimeout(() => {
+                        this.toast.show = false;
+                    }, 3000);
+                },
+                toggleTestDropdown() {
+                    this.showTestDropdown = !this.showTestDropdown;
+                },
+                getUserLocation() {
+                    this.loadingLocation = true;
+                    this.showTestDropdown = false;
+                    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+                    if (isMobile) {
+                        this.getLocationByGPS().then(loc => {
+                            this.applyLocation(loc, 'GPS定位', loc.accuracy ? loc.accuracy.toFixed(0) + 'm' : null);
+                        }).catch(() => {
+                            this.getLocationByIP().then(loc => {
+                                this.applyLocation(loc, 'IP定位', '约3-5km');
+                            }).catch(() => {
+                                this.loadingLocation = false;
+                                this.showToast('无法获取位置，请使用测试位置或允许定位权限', 'error');
+                            });
+                        });
+                    } else {
+                        this.getLocationByIP().then(loc => {
+                            this.applyLocation(loc, 'IP定位', '约3-5km');
+                        }).catch(() => {
+                            if (navigator.geolocation) {
+                                this.getLocationByGPS().then(loc => {
+                                    this.applyLocation(loc, 'GPS定位', loc.accuracy ? loc.accuracy.toFixed(0) + 'm' : null);
+                                }).catch(() => {
+                                    this.loadingLocation = false;
+                                    this.showToast('IP定位失败且GPS不可用，请使用测试位置', 'error');
+                                });
+                            } else {
+                                this.loadingLocation = false;
+                                this.showToast('浏览器不支持定位，请使用测试位置', 'error');
+                            }
+                        });
+                    }
+                },
+                getLocationByIP() {
+                    return fetch('https://ipapi.co/json/?fields=latitude,longitude,city,country_name')
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.latitude && data.longitude) {
+                                return {
+                                    lat: data.latitude,
+                                    lon: data.longitude,
+                                    city: data.city || '',
+                                    country: data.country_name || ''
+                                };
+                            }
+                            throw new Error('IP定位失败');
+                        });
+                },
+                getLocationByGPS() {
+                    return new Promise((resolve, reject) => {
+                        if (!navigator.geolocation) {
+                            reject(new Error('浏览器不支持GPS'));
+                            return;
+                        }
+                        navigator.geolocation.getCurrentPosition(
+                            pos => resolve({
+                                lat: pos.coords.latitude,
+                                lon: pos.coords.longitude,
+                                accuracy: pos.coords.accuracy
+                            }),
+                            err => reject(err),
+                            { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+                        );
+                    });
+                },
+                applyLocation(loc, source, accuracy) {
+                    this.latitude = loc.lat;
+                    this.longitude = loc.lon;
+                    this.locationSource = source + (loc.city ? ' · ' + loc.city : '');
+                    this.locationAccuracy = accuracy;
+                    this.loadingLocation = false;
+                    $ls.set('userLatitude', loc.lat);
+                    $ls.set('userLongitude', loc.lon);
+                    $ls.set('locationSource', source);
+                    this.showToast(source + '成功' + (accuracy ? '（精度' + accuracy + '）' : '') + '，正在搜索附近救助站...', 'success');
+                    this.search();
+                },
+                setTestLocation(loc) {
+                    this.showTestDropdown = false;
+                    this.latitude = loc.lat;
+                    this.longitude = loc.lon;
+                    this.locationSource = '测试位置 · ' + loc.district;
+                    this.locationAccuracy = null;
+                    this.showToast('已设置为「' + loc.name + '」（' + loc.district + '）', 'info');
+                    this.search();
+                },
+                setDistance(distance) {
+                    this.maxDistance = distance;
+                    if (this.latitude && this.longitude) {
+                        this.search();
+                    }
+                },
+                async search() {
+                    console.log('[DEBUG] search() called. lat:', this.latitude, 'lon:', this.longitude);
+                    if (!this.latitude || !this.longitude) {
+                        this.showToast('请先设置您的位置', 'info');
+                        return;
+                    }
+                    this.loading = true;
+                    this.error = null;
+                    this.hasSearched = true;
+                    try {
+                        console.log('[DEBUG] Calling API...');
+                        const response = await axios.post('/api/shelter-recommendation/recommend', {
+                            latitude: this.latitude,
+                            longitude: this.longitude,
+                            maxDistance: this.maxDistance,
+                            needCapacity: this.needCapacity,
+                            limit: 10
+                        });
+                        console.log('[DEBUG] API response received:', response.status, typeof response.data);
+
+                        // 健壮的数据提取（支持多种响应格式）
+                        let rawData = null;
+                        const data = response.data;
+                        if (data !== undefined && data !== null) {
+                            if (data.code === 200 && data.data) {
+                                rawData = data.data;
+                            } else if (data.code === undefined && data.data) {
+                                rawData = data.data;
+                            } else if (Array.isArray(data)) {
+                                rawData = data;
+                            }
+                        }
+                        console.log('[DEBUG] rawData type:', typeof rawData, rawData === null ? 'NULL' : Array.isArray(rawData) ? 'Array' : typeof rawData === 'object' ? 'Object with keys: ' + Object.keys(rawData).join(',') : rawData);
+
+                        // 提取推荐列表
+                        let list = null;
+                        if (rawData && typeof rawData === 'object' && 'data' in rawData) {
+                            list = rawData.data;
+                        } else if (Array.isArray(rawData)) {
+                            list = rawData;
+                        }
+                        console.log('[DEBUG] list type:', list === null ? 'NULL' : Array.isArray(list) ? 'Array len=' + list.length : typeof list);
+
+                        if (Array.isArray(list) && list.length > 0) {
+                            this.results = list.filter(item => item !== null && item !== undefined);
+                            console.log('[DEBUG] results set:', this.results.length, 'items');
+                        } else {
+                            this.results = [];
+                            console.log('[DEBUG] results set to empty');
+                        }
+                    } catch (err) {
+                        console.error('[DEBUG] API Error:', err.message, 'status:', err.response?.status);
+                        console.error('[DEBUG] Error data:', err.response?.data);
+                        this.error = err.response?.data?.message || err.message || '服务器错误，请稍后重试';
+                        this.results = [];
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                getScoreClass(score) {
+                    if (score >= 80) return 'excellent';
+                    if (score >= 60) return 'good';
+                    if (score >= 40) return 'fair';
+                    return 'poor';
+                },
+                getGaodeUrl(shelter) {
+                    if (!shelter.latitude || !shelter.longitude) return '#';
+                    return `https://restapi.amap.com/navi/direction?origin=${this.longitude},${this.latitude}&destination=${shelter.longitude},${shelter.latitude}&key=YOUR_AMAP_KEY`;
+                },
+                getBaiduUrl(shelter) {
+                    if (!shelter.latitude || !shelter.longitude) return '#';
+                    return `https://api.map.baidu.com/direction?origin=latlng:${this.latitude},${this.longitude}|name:我的位置&destination=latlng:${shelter.latitude},${shelter.longitude}|name:${encodeURIComponent(shelter.shelterName)}&mode=driving&output=html`;
+                },
+                getRoleName(role) {
+                    const map = { admin: '管理员', adopter: '领养人', volunteer: '志愿者', institution_admin: '机构管理员', hospital: '宠物医院' };
+                    return map[role] || role || '用户';
+                },
+                logout() {
+                    $ls.rm('token');
+                    $ls.rm('user');
+                    window.location.href = 'login.html';
+                }
+            },
+            updated() {
+                console.log('[DEBUG-VUE] updated() called. results length:', this.results.length, '| loading:', this.loading, '| error:', this.error);
+                // 如果有结果但 DOM 里没卡片，说明被外力删除了
+                if (this.results.length > 0 && !this.loading && !this.error) {
+                    const domCards = document.querySelectorAll('.shelter-card');
+                    if (domCards.length === 0) {
+                        console.error('[DEBUG-VUE] CRITICAL: results=' + this.results.length + ' but 0 cards in DOM!');
+                    }
+                }
+            },
+            beforeDestroy() {
+                console.log('[DEBUG-VUE] beforeDestroy() called - Vue instance is being destroyed!');
+            },
+            destroyed() {
+                console.log('[DEBUG-VUE] destroyed() called - Vue instance destroyed!');
+            },
+            mounted() {
+                console.log('[DEBUG] mounted() called');
+                // 监听 #app 的 DOM 变化，追踪是谁删除了卡片
+                const appEl = document.querySelector('#app');
+                if (appEl && !window.__domObserver) {
+                    window.__domObserver = new MutationObserver((mutations) => {
+                        for (const mut of mutations) {
+                            if (mut.type === 'childList' && mut.removedNodes.length > 0) {
+                                for (const node of mut.removedNodes) {
+                                    if (node.classList && (node.classList.contains('shelter-card') || node.classList.contains('shelter-grid'))) {
+                                        console.error('[DEBUG-VUE] DOM REMOVED by external:', node.classList.toString(), 'at', new Date().toISOString());
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    window.__domObserver.observe(appEl, { childList: true, subtree: true });
+                    console.log('[DEBUG] MutationObserver started on #app');
+                }
+                // 初始化当前用户信息
+                const userStr = $ls.get('user');
+                if (userStr) {
+                    try {
+                        this.currentUser = JSON.parse(userStr);
+                        this.currentRole = this.currentUser.role || '';
+                        console.log('[DEBUG] user loaded:', this.currentRole);
+                    } catch (e) { console.log('[DEBUG] user parse error:', e.message); }
+                }
+                const savedLat = $ls.get('userLatitude');
+                const savedLon = $ls.get('userLongitude');
+                if (savedLat && savedLon) {
+                    const lat = parseFloat(savedLat);
+                    const lon = parseFloat(savedLon);
+                    if (!isCoordinateInShanghai(lat, lon)) {
+                        console.log('[DEBUG] Saved location not in Shanghai, clearing and re-locating...');
+                        $ls.rm('userLatitude');
+                        $ls.rm('userLongitude');
+                        $ls.rm('locationSource');
+                        this.getUserLocation();
+                    } else {
+                        this.latitude = lat;
+                        this.longitude = lon;
+                        const savedSource = $ls.get('locationSource');
+                        this.locationSource = savedSource ? savedSource + '（已恢复）' : '上次位置（已恢复）';
+                        console.log('[DEBUG] Calling search from mounted (restored location)');
+                        this.search();
+                    }
+                } else {
+                    console.log('[DEBUG] No saved location, auto-locating...');
+                    this.getUserLocation();
+                }
+                // 标记 Vue 已完成初始化（防止追踪保护导致初始化过程中途崩溃）
+                this._mounted = true;
+                console.log('[DEBUG] Vue fully mounted, _mounted = true');
+            }
+        });
+        console.log('[DEBUG] new Vue() called (after this line Vue should be running)');
+    </script>
+</body>
+</html>

@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>健康档案管理 - 宠物救助收养系统</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        :root {
+            --primary: #409EFF;
+            --primary-light: #66B1FF;
+            --success: #67C23A;
+            --warning: #E6A23C;
+            --danger: #F56C6C;
+            --bg: #f5f7fa;
+            --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            --card-shadow-hover: 0 6px 20px rgba(0, 0, 0, 0.14);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius: 10px;
+        }
+        * { box-sizing: border-box; }
+        *:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg);
+            font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        @keyframes fadeSlideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes cardEnter {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            animation: fadeSlideDown 0.4s ease;
+        }
+        .header {
+            background: white;
+            padding: 20px 24px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeSlideDown 0.4s ease;
+        }
+        .header h2 {
+            margin: 0;
+            color: #303133;
+            font-size: 22px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 16px;
+            font-size: 14px;
+        }
+        .nav-links a {
+            color: #409EFF;
+            text-decoration: none;
+        }
+        .nav-links a:hover { text-decoration: underline; }
+        .filter-section {
+            background: white;
+            padding: 16px 24px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            box-shadow: var(--card-shadow);
+            animation: fadeSlideDown 0.4s ease 0.05s both;
+        }
+        .filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+        .stat-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: var(--transition);
+            animation: fadeSlideDown 0.4s ease 0.1s both;
+        }
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+        .stat-icon.vaccine { background: linear-gradient(135deg, #67C23A, #85CE61); color: white; }
+        .stat-icon.checkup { background: linear-gradient(135deg, #409EFF, #66B1FF); color: white; }
+        .stat-icon.treatment { background: linear-gradient(135deg, #E6A23C, #F56C6C); color: white; }
+        .stat-icon.total { background: linear-gradient(135deg, #909399, #B1B3B8); color: white; }
+        .stat-icon.cost { background: linear-gradient(135deg, #F56C6C, #E04040); color: white; }
+        .stat-info .stat-num {
+            font-size: 28px;
+            font-weight: bold;
+            color: #303133;
+            line-height: 1;
+        }
+        .stat-info .stat-label {
+            font-size: 13px;
+            color: #909399;
+            margin-top: 4px;
+        }
+        .table-card {
+            background: white;
+            padding: 20px 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+        .table-card:hover {
+            box-shadow: var(--card-shadow-hover);
+            transform: translateY(-2px);
+        }
+        .table-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .table-card-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #303133;
+        }
+        .record-type-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .type-vaccine { background: #f0f9eb; color: #67C23A; }
+        .type-checkup { background: #ecf5ff; color: #409EFF; }
+        .type-treatment { background: #fef0f0; color: #F56C6C; }
+        .type-surgery { background: #fdf6ec; color: #E6A23C; }
+        .type-dental { background: #f4f4f5; color: #909399; }
+        .type-other { background: #f4f4f5; color: #909399; }
+        .timeline-card {
+            background: white;
+            padding: 20px 24px;
+            border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+        .timeline-card:hover {
+            box-shadow: var(--card-shadow-hover);
+            transform: translateY(-2px);
+        }
+        .timeline {
+            position: relative;
+            padding-left: 24px;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #E4E7ED;
+        }
+        .timeline-item {
+            position: relative;
+            padding-bottom: 24px;
+            animation: fadeSlideDown 0.4s ease both;
+        }
+        .timeline-item:nth-child(1) { animation-delay: 0.05s; }
+        .timeline-item:nth-child(2) { animation-delay: 0.1s; }
+        .timeline-item:nth-child(3) { animation-delay: 0.15s; }
+        .timeline-item:nth-child(4) { animation-delay: 0.2s; }
+        .timeline-item:nth-child(5) { animation-delay: 0.25s; }
+        .timeline-item:nth-child(6) { animation-delay: 0.3s; }
+        .timeline-item:nth-child(7) { animation-delay: 0.35s; }
+        .timeline-item:nth-child(8) { animation-delay: 0.4s; }
+        .timeline-item:nth-child(9) { animation-delay: 0.45s; }
+        .timeline-item:nth-child(10) { animation-delay: 0.5s; }
+        .timeline-dot {
+            position: absolute;
+            left: -22px;
+            top: 4px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        .timeline-dot.vaccine { background: #67C23A; }
+        .timeline-dot.checkup { background: #409EFF; }
+        .timeline-dot.treatment { background: #F56C6C; }
+        .timeline-dot.surgery { background: #E6A23C; }
+        .timeline-dot.dental { background: #909399; }
+        .timeline-dot.other { background: #C0C4CC; }
+        .timeline-content {
+            background: #f5f7fa;
+            padding: 12px 16px;
+            border-radius: 8px;
+        }
+        .timeline-date {
+            font-size: 12px;
+            color: #909399;
+            margin-bottom: 4px;
+        }
+        .timeline-title {
+            font-weight: bold;
+            color: #303133;
+            margin-bottom: 4px;
+        }
+        .timeline-desc {
+            font-size: 13px;
+            color: #606266;
+        }
+        .reminder-tag {
+            background: #fef0f0;
+            color: #F56C6C;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-left: 6px;
+        }
+        .el-pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #909399;
+        }
+        .empty-state .icon { font-size: 64px; margin-bottom: 16px; }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .detail-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        .detail-label {
+            color: #909399;
+            font-size: 13px;
+            min-width: 70px;
+        }
+        .detail-value {
+            color: #303133;
+            font-size: 13px;
+            word-break: break-all;
+        }
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 900px) {
+            .two-col { grid-template-columns: 1fr; }
+            .detail-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ========== 移动端适配 ========== */
+        @media (max-width: 480px) {
+            .container { padding: 12px; }
+            .header { padding: 14px 16px; flex-direction: column; align-items: flex-start; gap: 10px; }
+            .header h2 { font-size: 18px; }
+            .filter-section { padding: 12px 14px; }
+            .filter-row { flex-direction: column; align-items: stretch; }
+            .filter-row .el-select, .filter-row .el-input { width: 100%; }
+            .filter-row > * { width: 100%; }
+            .filter-row { gap: 8px; }
+            .filter-actions { flex-wrap: wrap; }
+            .filter-actions .el-button { flex: 1; min-width: 80px; }
+            .stat-cards { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .stat-card { padding: 14px; }
+            .two-col { grid-template-columns: 1fr; }
+            .detail-grid { grid-template-columns: 1fr; }
+            .el-pagination .el-pagination__total,
+            .el-pagination .el-pagination__jump { display: none; }
+        }
+        @media (min-width: 481px) and (max-width: 768px) {
+            .container { padding: 16px; }
+            .two-col { grid-template-columns: 1fr; }
+        }
+        @media (hover: none) {
+            .table-card:hover, .timeline-card:hover { transform: none; }
+            .table-card:active, .timeline-card:active { transform: scale(0.99); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        /* 滚动条美化 */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+    </style>
+</head>
+<body>
+    <div id="app" class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h2>🏥 健康档案管理</h2>
+            <div class="nav-links">
+                <a href="login.html">登录</a>
+                <span>|</span>
+                <a href="pet-list.html">宠物列表</a>
+                <span>|</span>
+                <a href="volunteer-task.html">任务管理</a>
+                <span>|</span>
+                <a href="stats.html">数据统计</a>
+            </div>
+        </div>
+
+        <!-- 骨架屏加载 -->
+        <div class="skeleton-list" v-if="loading">
+            <div class="skeleton-card" v-for="i in 5" :key="'sk'+i" style="background: white; border-radius: var(--radius); padding: 16px; margin-bottom: 16px; box-shadow: var(--card-shadow);">
+                <div class="skeleton-line" style="height: 16px; border-radius: 4px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; margin-bottom: 10px;"></div>
+                <div class="skeleton-line" style="height: 12px; width: 60%; border-radius: 4px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; margin-bottom: 8px;"></div>
+                <div class="skeleton-line" style="height: 12px; width: 80%; border-radius: 4px; background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite;"></div>
+            </div>
+        </div>
+
+        <!-- 筛选区域 -->
+        <div class="filter-section">
+            <div class="filter-row">
+                <el-input
+                    v-model="filters.keyword"
+                    placeholder="搜索标题或机构"
+                    style="width: 220px;"
+                    clearable
+                    @keyup.enter.native="loadRecords">
+                    <i slot="prefix" class="el-input__icon el-icon-search"></i>
+                </el-input>
+
+                <el-select v-model="filters.petId" placeholder="选择宠物" clearable filterable @change="loadRecords" style="width: 180px;">
+                    <el-option v-for="p in petOptions" :key="p.id" :label="p.name + ' - ' + p.breed" :value="p.id"></el-option>
+                </el-select>
+
+                <el-select v-model="filters.recordType" placeholder="记录类型" clearable @change="loadRecords" style="width: 150px;">
+                    <el-option label="全部类型" value=""></el-option>
+                    <el-option label="疫苗接种" value="vaccine"></el-option>
+                    <el-option label="健康体检" value="checkup"></el-option>
+                    <el-option label="疾病治疗" value="treatment"></el-option>
+                    <el-option label="手术" value="surgery"></el-option>
+                    <el-option label="牙齿护理" value="dental"></el-option>
+                    <el-option label="其他" value="other"></el-option>
+                </el-select>
+
+                <el-select v-model="filters.status" placeholder="状态" clearable @change="loadRecords" style="width: 120px;">
+                    <el-option label="全部" value=""></el-option>
+                    <el-option label="正常" :value="0"></el-option>
+                    <el-option label="已过期" :value="1"></el-option>
+                </el-select>
+
+                <el-button type="primary" icon="el-icon-search" @click="loadRecords">查询</el-button>
+                <el-button icon="el-icon-refresh-right" @click="handleReset">重置</el-button>
+            </div>
+        </div>
+
+        <!-- 统计卡片 -->
+        <div class="stat-cards" v-if="filters.petId">
+            <div class="stat-card">
+                <div class="stat-icon total">📋</div>
+                <div class="stat-info">
+                    <div class="stat-num">{{ currentStats.totalRecords || 0 }}</div>
+                    <div class="stat-label">档案总数</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon vaccine">💉</div>
+                <div class="stat-info">
+                    <div class="stat-num">{{ currentStats.vaccineCount || 0 }}</div>
+                    <div class="stat-label">疫苗记录</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon checkup">🩺</div>
+                <div class="stat-info">
+                    <div class="stat-num">{{ currentStats.checkupCount || 0 }}</div>
+                    <div class="stat-label">体检记录</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon cost">💰</div>
+                <div class="stat-info">
+                    <div class="stat-num">¥{{ (currentStats.totalCost || 0).toFixed(0) }}</div>
+                    <div class="stat-label">累计费用</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 宠物选择提示 -->
+        <div v-if="!filters.petId" style="background: white; padding: 20px; border-radius: 8px; text-align: center; color: #909399; margin-bottom: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.08);">
+            <div style="font-size: 40px; margin-bottom: 8px;">🏥</div>
+            <div style="font-size: 15px; margin-bottom: 8px;">请从上方筛选栏选择一个宠物</div>
+            <div style="font-size: 13px;">查看该宠物的完整健康档案、时间线和统计数据</div>
+        </div>
+
+        <!-- 两栏布局 -->
+        <div class="two-col" v-if="filters.petId">
+            <!-- 左侧：档案列表 -->
+            <div>
+                <div class="table-card">
+                    <div class="table-card-header">
+                        <span class="table-card-title">📋 健康档案记录</span>
+                        <el-button type="primary" size="small" icon="el-icon-plus" @click="handleAdd">添加记录</el-button>
+                    </div>
+
+                    <el-table :data="records" v-loading="loading" stripe style="width: 100%">
+                        <el-table-column prop="title" label="标题" min-width="150" show-overflow-tooltip>
+                            <template slot-scope="scope">
+                                <span class="record-type-tag" :class="'type-' + scope.row.recordType">
+                                    {{ getRecordTypeText(scope.row.recordType) }}
+                                </span>
+                                {{ scope.row.title }}
+                            </template>
+                        </el-table-column>
+                        <el-table-column prop="recordDate" label="日期" width="110">
+                            <template slot-scope="scope">{{ formatDate(scope.row.recordDate) }}</template>
+                        </el-table-column>
+                        <el-table-column prop="veterinarian" label="兽医" width="80" show-overflow-tooltip></el-table-column>
+                        <el-table-column prop="cost" label="费用" width="70">
+                            <template slot-scope="scope">{{ scope.row.cost ? '¥' + scope.row.cost.toFixed(0) : '-' }}</template>
+                        </el-table-column>
+                        <el-table-column label="操作" width="140" fixed="right">
+                            <template slot-scope="scope">
+                                <el-button type="text" size="small" @click="handleDetail(scope.row)">详情</el-button>
+                                <el-button type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
+                                <el-button type="text" size="small" style="color: #F56C6C;" @click="handleDelete(scope.row)">删除</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+
+                    <el-pagination
+                        v-if="total > 0"
+                        @current-change="handlePageChange"
+                        :current-page="currentPage"
+                        :page-size="pageSize"
+                        layout="total, prev, pager, next"
+                        :total="total">
+                    </el-pagination>
+                </div>
+
+                <!-- 即将到期提醒 -->
+                <div class="table-card" style="margin-top: 0;" v-if="reminders.length > 0">
+                    <div class="table-card-header">
+                        <span class="table-card-title">⏰ 即将到期提醒</span>
+                    </div>
+                    <el-alert
+                        v-for="r in reminders"
+                        :key="r.id"
+                        :title="r.title + ' - ' + getRecordTypeText(r.recordType)"
+                        :description="'到期日期: ' + formatDate(r.nextReminderDate)"
+                        type="warning"
+                        :closable="false"
+                        style="margin-bottom: 8px;">
+                    </el-alert>
+                </div>
+            </div>
+
+            <!-- 右侧：健康时间线 -->
+            <div class="timeline-card">
+                <div class="table-card-header">
+                    <span class="table-card-title">📅 健康时间线</span>
+                </div>
+                <div class="timeline" v-if="timelineRecords.length > 0">
+                    <div class="timeline-item" v-for="r in timelineRecords" :key="r.id">
+                        <div class="timeline-dot" :class="r.recordType"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-date">{{ formatDate(r.recordDate) }}</div>
+                            <div class="timeline-title">
+                                {{ r.title }}
+                                <span class="reminder-tag" v-if="r.nextReminderDate && isUpcoming(r.nextReminderDate)">
+                                    {{ daysUntil(r.nextReminderDate) }}天后需复诊
+                                </span>
+                            </div>
+                            <div class="timeline-desc">{{ r.content }}</div>
+                            <div style="margin-top: 6px; font-size: 12px; color: #909399;">
+                                <span v-if="r.institution">🏥 {{ r.institution }}</span>
+                                <span v-if="r.veterinarian" style="margin-left: 10px;">👨‍⚕️ {{ r.veterinarian }}</span>
+                                <span v-if="r.cost" style="margin-left: 10px;">💰 ¥{{ r.cost.toFixed(0) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div v-else class="empty-state">
+                    <div class="icon" style="animation: float 3s ease-in-out infinite;">📅</div>
+                    <div>暂无健康记录</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 全量列表（未选宠物时） -->
+        <div class="table-card" v-if="!filters.petId && records.length > 0">
+            <div class="table-card-header">
+                <span class="table-card-title">📋 所有健康档案</span>
+            </div>
+            <el-table :data="records" v-loading="loading" stripe style="width: 100%">
+                <el-table-column prop="petName" label="宠物" width="120"></el-table-column>
+                <el-table-column prop="title" label="标题" min-width="150" show-overflow-tooltip></el-table-column>
+                <el-table-column prop="recordType" label="类型" width="100">
+                    <template slot-scope="scope">
+                        <span class="record-type-tag" :class="'type-' + scope.row.recordType">
+                            {{ getRecordTypeText(scope.row.recordType) }}
+                        </span>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="recordDate" label="日期" width="110">
+                    <template slot-scope="scope">{{ formatDate(scope.row.recordDate) }}</template>
+                </el-table-column>
+                <el-table-column prop="institution" label="机构" width="140" show-overflow-tooltip></el-table-column>
+                <el-table-column label="操作" width="100">
+                    <template slot-scope="scope">
+                        <el-button type="text" size="small" @click="handleDetail(scope.row)">详情</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <el-pagination
+                v-if="total > 0"
+                @current-change="handlePageChange"
+                :current-page="currentPage"
+                :page-size="pageSize"
+                layout="total, prev, pager, next"
+                :total="total">
+            </el-pagination>
+        </div>
+    </div>
+
+    <!-- 详情对话框 -->
+    <el-dialog title="健康档案详情" :visible.sync="detailDialogVisible" width="600px">
+        <div v-if="currentRecord">
+            <div class="detail-grid" style="margin-bottom: 16px;">
+                <div class="detail-item">
+                    <span class="detail-label">记录类型</span>
+                    <span class="detail-value">
+                        <span class="record-type-tag" :class="'type-' + currentRecord.recordType">
+                            {{ getRecordTypeText(currentRecord.recordType) }}
+                        </span>
+                    </span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">记录日期</span>
+                    <span class="detail-value">{{ formatDate(currentRecord.recordDate) }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">宠物名称</span>
+                    <span class="detail-value">{{ currentRecord.petName || '未知' }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">执行机构</span>
+                    <span class="detail-value">{{ currentRecord.institution || '-' }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">兽医</span>
+                    <span class="detail-value">{{ currentRecord.veterinarian || '-' }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">费用</span>
+                    <span class="detail-value">{{ currentRecord.cost ? '¥' + currentRecord.cost.toFixed(2) : '-' }}</span>
+                </div>
+                <div class="detail-item" v-if="currentRecord.nextReminderDate">
+                    <span class="detail-label">下次提醒</span>
+                    <span class="detail-value" style="color: #E6A23C;">{{ formatDate(currentRecord.nextReminderDate) }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">状态</span>
+                    <span class="detail-value">
+                        <el-tag :type="currentRecord.status === 0 ? 'success' : currentRecord.status === 1 ? 'warning' : 'info'" size="mini">
+                            {{ currentRecord.status === 0 ? '正常' : currentRecord.status === 1 ? '已过期' : '已取消' }}
+                        </el-tag>
+                    </span>
+                </div>
+            </div>
+            <div class="detail-item" style="flex-direction: column; align-items: flex-start;">
+                <span class="detail-label">标题</span>
+                <span class="detail-value" style="font-weight: bold; font-size: 15px;">{{ currentRecord.title }}</span>
+            </div>
+            <div style="margin-top: 12px;">
+                <div class="detail-label" style="margin-bottom: 6px;">记录内容</div>
+                <div style="background: #f5f7fa; padding: 12px; border-radius: 6px; color: #606266; font-size: 13px; line-height: 1.6;">
+                    {{ currentRecord.content || '无' }}
+                </div>
+            </div>
+            <div v-if="currentRecord.remark" style="margin-top: 12px;">
+                <div class="detail-label" style="margin-bottom: 6px;">备注</div>
+                <div style="color: #909399; font-size: 13px;">{{ currentRecord.remark }}</div>
+            </div>
+        </div>
+        <div slot="footer">
+            <el-button @click="detailDialogVisible = false">关闭</el-button>
+            <el-button type="primary" @click="detailDialogVisible = false; handleEdit(currentRecord)">编辑</el-button>
+        </div>
+    </el-dialog>
+
+    <!-- 添加/编辑对话框 -->
+    <el-dialog :title="editForm.id ? '编辑健康档案' : '添加健康档案'" :visible.sync="editDialogVisible" width="650px">
+        <el-form :model="editForm" :rules="editRules" ref="editFormRef" label-width="100px">
+            <el-form-item label="选择宠物" prop="petId">
+                <el-select v-model="editForm.petId" placeholder="请选择宠物" filterable style="width: 100%;">
+                    <el-option v-for="p in petOptions" :key="p.id" :label="p.name + ' - ' + p.breed" :value="p.id"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="记录类型" prop="recordType">
+                <el-select v-model="editForm.recordType" placeholder="请选择类型" style="width: 100%;">
+                    <el-option label="疫苗接种" value="vaccine"></el-option>
+                    <el-option label="健康体检" value="checkup"></el-option>
+                    <el-option label="疾病治疗" value="treatment"></el-option>
+                    <el-option label="手术" value="surgery"></el-option>
+                    <el-option label="牙齿护理" value="dental"></el-option>
+                    <el-option label="其他" value="other"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="标题" prop="title">
+                <el-input v-model="editForm.title" placeholder="请输入记录标题"></el-input>
+            </el-form-item>
+            <el-form-item label="记录日期" prop="recordDate">
+                <el-date-picker v-model="editForm.recordDate" type="date" placeholder="选择日期"
+                    value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+            </el-form-item>
+            <el-form-item label="执行机构">
+                <el-input v-model="editForm.institution" placeholder="请输入宠物医院/机构名称"></el-input>
+            </el-form-item>
+            <el-form-item label="兽医">
+                <el-input v-model="editForm.veterinarian" placeholder="请输入兽医姓名"></el-input>
+            </el-form-item>
+            <el-form-item label="费用（元）">
+                <el-input-number v-model="editForm.cost" :min="0" :precision="2" :step="10" style="width: 100%;"></el-input-number>
+            </el-form-item>
+            <el-form-item label="下次提醒">
+                <el-date-picker v-model="editForm.nextReminderDate" type="date" placeholder="选择下次提醒日期"
+                    value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
+            </el-form-item>
+            <el-form-item label="记录内容">
+                <el-input type="textarea" v-model="editForm.content" :rows="3" placeholder="请输入详细记录内容"></el-input>
+            </el-form-item>
+            <el-form-item label="备注">
+                <el-input type="textarea" v-model="editForm.remark" :rows="2" placeholder="请输入备注信息"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer">
+            <el-button @click="editDialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="handleSave" :loading="saveLoading">保存</el-button>
+        </div>
+    </el-dialog>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/axios@0.27.2/dist/axios.min.js"></script>
+    <script>
+        axios.interceptors.request.use(config => {
+            const token = localStorage.getItem('token');
+            if (token) config.headers.Authorization = 'Bearer ' + token;
+            return config;
+        });
+
+        // 响应拦截器
+        axios.interceptors.response.use(
+            response => response,
+            error => {
+                if (error.response && error.response.status === 401) {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    window.location.href = 'login.html';
+                }
+                return Promise.reject(error);
+            }
+        );
+
+        new Vue({
+            el: '#app',
+            data: {
+                records: [],
+                timelineRecords: [],
+                reminders: [],
+                petOptions: [],
+                loading: false,
+                saveLoading: false,
+                total: 0,
+                currentPage: 1,
+                pageSize: 20,
+                currentStats: {},
+                detailDialogVisible: false,
+                editDialogVisible: false,
+                currentRecord: null,
+                filters: {
+                    keyword: '',
+                    petId: '',
+                    recordType: '',
+                    status: ''
+                },
+                editForm: {
+                    id: null,
+                    petId: null,
+                    recordType: '',
+                    title: '',
+                    recordDate: '',
+                    institution: '',
+                    veterinarian: '',
+                    cost: 0,
+                    nextReminderDate: '',
+                    content: '',
+                    remark: ''
+                },
+                editRules: {
+                    petId: [{ required: true, message: '请选择宠物', trigger: 'change' }],
+                    recordType: [{ required: true, message: '请选择记录类型', trigger: 'change' }],
+                    title: [{ required: true, message: '请输入标题', trigger: 'blur' }],
+                    recordDate: [{ required: true, message: '请选择日期', trigger: 'change' }]
+                }
+            },
+            watch: {
+                'filters.petId': function(val) {
+                    if (val) {
+                        this.loadStats(val);
+                        this.loadReminders();
+                    }
+                }
+            },
+            mounted() {
+                this.loadPets();
+                this.loadRecords();
+            },
+            methods: {
+                loadPets() {
+                    axios.get('/pet/list', { params: { page: 1, pageSize: 100, status: '' } })
+                        .then(res => {
+                            if (res.data.code === 200) {
+                                this.petOptions = res.data.data.pets || [];
+                            }
+                        });
+                },
+
+                loadRecords() {
+                    this.loading = true;
+                    const params = {
+                        page: this.currentPage,
+                        pageSize: this.pageSize,
+                        keyword: this.filters.keyword,
+                        petId: this.filters.petId,
+                        recordType: this.filters.recordType,
+                        status: this.filters.status !== '' ? this.filters.status : null
+                    };
+                    axios.get('/health-record/list', { params: params })
+                        .then(res => {
+                            this.loading = false;
+                            if (res.data.code === 200) {
+                                this.records = res.data.data.records || [];
+                                this.total = this.records.length;
+                                this.timelineRecords = this.records.slice(0, 10);
+                            } else {
+                                this.$message.error(res.data.message || '加载失败');
+                            }
+                        })
+                        .catch(error => {
+                            this.loading = false;
+                            if (error.response && error.response.status === 401) {
+                                this.$message.error('登录已过期，请重新登录');
+                                setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+                            } else {
+                                this.$message.error('加载健康档案失败');
+                            }
+                        });
+                },
+
+                loadStats(petId) {
+                    axios.get('/health-record/stats/' + petId)
+                        .then(res => {
+                            if (res.data.code === 200) {
+                                this.currentStats = res.data.data.stats || {};
+                            }
+                        });
+                },
+
+                loadReminders() {
+                    axios.get('/health-record/reminders', { params: { days: 30 } })
+                        .then(res => {
+                            if (res.data.code === 200) {
+                                this.reminders = (res.data.data.reminders || []).filter(r =>
+                                    !this.filters.petId || r.petId == this.filters.petId
+                                );
+                            }
+                        });
+                },
+
+                handleReset() {
+                    this.filters = { keyword: '', petId: '', recordType: '', status: '' };
+                    this.currentPage = 1;
+                    this.loadRecords();
+                },
+
+                handlePageChange(page) {
+                    this.currentPage = page;
+                    this.loadRecords();
+                },
+
+                handleAdd() {
+                    this.editForm = {
+                        id: null, petId: this.filters.petId || null,
+                        recordType: '', title: '', recordDate: this.getToday(),
+                        institution: '', veterinarian: '', cost: 0,
+                        nextReminderDate: '', content: '', remark: ''
+                    };
+                    this.editDialogVisible = true;
+                },
+
+                handleEdit(row) {
+                    this.editForm = {
+                        id: row.id,
+                        petId: row.petId,
+                        recordType: row.recordType,
+                        title: row.title,
+                        recordDate: this.formatDateForEdit(row.recordDate),
+                        institution: row.institution || '',
+                        veterinarian: row.veterinarian || '',
+                        cost: row.cost || 0,
+                        nextReminderDate: this.formatDateForEdit(row.nextReminderDate),
+                        content: row.content || '',
+                        remark: row.remark || ''
+                    };
+                    this.editDialogVisible = true;
+                },
+
+                handleSave() {
+                    this.$refs.editFormRef.validate(valid => {
+                        if (!valid) return;
+                        this.saveLoading = true;
+                        const url = this.editForm.id ? '/health-record/update' : '/health-record/add';
+                        const method = this.editForm.id ? 'put' : 'post';
+                        axios[method](url, this.editForm)
+                            .then(res => {
+                                this.saveLoading = false;
+                                if (res.data.code === 200) {
+                                    this.$message.success(this.editForm.id ? '更新成功' : '添加成功');
+                                    this.editDialogVisible = false;
+                                    this.loadRecords();
+                                    if (this.filters.petId) {
+                                        this.loadStats(this.filters.petId);
+                                        this.loadReminders();
+                                    }
+                                } else {
+                                    this.$message.error(res.data.message || '操作失败');
+                                }
+                            })
+                            .catch(() => { this.saveLoading = false; });
+                    });
+                },
+
+                handleDetail(row) {
+                    this.currentRecord = row;
+                    this.detailDialogVisible = true;
+                },
+
+                handleDelete(row) {
+                    this.$confirm('确认删除该健康档案？', '提示', { type: 'warning' })
+                        .then(() => {
+                            axios.delete('/health-record/delete/' + row.id)
+                                .then(res => {
+                                    if (res.data.code === 200) {
+                                        this.$message.success('删除成功');
+                                        this.loadRecords();
+                                        if (this.filters.petId) this.loadStats(this.filters.petId);
+                                    } else {
+                                        this.$message.error(res.data.message || '删除失败');
+                                    }
+                                });
+                        });
+                },
+
+                getRecordTypeText(type) {
+                    const map = { vaccine: '疫苗', checkup: '体检', treatment: '治疗', surgery: '手术', dental: '牙科', other: '其他' };
+                    return map[type] || '其他';
+                },
+
+                formatDate(date) {
+                    if (!date) return '-';
+                    if (typeof date === 'string') return date.substring(0, 10);
+                    if (date.time) return new Date(date.time).toISOString().substring(0, 10);
+                    return String(date).substring(0, 10);
+                },
+
+                formatDateForEdit(date) {
+                    if (!date) return '';
+                    if (typeof date === 'string') return date.substring(0, 10);
+                    if (date.time) return new Date(date.time).toISOString().substring(0, 10);
+                    return '';
+                },
+
+                getToday() {
+                    return new Date().toISOString().substring(0, 10);
+                },
+
+                isUpcoming(date) {
+                    if (!date) return false;
+                    const d = new Date(this.formatDate(date));
+                    const diff = (d - new Date()) / (1000 * 60 * 60 * 24);
+                    return diff >= 0 && diff <= 30;
+                },
+
+                daysUntil(date) {
+                    if (!date) return 0;
+                    const d = new Date(this.formatDate(date));
+                    return Math.ceil((d - new Date()) / (1000 * 60 * 60 * 24));
+                }
+            }
+        });
+    </script>
+</body>
+</html>
