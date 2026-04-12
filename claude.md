@@ -334,10 +334,10 @@
 
   如有任何问题，欢迎提交Issue或联系项目维护者。
 
----最后更新：2026-04-12（v1.2.1 health-record.html DOM结构修复）
+---最后更新：2026-04-12（v1.2.1 宠物收藏功能开发 + GitHub v1.2推送 + 文档全面更新）
 版本：1.2.1
-状态：v1.2.0 UI优化全部完成 | health-record.html DOM修复 | 宠物数据冲突修复（v1.1.6）
-新增：v1.2.1 health-record.html 多余DOM闭合标签导致Vue模板解析失败，已修复
+状态：v1.2.0 UI优化全部完成 ✅ | 宠物收藏功能 ✅ | GitHub v1.2推送 ✅ | 文档全面更新 ✅
+新增：v1.2.1 宠物收藏功能（Entity/Mapper/Service/Controller）；截图管理文档v1.2.0（44张）；论文素材保存文档v1.3（JWT双Token/成长体系）
 
   ## 🎨 前端 UI 设计规范（2026-04-02 新增）
 
@@ -841,30 +841,70 @@
 
 ---
 
-## 📌 v1.2.1 更新（2026-04-12）health-record.html DOM 结构修复
+## 📌 v1.2.1 更新（2026-04-12）宠物收藏功能 + GitHub v1.2 推送 + 文档全面更新
 
-### 问题现象
+### 一、宠物收藏功能开发（v1.2.0 新增）
 
-访问 `health-record.html` 后，页面显示 Vue 表达式文字（如 `{{editForm.id}}`、`{{getRoleNameH(currentRole)}}`），所有功能失效。
+**数据库**：`pet_favorite` 表（user_id + pet_id 唯一约束）
 
-### 根本原因
+**后端（6个文件）**：
+- `PetFavorite.java` Entity
+- `PetFavoriteMapper.java`
+- `PetFavoriteService.java` + `PetFavoriteServiceImpl.java`
+- `PetFavoriteController.java` — 3个API端点（列表/收藏/取消/检查）
+- `pet-favorite.sql` 建表脚本
 
-行 846-848 区域多出了两个多余的 `</div>` 闭合标签，破坏了 `#app` 内 Vue 模板的 DOM 层级结构。
+**前端**：
+- `pet-detail.html` — 收藏按钮（爱心图标），点击切换收藏状态
+- `profile.html` — 新增「我的收藏」Tab，展示收藏宠物列表
 
-### 修复方案
+**SecurityConfig**：放行 `/api/favorite/**`（需认证后访问）
 
-删除多余的 `</span>` 和两个 `</div>`，恢复正确的 DOM 结构。
+### 二、GitHub v1.2 推送
 
-### 预防经验
+**提交内容**：69个文件，+17164行，-4550行
 
-**Vue 表达式 `{{...}}` 直接显示的常见原因**：
+新增功能：
+- 宠物收藏、回访记录、JWT双Token刷新机制
+- 前端全面优化（温馨治愈风UI + 统一遮罩层 + 响应式适配）
+- 新增页面（帮助中心、宠物医院、简化统计页、成长中心、我的收藏）
+- 文档更新
+
+**敏感信息处理**：
+- `application.yml`：数据库密码和JWT密钥改为 `${DB_PASSWORD:CHANGE_ME}` 和 `${JWT_SECRET:CHANGE_ME}`
+- 以下文件**未提交**：根目录 `application.yml`（含真实密码）、临时调试脚本、内部开发备忘文档
+
+**GitHub**：`https://github.com/runninggoo/pet-rescue-system`
+
+### 三、截图管理文档 v1.2.0 更新
+
+- 截图总数：39张 → **44张**
+- 新增模块：志愿者成长体系（5张）、宠物收藏（2张）、宠物医院（1张）、帮助中心（1张）、简化统计页（1张）
+- 页面数：14个 → **15个**
+- 底部版本记录：v1.2.0
+
+### 四、论文素材保存文档 v1.3 更新
+
+新增内容：
+- **创新点**：第5点（志愿者成长激励）、第6点（个性化收藏）
+- **核心技术栈**：补充 Element UI 2.15.13、Vite、双Token架构
+- **测试数据**：补充 v1.1.6 宠物数据修复说明
+- **数据库设计**：补充 pet_category、refresh_token、pet_favorite 表
+- **关键代码**：JWT双Token认证机制、志愿者成长等级体系代码
+- **前端页面清单**：9个 → **15个页面**
+- **答辩Q&A**：新增Q6（双Token优势）、Q7（成长体系设计）、Q8（收藏功能实现）
+
+---
+
+### 原 health-record.html DOM 结构修复（v1.2.1 前置修复）
+
+**问题**：行 846-848 多余的 `</div>` 闭合标签，破坏 Vue 模板 DOM 层级，`{{...}}` 直接显示。
+
+**修复**：删除多余的 `</span>` 和两个 `</div>`，恢复正确的 DOM 结构。
+
+**预防经验**：
 1. `</div><!-- end #app -->` 提前闭合
 2. DOM 标签未匹配闭合（本例多余 `</div>`）
 3. HTML 结构被截断或嵌套错误
-
-### URL 说明
-
-- Vite 开发：`http://localhost:5173/health-record.html`
-- 后端：`http://localhost:8081/api/health-record.html`（注意 `/api` 前缀，因为 `context-path: /api`）
 
 ## 🎯 更新完成（v1.2.1）
