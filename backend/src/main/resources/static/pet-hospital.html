@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>医疗档案管理 - 宠物医院端</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.15.13/lib/theme-chalk/index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #E07A5F;
+            --primary-dark: #c96a50;
+            --primary-light: #f0a28a;
+            --primary-bg: rgba(224, 122, 95, 0.08);
+            --sage: #81B29A;
+            --sage-light: #a8cdb8;
+            --amber: #F4A261;
+            --sky: #87CEEB;
+            --sky-light: #B0E2FF;
+            --sky-bg: rgba(135, 206, 235, 0.12);
+            --lavender: #B8A9C9;
+            --lavender-light: #D8CCE8;
+            --lavender-bg: rgba(184, 169, 201, 0.12);
+            --mint: #98D8C8;
+            --mint-light: #B8EBE0;
+            --mint-bg: rgba(152, 216, 200, 0.12);
+            --success: #52c788;
+            --danger: #e05d5d;
+            --info: #5b8dee;
+            --warm-white: #FDF6F0;
+            --warm-cream: #FAEEE7;
+            --warm-gray: #f0ebe7;
+            --warm-gray2: #ede6df;
+            --text-dark: #3D405B;
+            --text-muted: #8A8EA0;
+            --bg: var(--warm-white);
+            --card-shadow: 0 4px 20px rgba(224, 122, 95, 0.1);
+            --card-shadow-hover: 0 12px 40px rgba(224, 122, 95, 0.2);
+            --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius: 20px;
+            --radius-sm: 12px;
+        }
+        * { box-sizing: border-box; }
+        *:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; }
+        body {
+            margin: 0; padding: 0;
+            background: var(--bg);
+            font-family: "Nunito", "PingFang SC", "Microsoft YaHei", sans-serif;
+            -webkit-font-smoothing: antialiased;
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--warm-gray); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--sky-light); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--sky); }
+
+        /* Element UI 覆盖 */
+        .el-button--primary { background-color: var(--sky) !important; border-color: var(--sky) !important; border-radius: var(--radius-sm) !important; color: var(--text-dark) !important; font-weight: 700 !important; }
+        .el-button--primary:hover { background-color: var(--sky-light) !important; border-color: var(--sky-light) !important; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(135,206,235,0.3); }
+        .el-button--success { background-color: var(--sage) !important; border-color: var(--sage) !important; border-radius: var(--radius-sm) !important; }
+        .el-button--warning { background-color: var(--amber) !important; border-color: var(--amber) !important; border-radius: var(--radius-sm) !important; }
+        .el-button--danger { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; }
+        .el-button { border-radius: var(--radius-sm) !important; }
+        .el-input__inner:focus, .el-textarea__inner:focus { border-color: var(--sky) !important; box-shadow: 0 0 0 3px rgba(135,206,235,0.15) !important; }
+        .el-pager li.active { background-color: var(--sky) !important; color: white !important; border-radius: 50% !important; }
+        .el-pager li:hover { color: var(--sky) !important; }
+        .el-table th { background: var(--sky-bg) !important; color: var(--text-dark); font-weight: 700; }
+        .el-table td { border-color: var(--warm-gray) !important; }
+        .el-form-item__label { color: var(--text-dark); font-weight: 600; }
+        .el-select .el-input__inner:focus { border-color: var(--sky) !important; }
+        .el-pagination .el-pager li { border-radius: 50% !important; }
+        .el-loading-mask { background: rgba(253,246,240,0.9) !important; }
+
+        /* 页面背景 */
+        .page-bg {
+            position: fixed; inset: 0; pointer-events: none; z-index: 0;
+            background: linear-gradient(160deg, var(--sky-bg) 0%, var(--warm-white) 50%, var(--warm-cream) 100%);
+            opacity: 0.6;
+        }
+
+        #app {
+            position: relative; z-index: 1;
+            max-width: 1600px; margin: 0 auto; padding: 20px 24px;
+        }
+
+        /* 横幅 */
+        .hero-banner {
+            background: linear-gradient(135deg, var(--sky) 0%, #5bb5d4 60%, var(--sage) 100%);
+            border-radius: var(--radius); padding: 20px 28px; margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(135, 206, 235, 0.3);
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 16px;
+            animation: fadeSlideDown 0.5s ease-out;
+        }
+        @keyframes fadeSlideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hero-left { display: flex; align-items: center; gap: 16px; }
+        .hero-icon { font-size: 48px; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.1)); }
+        .hero-title-group h1 {
+            margin: 0; font-size: 22px; font-weight: 800; color: white;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+        .hero-title-group p { margin: 4px 0 0; font-size: 13px; color: rgba(255,255,255,0.85); }
+        .title-icon { font-size: 1em; margin-right: 6px; }
+        .nav-links { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .nav-links a { color: rgba(255,255,255,0.9); text-decoration: none; font-size: 13px; font-weight: 600; transition: var(--transition); padding: 4px 8px; border-radius: 8px; }
+        .nav-links a:hover { background: rgba(255,255,255,0.2); color: white; }
+        .nav-links span { color: rgba(255,255,255,0.5); font-size: 12px; }
+        .role-badge {
+            padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+            background: rgba(255,255,255,0.25); color: white; backdrop-filter: blur(4px);
+        }
+
+        /* 筛选卡片 */
+        .filter-card {
+            background: white; border-radius: var(--radius); padding: 20px 24px; margin-bottom: 16px;
+            box-shadow: var(--card-shadow); border: 1px solid rgba(135,206,235,0.15);
+            animation: cardEnter 0.5s ease-out 0.1s both;
+        }
+        @keyframes cardEnter {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .filter-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; }
+        .filter-item { display: flex; flex-direction: column; gap: 6px; }
+        .filter-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* 统计卡片 */
+        .stat-cards {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px;
+        }
+        .stat-card {
+            background: white; border-radius: var(--radius); padding: 20px; box-shadow: var(--card-shadow);
+            display: flex; align-items: center; gap: 16px;
+            border: 1px solid rgba(135,206,235,0.1);
+            transition: var(--transition); animation: cardEnter 0.5s ease-out 0.15s both;
+        }
+        .stat-card:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-2px); }
+        .stat-card .stat-icon { font-size: 36px; line-height: 1; }
+        .stat-card .stat-info .stat-num { font-size: 28px; font-weight: 800; color: var(--text-dark); }
+        .stat-card .stat-info .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+        /* 内容卡片 */
+        .content-card {
+            background: white; border-radius: var(--radius); padding: 24px; margin-bottom: 16px;
+            box-shadow: var(--card-shadow); border: 1px solid rgba(135,206,235,0.1);
+            animation: cardEnter 0.5s ease-out 0.2s both;
+        }
+        .content-card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px; padding-bottom: 16px;
+            border-bottom: 1px solid var(--warm-gray);
+        }
+        .content-card-title { font-size: 16px; font-weight: 700; color: var(--text-dark); display: flex; align-items: center; gap: 8px; }
+        .content-card-title .icon { font-size: 18px; }
+
+        /* 表格 */
+        .table-wrap { border-radius: var(--radius-sm); overflow: hidden; }
+        .record-type-tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .record-type-tag.vaccine { background: var(--sky-bg); color: #2e7d9a; }
+        .record-type-tag.checkup { background: var(--sage); background: rgba(129,178,154,0.15); color: #4a8a6e; }
+        .record-type-tag.treatment { background: var(--lavender-bg); color: #6b5a8a; }
+        .record-type-tag.surgery { background: rgba(244,162,97,0.15); color: #b06a2a; }
+        .record-type-tag.dental { background: var(--mint-bg); color: #4a8a7a; }
+        .record-type-tag.other { background: var(--warm-cream); color: var(--text-muted); }
+        .status-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .status-badge.normal { background: rgba(82,199,136,0.15); color: #3a8a5a; }
+        .status-badge.expired { background: rgba(224,93,93,0.12); color: #b03a3a; }
+        .action-btns { display: flex; gap: 6px; }
+
+        /* 原生遮罩层 */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 2000;
+            background: rgba(61, 64, 91, 0.5); backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-panel {
+            background: white; border-radius: var(--radius);
+            width: 640px; max-width: 95vw; max-height: 85vh;
+            overflow: hidden; display: flex; flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            animation: slideUp 0.25s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 18px 24px; border-bottom: 1px solid var(--warm-gray);
+            background: linear-gradient(135deg, var(--sky) 0%, var(--primary) 100%);
+            color: white;
+        }
+        .modal-header h3 { margin: 0; font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .modal-header h3 .icon { font-size: 20px; }
+        .modal-close { cursor: pointer; font-size: 22px; opacity: 0.8; transition: opacity 0.2s; }
+        .modal-close:hover { opacity: 1; }
+        .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+        .modal-footer { display: flex; gap: 10px; justify-content: flex-end; padding: 16px 24px; border-top: 1px solid var(--warm-gray); }
+        .modal-footer .btn-cancel { background: var(--warm-gray2) !important; color: var(--text-dark) !important; border: 1px solid var(--warm-gray) !important; border-radius: var(--radius-sm) !important; padding: 8px 20px; cursor: pointer; font-weight: 600; transition: var(--transition); }
+        .modal-footer .btn-cancel:hover { background: var(--warm-gray) !important; }
+        .modal-footer .btn-submit { background: var(--sky) !important; color: var(--text-dark) !important; border: none !important; border-radius: var(--radius-sm) !important; padding: 8px 24px; cursor: pointer; font-weight: 700; transition: var(--transition); }
+        .modal-footer .btn-submit:hover { background: var(--sky-light) !important; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(135,206,235,0.3); }
+
+        /* 表单 */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-grid .full { grid-column: span 2; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; }
+        .form-group label span { color: var(--primary); }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 10px 14px; border: 1.5px solid var(--warm-gray2); border-radius: var(--radius-sm);
+            font-size: 14px; font-family: inherit; color: var(--text-dark);
+            transition: var(--transition); background: white;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none; border-color: var(--sky); box-shadow: 0 0 0 3px rgba(135,206,235,0.12);
+        }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+
+        /* 时间线 */
+        .timeline { position: relative; padding-left: 24px; }
+        .timeline::before {
+            content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px;
+            width: 2px; background: linear-gradient(to bottom, var(--sky), var(--sage));
+            border-radius: 2px;
+        }
+        .timeline-item { position: relative; margin-bottom: 24px; }
+        .timeline-item::before {
+            content: ''; position: absolute; left: -21px; top: 8px;
+            width: 12px; height: 12px; border-radius: 50%;
+            background: white; border: 3px solid var(--sky);
+        }
+        .timeline-card {
+            background: white; border-radius: var(--radius-sm); padding: 16px 20px;
+            box-shadow: 0 2px 12px rgba(135,206,235,0.12);
+            border: 1px solid rgba(135,206,235,0.15);
+            transition: var(--transition);
+        }
+        .timeline-card:hover { box-shadow: 0 4px 20px rgba(135,206,235,0.2); transform: translateX(4px); }
+        .timeline-date { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
+        .timeline-title { font-size: 15px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+        .timeline-title .icon { font-size: 18px; }
+        .timeline-content { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+        .timeline-meta { margin-top: 10px; display: flex; gap: 12px; flex-wrap: wrap; }
+        .timeline-meta span { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+
+        /* 空状态 */
+        .empty-state { text-align: center; padding: 48px 24px; color: var(--text-muted); }
+        .empty-state .icon { font-size: 56px; margin-bottom: 16px; opacity: 0.4; }
+        .empty-state p { font-size: 14px; margin: 0; }
+
+        /* 加载动画 */
+        .loading-overlay {
+            position: fixed; inset: 0; z-index: 9999;
+            background: linear-gradient(160deg, var(--sky-bg) 0%, var(--warm-white) 100%);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .loading-overlay.hidden { opacity: 0; pointer-events: none; transition: opacity 0.5s; }
+        .loading-content { text-align: center; }
+        .loading-icon { font-size: 48px; animation: spin 1s linear infinite; display: inline-block; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .loading-text { margin-top: 12px; font-size: 14px; color: var(--text-dark); font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="page-bg"></div>
+    <div class="loading-overlay" id="appLoading">
+        <div class="loading-content">
+            <div class="loading-icon">🏥</div>
+            <div class="loading-text">正在加载医疗档案管理...</div>
+        </div>
+    </div>
+
+    <div id="app">
+        <!-- 横幅 -->
+        <div class="hero-banner">
+            <div class="hero-left">
+                <div class="hero-icon">🏥</div>
+                <div class="hero-title-group">
+                    <h1><span class="title-icon">💉</span>医疗档案管理</h1>
+                    <p>录入疫苗接种记录、健康体检报告，守护每一只小可爱的健康</p>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="pet-list.html">首页</a><span>|</span>
+                <a href="profile.html">个人中心</a><span>|</span>
+                <span @click="logout" style="color:rgba(255,255,255,0.9);cursor:pointer;font-weight:600;font-size:13px;">退出登录</span>
+                <span class="role-badge">🏥 {{ getRoleName(currentRole) }}</span>
+            </div>
+        </div>
+
+        <!-- 筛选 -->
+        <div class="filter-card">
+            <div class="filter-row">
+                <div class="filter-item">
+                    <span class="filter-label">选择宠物</span>
+                    <el-select v-model="filters.petId" placeholder="搜索宠物名称" clearable filterable remote :remote-method="searchPets" :loading="searchingPet" style="width: 240px;">
+                        <el-option v-for="p in petOptions" :key="p.id" :label="p.name + ' · ' + p.breed" :value="p.id"></el-option>
+                    </el-select>
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">记录类型</span>
+                    <el-select v-model="filters.recordType" placeholder="全部类型" clearable @change="loadRecords" style="width: 160px;">
+                        <el-option label="全部类型" value=""></el-option>
+                        <el-option label="💉 疫苗接种" value="vaccine"></el-option>
+                        <el-option label="🩺 健康体检" value="checkup"></el-option>
+                        <el-option label="💊 疾病治疗" value="treatment"></el-option>
+                        <el-option label="🏥 手术" value="surgery"></el-option>
+                        <el-option label="🦷 牙齿护理" value="dental"></el-option>
+                        <el-option label="📋 其他" value="other"></el-option>
+                    </el-select>
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">状态</span>
+                    <el-select v-model="filters.status" placeholder="全部" clearable @change="loadRecords" style="width: 120px;">
+                        <el-option label="全部" value=""></el-option>
+                        <el-option label="✅ 正常" :value="0"></el-option>
+                        <el-option label="⚠️ 已过期" :value="1"></el-option>
+                    </el-select>
+                </div>
+                <div style="display:flex;gap:8px;align-items:flex-end;padding-top:18px;">
+                    <button class="btn-primary" @click="loadRecords" style="background:var(--sky)!important;border-color:var(--sky)!important;color:var(--text-dark)!important;border-radius:12px!important;padding:10px 20px;font-weight:700;cursor:pointer;border:none;">🔍 查询</button>
+                    <button @click="handleReset" style="background:var(--warm-gray2)!important;border:1px solid var(--warm-gray)!important;color:var(--text-dark)!important;border-radius:12px!important;padding:10px 20px;font-weight:600;cursor:pointer;">🔄 重置</button>
+                    <button @click="handleAdd" style="background:var(--sage)!important;border:none!important;color:white!important;border-radius:12px!important;padding:10px 20px;font-weight:700;cursor:pointer;">➕ 录入档案</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 统计 -->
+        <div class="stat-cards" v-if="filters.petId">
+            <div class="stat-card">
+                <div class="stat-icon">📋</div>
+                <div class="stat-info">
+                    <div class="stat-num">{{ stats.total }}</div>
+                    <div class="stat-label">档案总数</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💉</div>
+                <div class="stat-info">
+                    <div class="stat-num">{{ stats.vaccine }}</div>
+                    <div class="stat-label">疫苗记录</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🩺</div>
+                <div class="stat-info">
+                    <div class="stat-num">{{ stats.checkup }}</div>
+                    <div class="stat-label">体检记录</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-info">
+                    <div class="stat-num">¥{{ stats.cost }}</div>
+                    <div class="stat-label">累计费用</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 档案列表 -->
+        <div class="content-card" v-if="filters.petId">
+            <div class="content-card-header">
+                <span class="content-card-title"><span class="icon">📋</span>医疗档案记录</span>
+                <button @click="handleAdd" style="background:var(--sky)!important;border:none!important;color:var(--text-dark)!important;border-radius:12px!important;padding:8px 16px;font-weight:700;cursor:pointer;">➕ 录入新档案</button>
+            </div>
+            <div class="table-wrap">
+                <table style="width:100%;border-collapse:collapse;">
+                    <thead>
+                        <tr style="background:var(--sky-bg);">
+                            <th style="padding:12px 16px;text-align:left;font-size:13px;font-weight:700;color:var(--text-dark);border-bottom:2px solid var(--warm-gray);">记录类型</th>
+                            <th style="padding:12px 16px;text-align:left;font-size:13px;font-weight:700;color:var(--text-dark);border-bottom:2px solid var(--warm-gray);">记录标题</th>
+                            <th style="padding:12px 16px;text-align:left;font-size:13px;font-weight:700;color:var(--text-dark);border-bottom:2px solid var(--warm-gray);">记录日期</th>
+                            <th style="padding:12px 16px;text-align:left;font-size:13px;font-weight:700;color:var(--text-dark);border-bottom:2px solid var(--warm-gray);">兽医</th>
+                            <th style="padding:12px 16px;text-align:left;font-size:13px;font-weight:700;color:var(--text-dark);border-bottom:2px solid var(--warm-gray);">费用</th>
+                            <th style="padding:12px 16px;text-align:left;font-size:13px;font-weight:700;color:var(--text-dark);border-bottom:2px solid var(--warm-gray);">状态</th>
+                            <th style="padding:12px 16px;text-align:left;font-size:13px;font-weight:700;color:var(--text-dark);border-bottom:2px solid var(--warm-gray);">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="r in records" :key="r.id" style="border-bottom:1px solid var(--warm-gray);transition:var(--transition);" onmouseover="this.style.background='var(--sky-bg)'" onmouseout="this.style.background=''">
+                            <td style="padding:12px 16px;font-size:13px;"><span class="record-type-tag" :class="r.recordType">{{ typeLabel(r.recordType) }}</span></td>
+                            <td style="padding:12px 16px;font-size:13px;font-weight:600;color:var(--text-dark);">{{ r.title }}</td>
+                            <td style="padding:12px 16px;font-size:13px;color:var(--text-muted);">{{ r.recordDate }}</td>
+                            <td style="padding:12px 16px;font-size:13px;color:var(--text-muted);">{{ r.vetName || '-' }}</td>
+                            <td style="padding:12px 16px;font-size:13px;color:var(--text-dark);font-weight:600;">¥{{ r.cost || 0 }}</td>
+                            <td style="padding:12px 16px;font-size:13px;"><span class="status-badge" :class="r.status===0?'normal':'expired'">{{ r.status===0?'✅ 正常':'⚠️ 已过期' }}</span></td>
+                            <td style="padding:12px 16px;font-size:13px;">
+                                <button @click="handleView(r)" style="background:var(--sky-bg)!important;border:1px solid var(--sky)!important;color:var(--text-dark)!important;border-radius:8px!important;padding:4px 12px;font-size:12px;font-weight:600;cursor:pointer;">👁 查看</button>
+                                <button @click="handleEdit(r)" style="background:rgba(129,178,154,0.12)!important;border:1px solid var(--sage)!important;color:var(--sage)!important;border-radius:8px!important;padding:4px 12px;font-size:12px;font-weight:600;cursor:pointer;">✏️ 编辑</button>
+                            </td>
+                        </tr>
+                        <tr v-if="records.length === 0">
+                            <td colspan="7" style="padding:40px;text-align:center;color:var(--text-muted);">
+                                <div class="empty-state">
+                                    <div class="icon">📋</div>
+                                    <p>暂无档案记录，请点击「录入新档案」添加</p>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 未选宠物提示 -->
+        <div class="content-card" v-if="!filters.petId">
+            <div class="empty-state">
+                <div class="icon">🏥</div>
+                <p>请从上方「选择宠物」下拉框中搜索并选择一只宠物</p>
+                <p style="margin-top:8px;font-size:12px;">选择后即可查看该宠物的所有医疗档案记录，或录入新档案</p>
+            </div>
+        </div>
+    </div><!-- end #app -->
+
+    <!-- 添加/编辑弹窗 -->
+    <div v-if="showModal" class="modal-overlay" @click.self="showModal=false">
+        <div class="modal-panel">
+            <div class="modal-header">
+                <h3><span class="icon">{{ form.id ? '✏️' : '➕' }}</span>{{ form.id ? '编辑档案' : '录入新档案' }}</h3>
+                <span class="modal-close" @click="showModal=false">✕</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>宠物 <span>*</span></label>
+                        <select v-model="form.petId" required>
+                            <option value="">请选择宠物</option>
+                            <option v-for="p in petOptions" :key="p.id" :value="p.id">{{ p.name }} · {{ p.breed }}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>记录类型 <span>*</span></label>
+                        <select v-model="form.recordType" required>
+                            <option value="">请选择</option>
+                            <option value="vaccine">💉 疫苗接种</option>
+                            <option value="checkup">🩺 健康体检</option>
+                            <option value="treatment">💊 疾病治疗</option>
+                            <option value="surgery">🏥 手术</option>
+                            <option value="dental">🦷 牙齿护理</option>
+                            <option value="other">📋 其他</option>
+                        </select>
+                    </div>
+                    <div class="form-group full">
+                        <label>记录标题 <span>*</span></label>
+                        <input type="text" v-model="form.title" placeholder="如：犬四联疫苗首免、常规健康体检" required>
+                    </div>
+                    <div class="form-group">
+                        <label>记录日期 <span>*</span></label>
+                        <input type="date" v-model="form.recordDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>主治兽医</label>
+                        <input type="text" v-model="form.vetName" placeholder="如：张医生">
+                    </div>
+                    <div class="form-group">
+                        <label>费用（元）</label>
+                        <input type="number" v-model="form.cost" placeholder="0" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>机构名称</label>
+                        <input type="text" v-model="form.institution" placeholder="如：浦东动物救助中心">
+                    </div>
+                    <div class="form-group full">
+                        <label>详细说明</label>
+                        <textarea v-model="form.description" placeholder="请填写本次就诊的详细情况、诊断结果、治疗方案等" rows="4"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" @click="showModal=false">取消</button>
+                <button class="btn-submit" @click="handleSubmit">💾 保存档案</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 详情弹窗 -->
+    <div v-if="showDetail" class="modal-overlay" @click.self="showDetail=false">
+        <div class="modal-panel">
+            <div class="modal-header">
+                <h3><span class="icon">📋</span>档案详情</h3>
+                <span class="modal-close" @click="showDetail=false">✕</span>
+            </div>
+            <div class="modal-body" v-if="detailRecord">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+                    <div><label style="font-size:12px;color:var(--text-muted);font-weight:700;">记录类型</label><div style="margin-top:4px;"><span class="record-type-tag" :class="detailRecord.recordType">{{ typeLabel(detailRecord.recordType) }}</span></div></div>
+                    <div><label style="font-size:12px;color:var(--text-muted);font-weight:700;">记录日期</label><div style="margin-top:4px;font-weight:600;">{{ detailRecord.recordDate }}</div></div>
+                    <div><label style="font-size:12px;color:var(--text-muted);font-weight:700;">主治兽医</label><div style="margin-top:4px;">{{ detailRecord.vetName || '-' }}</div></div>
+                    <div><label style="font-size:12px;color:var(--text-muted);font-weight:700;">费用</label><div style="margin-top:4px;font-weight:700;">¥{{ detailRecord.cost || 0 }}</div></div>
+                    <div><label style="font-size:12px;color:var(--text-muted);font-weight:700;">机构名称</label><div style="margin-top:4px;">{{ detailRecord.institution || '-' }}</div></div>
+                    <div><label style="font-size:12px;color:var(--text-muted);font-weight:700;">记录状态</label><div style="margin-top:4px;"><span class="status-badge" :class="detailRecord.status===0?'normal':'expired'">{{ detailRecord.status===0?'✅ 正常':'⚠️ 已过期' }}</span></div></div>
+                </div>
+                <div style="margin-bottom:16px;"><label style="font-size:12px;color:var(--text-muted);font-weight:700;">记录标题</label><div style="margin-top:4px;font-size:16px;font-weight:700;">{{ detailRecord.title }}</div></div>
+                <div><label style="font-size:12px;color:var(--text-muted);font-weight:700;">详细说明</label><div style="margin-top:8px;padding:16px;background:var(--sky-bg);border-radius:12px;font-size:14px;line-height:1.8;color:var(--text-dark);">{{ detailRecord.description || '无详细说明' }}</div></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" @click="showDetail=false">关闭</button>
+                <button class="btn-submit" @click="handleEdit(detailRecord);showDetail=false">✏️ 编辑档案</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // 安全 localStorage 封装
+        const $ls = {
+            get: (k) => { try { return localStorage.getItem(k); } catch(e) { return null; } },
+            set: (k, v) => { try { localStorage.setItem(k, v); } catch(e) {} },
+            rm: (k) => { try { localStorage.removeItem(k); } catch(e) {} }
+        };
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const ov = document.getElementById('appLoading');
+                if (ov) ov.classList.add('hidden');
+            }, 400);
+        });
+
+        const vm = new Vue({
+            el: '#app',
+            data: {
+                currentRole: '',
+                currentUser: null,
+                records: [],
+                petOptions: [],
+                filters: { petId: null, recordType: '', status: '' },
+                stats: { total: 0, vaccine: 0, checkup: 0, cost: 0 },
+                showModal: false,
+                showDetail: false,
+                detailRecord: null,
+                searchingPet: false,
+                form: this._formDefaults()
+            },
+            methods: {
+                _formDefaults() {
+                    return { id: null, petId: '', recordType: '', title: '', recordDate: '', vetName: '', cost: '', institution: '', description: '' };
+                },
+                getRoleName(role) {
+                    const map = { admin: '管理员', institution_admin: '机构管理员', volunteer: '志愿者', adopter: '领养人', pet_hospital: '宠物医院' };
+                    return map[role] || role || '用户';
+                },
+                typeLabel(type) {
+                    const map = { vaccine: '💉疫苗', checkup: '🩺体检', treatment: '💊治疗', surgery: '🏥手术', dental: '🦷牙科', other: '📋其他' };
+                    return map[type] || type;
+                },
+                searchPets(query) {
+                    if (!query) { this.petOptions = []; return; }
+                    this.searchingPet = true;
+                    axios.get('/api/pet/list', { params: { keyword: query, page: 1, pageSize: 20 } })
+                        .then(r => {
+                            if (r.data.code === 200) this.petOptions = r.data.data.records || [];
+                        })
+                        .finally(() => this.searchingPet = false);
+                },
+                loadRecords() {
+                    if (!this.filters.petId) { this.records = []; this.stats = { total: 0, vaccine: 0, checkup: 0, cost: 0 }; return; }
+                    const params = { petId: this.filters.petId };
+                    if (this.filters.recordType) params.recordType = this.filters.recordType;
+                    if (this.filters.status !== '') params.status = this.filters.status;
+                    axios.get('/api/health-record/list', { params })
+                        .then(r => {
+                            if (r.data.code === 200) {
+                                this.records = r.data.data.records || [];
+                                this.calcStats();
+                            }
+                        });
+                },
+                calcStats() {
+                    this.stats.total = this.records.length;
+                    this.stats.vaccine = this.records.filter(r => r.recordType === 'vaccine').length;
+                    this.stats.checkup = this.records.filter(r => r.recordType === 'checkup').length;
+                    this.stats.cost = (this.records.reduce((s, r) => s + (parseFloat(r.cost) || 0), 0)).toFixed(0);
+                },
+                handleReset() {
+                    this.filters = { petId: null, recordType: '', status: '' };
+                    this.records = [];
+                    this.stats = { total: 0, vaccine: 0, checkup: 0, cost: 0 };
+                },
+                handleAdd() {
+                    if (!this.filters.petId) { alert('请先选择一个宠物'); return; }
+                    this.form = this._formDefaults();
+                    this.form.petId = this.filters.petId;
+                    this.form.recordDate = new Date().toISOString().split('T')[0];
+                    this.showModal = true;
+                },
+                handleEdit(r) {
+                    this.form = { id: r.id, petId: r.petId, recordType: r.recordType, title: r.title, recordDate: r.recordDate || '', vetName: r.vetName || '', cost: r.cost || '', institution: r.institution || '', description: r.description || '' };
+                    this.showModal = true;
+                },
+                handleView(r) {
+                    this.detailRecord = r;
+                    this.showDetail = true;
+                },
+                handleSubmit() {
+                    if (!this.form.petId) { alert('请选择宠物'); return; }
+                    if (!this.form.recordType) { alert('请选择记录类型'); return; }
+                    if (!this.form.title.trim()) { alert('请输入记录标题'); return; }
+                    const payload = { ...this.form };
+                    if (payload.cost === '') payload.cost = 0;
+                    const action = payload.id
+                        ? axios.put('/api/health-record/update', payload)
+                        : axios.post('/api/health-record/add', payload);
+                    action.then(r => {
+                        if (r.data.code === 200) {
+                            this.showModal = false;
+                            this.loadRecords();
+                        } else { alert(r.data.message || '保存失败'); }
+                    }).catch(() => alert('保存失败，请重试'));
+                },
+                logout() {
+                    $ls.rm('token'); $ls.rm('user'); $ls.rm('refreshToken');
+                    window.location.href = 'login.html';
+                }
+            },
+            mounted() {
+                const userStr = $ls.get('user');
+                if (!userStr) { window.location.href = 'login.html'; return; }
+                this.currentUser = JSON.parse(userStr);
+                this.currentRole = this.currentUser.role;
+                // 自动加载宠物列表
+                this.searchPets('');
+            }
+        });
+    </script>
+    <script>
+    // 替换分页器箭头图标（‹ ›）
+    document.addEventListener('DOMContentLoaded', function() {
+        function fixPaginationIcons() {
+            document.querySelectorAll('.el-pagination .btn-prev .el-icon').forEach(function(el) {
+                el.textContent = '‹';
+                el.style.fontSize = '18px';
+                el.style.fontWeight = '700';
+                el.style.fontFamily = '"Segoe UI Symbol", "Arial Unicode MS", sans-serif';
+            });
+            document.querySelectorAll('.el-pagination .btn-next .el-icon').forEach(function(el) {
+                el.textContent = '›';
+                el.style.fontSize = '18px';
+                el.style.fontWeight = '700';
+                el.style.fontFamily = '"Segoe UI Symbol", "Arial Unicode MS", sans-serif';
+            });
+        }
+        fixPaginationIcons();
+        setTimeout(fixPaginationIcons, 500);
+        setTimeout(fixPaginationIcons, 1000);
+    });
+    </script>
+</body>
+</html>

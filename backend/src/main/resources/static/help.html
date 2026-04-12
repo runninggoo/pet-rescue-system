@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>系统帮助 - 宠物救助收养系统</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.15.13/lib/theme-chalk/index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #E07A5F;
+            --primary-dark: #c96a50;
+            --primary-light: #f0a28a;
+            --primary-bg: rgba(224, 122, 95, 0.08);
+            --sage: #81B29A;
+            --sage-light: #a8cdb8;
+            --amber: #F4A261;
+            --sky: #87CEEB;
+            --sky-light: #B0E2FF;
+            --sky-bg: rgba(135, 206, 235, 0.12);
+            --lavender: #B8A9C9;
+            --lavender-light: #D8CCE8;
+            --lavender-bg: rgba(184, 169, 201, 0.12);
+            --mint: #98D8C8;
+            --mint-light: #B8EBE0;
+            --mint-bg: rgba(152, 216, 200, 0.12);
+            --success: #52c788;
+            --danger: #e05d5d;
+            --info: #5b8dee;
+            --warm-white: #FDF6F0;
+            --warm-cream: #FAEEE7;
+            --warm-gray: #f0ebe7;
+            --warm-gray2: #ede6df;
+            --text-dark: #3D405B;
+            --text-muted: #8A8EA0;
+            --card-shadow: 0 4px 20px rgba(224, 122, 95, 0.1);
+            --card-shadow-hover: 0 12px 40px rgba(224, 122, 95, 0.2);
+            --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius: 20px;
+            --radius-sm: 12px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        *:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+        body {
+            background: linear-gradient(160deg, var(--warm-white) 0%, var(--warm-cream) 60%, #f5e8df 100%);
+            font-family: "Nunito", "PingFang SC", "Microsoft YaHei", sans-serif;
+            -webkit-font-smoothing: antialiased;
+            color: var(--text-dark);
+            line-height: 1.7;
+        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--warm-gray); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        .el-button--primary { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; }
+        .el-button--primary:hover { background-color: var(--primary-dark) !important; border-color: var(--primary-dark) !important; }
+        .el-button--success { background-color: var(--sage) !important; border-color: var(--sage) !important; border-radius: var(--radius-sm) !important; }
+        .el-button--warning { background-color: var(--amber) !important; border-color: var(--amber) !important; border-radius: var(--radius-sm) !important; }
+        .el-button { border-radius: var(--radius-sm) !important; }
+        .el-input__inner:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(224,122,95,0.12) !important; }
+        .el-collapse-item__header { font-weight: 700; color: var(--text-dark) !important; }
+        .el-collapse-item__wrap { border-top: none !important; }
+        .el-collapse { border-top: 2px solid var(--warm-gray2) !important; border-bottom: 2px solid var(--warm-gray2) !important; }
+        .el-collapse-item__header { border-bottom: 1px solid var(--warm-gray) !important; }
+        .el-collapse-item__content { color: var(--text-dark) !important; font-size: 14px; line-height: 1.8; padding-top: 16px !important; }
+        .el-collapse-item__arrow { color: var(--primary) !important; }
+
+        @keyframes fadeSlideDown {
+            from { opacity: 0; transform: translateY(-16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes cardEnter {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        @keyframes stepPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+
+        /* ========== 导航栏 ========== */
+        .top-nav {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--warm-gray2);
+            padding: 0 24px; height: 60px;
+            display: flex; align-items: center; justify-content: space-between;
+            animation: fadeSlideDown 0.4s ease;
+        }
+        .nav-brand {
+            display: flex; align-items: center; gap: 10px;
+            text-decoration: none; color: var(--text-dark);
+        }
+        .nav-brand-icon { font-size: 28px; }
+        .nav-brand-text { font-size: 17px; font-weight: 800; color: var(--text-dark); }
+        .nav-brand-text span { color: var(--primary); }
+        .nav-links { display: flex; align-items: center; gap: 6px; }
+        .nav-link {
+            padding: 8px 16px; border-radius: var(--radius-sm);
+            text-decoration: none; color: var(--text-muted);
+            font-size: 14px; font-weight: 600; transition: var(--transition);
+        }
+        .nav-link:hover { color: var(--primary); background: var(--primary-bg); }
+        .nav-link.active { color: var(--primary); background: var(--primary-bg); }
+        .nav-link.primary {
+            background: var(--primary); color: white !important;
+            box-shadow: 0 4px 12px rgba(224,122,95,0.3);
+        }
+        .nav-link.primary:hover { background: var(--primary-dark); box-shadow: 0 6px 16px rgba(224,122,95,0.4); }
+
+        /* ========== 页面主体 ========== */
+        .page-content {
+            max-width: 1600px; margin: 0 auto;
+            padding: 0 24px 64px;
+        }
+
+        /* ========== Hero 区域 ========== */
+        .hero {
+            background: white; border-radius: var(--radius);
+            padding: 48px 40px; margin-top: 28px; margin-bottom: 28px;
+            box-shadow: var(--card-shadow);
+            text-align: center; position: relative; overflow: hidden;
+            animation: fadeSlideUp 0.5s ease;
+        }
+        .hero::before {
+            content: ''; position: absolute; top: -60px; right: -60px;
+            width: 240px; height: 240px;
+            background: radial-gradient(circle, rgba(224,122,95,0.07) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .hero-icon { font-size: 56px; margin-bottom: 16px; display: block; animation: float 3s ease-in-out infinite; }
+        .hero h1 { font-size: 30px; font-weight: 800; color: var(--text-dark); margin-bottom: 10px; }
+        .hero h1 span { color: var(--primary); }
+        .hero p { font-size: 15px; color: var(--text-muted); max-width: 600px; margin: 0 auto; }
+
+        /* ========== 锚点导航 ========== */
+        .anchor-nav {
+            background: white; border-radius: var(--radius); padding: 16px 20px; margin-bottom: 24px;
+            box-shadow: var(--card-shadow); display: flex; gap: 8px; flex-wrap: wrap;
+            animation: fadeSlideUp 0.5s ease 0.1s both;
+        }
+        .anchor-btn {
+            padding: 6px 16px; border-radius: 20px; border: 2px solid var(--warm-gray2);
+            background: white; color: var(--text-muted); font-size: 13px; font-weight: 700;
+            cursor: pointer; transition: var(--transition); text-decoration: none;
+            font-family: inherit;
+        }
+        .anchor-btn:hover { border-color: var(--primary-light); color: var(--primary); transform: translateY(-2px); }
+        .anchor-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
+
+        /* ========== 通用章节标题 ========== */
+        .section { margin-bottom: 40px; }
+        .section-title {
+            font-size: 22px; font-weight: 800; color: var(--text-dark);
+            margin-bottom: 6px; display: flex; align-items: center; gap: 10px;
+        }
+        .section-title .icon { font-size: 26px; }
+        .section-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 20px; padding-left: 36px; }
+
+        /* ========== 系统简介卡片 ========== */
+        .intro-card {
+            background: white; border-radius: var(--radius); padding: 32px;
+            box-shadow: var(--card-shadow); animation: cardEnter 0.5s ease;
+        }
+        .intro-features {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 20px;
+        }
+        .intro-feature {
+            background: var(--warm-cream); border-radius: var(--radius-sm); padding: 18px;
+            display: flex; gap: 14px; align-items: flex-start;
+            transition: var(--transition); border: 1px solid transparent;
+        }
+        .intro-feature:hover { border-color: var(--primary-light); transform: translateY(-3px); box-shadow: 0 6px 20px rgba(224,122,95,0.12); }
+        .intro-feature-icon { font-size: 28px; flex-shrink: 0; }
+        .intro-feature-title { font-size: 14px; font-weight: 700; color: var(--text-dark); margin-bottom: 4px; }
+        .intro-feature-desc { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+
+        /* ========== 角色卡片 ========== */
+        .roles-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;
+        }
+        .role-card {
+            background: white; border-radius: var(--radius); padding: 24px 20px;
+            box-shadow: var(--card-shadow); text-align: center;
+            transition: var(--transition); animation: cardEnter 0.5s ease both;
+            border: 2px solid transparent;
+        }
+        .role-card:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-4px); border-color: var(--primary-light); }
+        .role-avatar {
+            width: 64px; height: 64px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 30px; margin: 0 auto 14px;
+            box-shadow: 0 4px 16px rgba(224,122,95,0.2);
+        }
+        .role-name { font-size: 15px; font-weight: 800; color: var(--text-dark); margin-bottom: 10px; }
+        .role-desc { font-size: 12px; color: var(--text-muted); line-height: 1.7; margin-bottom: 14px; min-height: 50px; }
+        .role-tags { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+        .role-tag {
+            padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: 700;
+        }
+        .role-tag-primary { background: var(--primary-bg); color: var(--primary); }
+        .role-tag-sage { background: rgba(129,178,154,0.1); color: #5a9b7d; }
+        .role-tag-amber { background: rgba(244,162,97,0.1); color: #c87c2a; }
+        .role-tag-blue { background: rgba(96,130,200,0.1); color: #4a6fa5; }
+        .role-tag-green { background: rgba(76,175,80,0.1); color: #388e3c; }
+
+        /* ========== 流程图 ========== */
+        .flow-card {
+            background: white; border-radius: var(--radius); padding: 32px;
+            box-shadow: var(--card-shadow); animation: cardEnter 0.5s ease;
+        }
+        .flow-title {
+            font-size: 16px; font-weight: 800; color: var(--text-dark);
+            margin-bottom: 24px; display: flex; align-items: center; gap: 10px;
+        }
+        .flow-steps {
+            display: flex; gap: 0; align-items: center; flex-wrap: wrap;
+            justify-content: center;
+        }
+        .flow-step {
+            display: flex; flex-direction: column; align-items: center;
+            min-width: 100px; max-width: 140px;
+        }
+        .flow-step-circle {
+            width: 60px; height: 60px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; font-weight: 800; color: white;
+            box-shadow: 0 4px 16px rgba(224,122,95,0.25);
+            animation: stepPulse 3s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+        .flow-step-text {
+            margin-top: 8px; font-size: 12px; font-weight: 700; color: var(--text-dark); text-align: center; line-height: 1.4;
+        }
+        .flow-arrow {
+            display: flex; align-items: center; padding: 0 8px; color: var(--primary-light);
+            font-size: 22px; flex-shrink: 0;
+        }
+        .flow-step-desc {
+            font-size: 11px; color: var(--text-muted); text-align: center; margin-top: 4px; line-height: 1.5; max-width: 120px;
+        }
+
+        /* ========== FAQ ========== */
+        .faq-card {
+            background: white; border-radius: var(--radius); padding: 32px;
+            box-shadow: var(--card-shadow); animation: cardEnter 0.5s ease;
+        }
+        .faq-item {
+            padding: 14px 0; border-bottom: 1px solid var(--warm-gray);
+            animation: cardEnter 0.4s ease both;
+        }
+        .faq-item:last-child { border-bottom: none; }
+        .faq-q {
+            font-size: 14px; font-weight: 700; color: var(--text-dark);
+            display: flex; align-items: flex-start; gap: 10px; cursor: pointer; padding: 6px 0;
+        }
+        .faq-q-icon { color: var(--primary); flex-shrink: 0; margin-top: 2px; font-size: 16px; }
+        .faq-a { font-size: 13px; color: var(--text-muted); padding: 8px 0 8px 26px; line-height: 1.8; }
+
+        /* ========== 页脚 ========== */
+        .page-footer {
+            background: var(--warm-cream); border-top: 1px solid var(--warm-gray2);
+            padding: 24px; text-align: center;
+        }
+        .footer-text { font-size: 13px; color: var(--text-muted); }
+        .footer-paw { font-size: 20px; animation: float 3s ease-in-out infinite; display: block; margin-bottom: 8px; }
+
+        .hero h1 { font-size: 26px; font-weight: 800; color: var(--text-dark); margin-bottom: 10px; line-height: 1.2; }
+        .hero h1 span { color: var(--primary); }
+        .hero p { font-size: 14px; color: var(--text-muted); max-width: 600px; margin: 0 auto; line-height: 1.6; }
+
+        /* ========== P2-2 响应式布局 ========== */
+        @media (max-width: 900px) {
+            .hero { padding: 32px 24px; }
+            .flow-steps { flex-wrap: wrap; gap: 16px; }
+            .roles-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+        }
+        @media (max-width: 600px) {
+            .page-content { padding: 0 12px 40px; }
+            .hero { padding: 20px 16px; margin-top: 16px; margin-bottom: 16px; }
+            .hero h1 { font-size: 22px; }
+            .hero p { font-size: 13px; }
+            .hero-icon { font-size: 44px; margin-bottom: 12px; }
+            .flow-steps { flex-direction: column; align-items: flex-start; }
+            .flow-arrow { display: none; }
+            .flow-step { flex-direction: row; gap: 12px; }
+            .roles-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            /* 触摸友好 */
+            .el-button, .nav-link { min-height: 36px; padding: 8px 14px; }
+            .top-nav { padding: 12px 16px; }
+            .nav-brand-text { font-size: 15px; }
+            .nav-links { gap: 4px; }
+            .nav-link { padding: 6px 10px; font-size: 13px; }
+        }
+        @media (max-width: 375px) {
+            .hero h1 { font-size: 20px; }
+            .roles-grid { grid-template-columns: 1fr; }
+        }
+        .el-pagination .btn-prev,
+        .el-pagination .btn-next {
+            font-family: "Segoe UI", sans-serif !important;
+        }
+        .el-pagination .btn-prev .el-icon,
+        .el-pagination .btn-next .el-icon {
+            display: none !important;
+        }
+        .el-pagination .btn-prev::after {
+            content: "‹" !important;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            font-family: "Segoe UI", sans-serif !important;
+            display: inline-block;
+            line-height: 1;
+        }
+        .el-pagination .btn-next::after {
+            content: "›" !important;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            font-family: "Segoe UI", sans-serif !important;
+            display: inline-block;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <!-- 导航栏 -->
+    <nav class="top-nav">
+        <a href="pet-list.html" class="nav-brand">
+            <span class="nav-brand-icon">🐾</span>
+            <span class="nav-brand-text">宠物<span>救助</span>收养系统</span>
+        </a>
+        <div class="nav-links">
+            <a href="pet-list.html" class="nav-link">首页</a>
+            <a href="help.html" class="nav-link active">帮助中心</a>
+            <a href="login.html" class="nav-link primary">立即登录</a>
+        </div>
+    </nav>
+
+    <div class="page-content">
+        <!-- Hero -->
+        <div class="hero">
+            <span class="hero-icon">📈</span>
+            <h1>欢迎使用<span>宠物救助收养系统</span></h1>
+            <p>本系统覆盖从"救助发现 → 领养审核 → 健康管理 → 后续跟踪"全业务流程，为流浪宠物找到温暖的家。</p>
+        </div>
+
+        <!-- 锚点导航 -->
+        <div class="anchor-nav">
+            <a href="#overview" class="anchor-btn active">系统简介</a>
+            <a href="#roles" class="anchor-btn">角色说明</a>
+            <a href="#adoption-flow" class="anchor-btn">领养流程</a>
+            <a href="#volunteer-flow" class="anchor-btn">志愿者流程</a>
+            <a href="#faq" class="anchor-btn">常见问题</a>
+        </div>
+
+        <!-- 系统简介 -->
+        <div class="section" id="overview">
+            <div class="section-title">
+                <span class="icon">🏠</span> 帮助中心
+            </div>
+            <div class="section-sub">基于 Spring Boot + Vue.js 的前后端分离 Web 应用，覆盖上海地区流浪宠物救助收养的完整数字化管理流程。</div>
+            <div class="intro-card">
+                <div class="intro-features">
+                    <div class="intro-feature">
+                        <span class="intro-feature-icon">🐾</span>
+                        <div>
+                            <div class="intro-feature-title">宠物管理</div>
+                            <div class="intro-feature-desc">支持多维度筛选（品种/紧急程度/健康状态），快速找到心仪宠物</div>
+                        </div>
+                    </div>
+                    <div class="intro-feature">
+                        <span class="intro-feature-icon">📋</span>
+                        <div>
+                            <div class="intro-feature-title">领养审核</div>
+                            <div class="intro-feature-desc">多申请人横向对比，规范审核流程，支持补充材料与协议签署</div>
+                        </div>
+                    </div>
+                    <div class="intro-feature">
+                        <span class="intro-feature-icon">🏥</span>
+                        <div>
+                            <div class="intro-feature-title">健康档案</div>
+                            <div class="intro-feature-desc">疫苗、体检、治疗全记录，支持到期提醒，守护宠物健康</div>
+                        </div>
+                    </div>
+                    <div class="intro-feature">
+                        <span class="intro-feature-icon">❤️</span>
+                        <div>
+                            <div class="intro-feature-title">志愿者体系</div>
+                            <div class="intro-feature-desc">积分成长、每日签到、排行榜，激励志愿者持续参与公益</div>
+                        </div>
+                    </div>
+                    <div class="intro-feature">
+                        <span class="intro-feature-icon">📊</span>
+                        <div>
+                            <div class="intro-feature-title">数据统计</div>
+                            <div class="intro-feature-desc">实时掌握领养成功率、区域分布、季节性趋势，辅助科学决策</div>
+                        </div>
+                    </div>
+                    <div class="intro-feature">
+                        <span class="intro-feature-icon">🔗</span>
+                        <div>
+                            <div class="intro-feature-title">回访跟踪</div>
+                            <div class="intro-feature-desc">领养后定期回访，关注宠物适应情况，记录回访历史</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 角色说明 -->
+        <div class="section" id="roles">
+            <div class="section-title">
+                <span class="icon">👥</span> 角色说明
+            </div>
+            <div class="section-sub">系统支持五大角色，各司其职、协同工作</div>
+            <div class="roles-grid">
+                <div class="role-card" style="animation-delay:0.05s">
+                    <div class="role-avatar" style="background:linear-gradient(135deg,#fef0ee,#fce8e2);">👑</div>
+                    <div class="role-name">系统管理员</div>
+                    <div class="role-desc">拥有系统最高权限，管理用户账户、宠物信息、机构数据、全部统计数据。</div>
+                    <div class="role-tags">
+                        <span class="role-tag role-tag-primary">用户管理</span>
+                        <span class="role-tag role-tag-primary">数据统计</span>
+                    </div>
+                </div>
+                <div class="role-card" style="animation-delay:0.1s">
+                    <div class="role-avatar" style="background:linear-gradient(135deg,#e3f2fd,#bbdefb);">🏢</div>
+                    <div class="role-name">机构管理员</div>
+                    <div class="role-desc">管理本机构宠物、审核领养申请、录入健康档案、发布志愿任务。</div>
+                    <div class="role-tags">
+                        <span class="role-tag role-tag-blue">审核申请</span>
+                        <span class="role-tag role-tag-blue">健康档案</span>
+                    </div>
+                </div>
+                <div class="role-card" style="animation-delay:0.15s">
+                    <div class="role-avatar" style="background:linear-gradient(135deg,#e8f5e9,#c8e6c9);">🏠</div>
+                    <div class="role-name">领养人</div>
+                    <div class="role-desc">浏览宠物、提交领养申请、补充材料、签署领养协议、完成领养流程。</div>
+                    <div class="role-tags">
+                        <span class="role-tag role-tag-sage">申请领养</span>
+                        <span class="role-tag role-tag-sage">签署协议</span>
+                    </div>
+                </div>
+                <div class="role-card" style="animation-delay:0.2s">
+                    <div class="role-avatar" style="background:linear-gradient(135deg,#fff8e1,#ffecb3);">🌟</div>
+                    <div class="role-name">志愿者</div>
+                    <div class="role-desc">接取并完成任务、获得成长积分、每日签到、查看个人排行榜与等级。</div>
+                    <div class="role-tags">
+                        <span class="role-tag role-tag-amber">接任务</span>
+                        <span class="role-tag role-tag-amber">获积分</span>
+                    </div>
+                </div>
+                <div class="role-card" style="animation-delay:0.25s">
+                    <div class="role-avatar" style="background:linear-gradient(135deg,#e0f2f1,#b2dfdb);">🏥</div>
+                    <div class="role-name">宠物医院</div>
+                    <div class="role-desc">查看宠物健康档案、录入疫苗和体检记录、管理医疗资源信息。</div>
+                    <div class="role-tags">
+                        <span class="role-tag role-tag-green">疫苗记录</span>
+                        <span class="role-tag role-tag-green">体检记录</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 领养流程 -->
+        <div class="section" id="adoption-flow">
+            <div class="section-title">
+                <span class="icon">💡</span> 领养流程
+            </div>
+            <div class="section-sub">从发现宠物到完成领养的完整业务流程</div>
+            <div class="flow-card">
+                <div class="flow-title">🐾 领养申请 → 审核 → 签约 → 回访</div>
+                <div class="flow-steps">
+                    <div class="flow-step">
+                        <div class="flow-step-circle" style="background:linear-gradient(135deg,#81B29A,#a8cdb8);">1</div>
+                        <div class="flow-step-text">浏览宠物</div>
+                        <div class="flow-step-desc">在宠物列表页筛选品种、紧急程度，找到心仪宠物</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <div class="flow-step-circle" style="background:linear-gradient(135deg,#E07A5F,#f0a28a);">2</div>
+                        <div class="flow-step-text">提交申请</div>
+                        <div class="flow-step-desc">填写养宠经验、居住条件、家庭成员等信息</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <div class="flow-step-circle" style="background:linear-gradient(135deg,#F4A261,#f7c59f);">3</div>
+                        <div class="flow-step-text">等待审核</div>
+                        <div class="flow-step-desc">管理员/机构审核，可要求补充材料或直接拒绝</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <div class="flow-step-circle" style="background:linear-gradient(135deg,#E07A5F,#f0a28a);">4</div>
+                        <div class="flow-step-text">签署协议</div>
+                        <div class="flow-step-desc">审核通过后签署领养协议，正式成为领养人</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <div class="flow-step-circle" style="background:linear-gradient(135deg,#81B29A,#a8cdb8);">5</div>
+                        <div class="flow-step-text">领养成功</div>
+                        <div class="flow-step-desc">宠物正式交接入住新家，机构可进行回访跟踪</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 志愿者流程 -->
+        <div class="section" id="volunteer-flow">
+            <div class="section-title">
+                <span class="icon">🌟</span> 志愿者成长流程
+            </div>
+            <div class="section-sub">完成任务获得积分，提升等级，解锁更多公益荣誉</div>
+            <div class="flow-card">
+                <div class="flow-title">🌟 接单 → 完成任务 → 获得积分 → 升级</div>
+                <div class="flow-steps">
+                    <div class="flow-step">
+                        <div class="flow-step-circle" style="background:linear-gradient(135deg,#F4A261,#f7c59f);">1</div>
+                        <div class="flow-step-text">浏览任务</div>
+                        <div class="flow-step-desc">在任务管理页查看救助站发布的各类志愿任务</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <div class="flow-step-circle" style="background:linear-gradient(135deg,#E07A5F,#f0a28a);">2</div>
+                        <div class="flow-step-text">接取任务</div>
+                        <div class="flow-step-desc">点击接单，任务状态变为"进行中"，按时完成</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <div class="flow-step-circle" style="background:linear-gradient(135deg,#81B29A,#a8cdb8);">3</div>
+                        <div class="flow-step-text">获得积分</div>
+                        <div class="flow-step-desc">任务完成后获得积分奖励，每日签到也有额外积分</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <div class="flow-step-circle" style="background:linear-gradient(135deg,#E07A5F,#c96a50);">4</div>
+                        <div class="flow-step-text">等级提升</div>
+                        <div class="flow-step-desc">累计积分达到阈值自动升级，共6个等级：新手上路→公益之星</div>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-step">
+                        <div class="flow-step-circle" style="background:linear-gradient(135deg,#F4A261,#e0933e);">5</div>
+                        <div class="flow-step-text">榜单荣誉</div>
+                        <div class="flow-step-desc">每周积分排行榜 TOP10，积分历史可查，等级徽章展示</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div class="section" id="faq">
+            <div class="section-title">
+                <span class="icon">❔</span> 常见问题
+            </div>
+            <div class="section-sub">快速找到常见问题的解答</div>
+            <div class="faq-card">
+                <div v-for="(item, idx) in faqList" :key="idx" class="faq-item" :style="'animation-delay:' + (idx * 0.06) + 's'">
+                    <div class="faq-q" @click="toggleFaq(idx)">
+                        <span class="faq-q-icon">Q</span>
+                        {{ item.q }}
+                        <span style="margin-left:auto;color:var(--text-muted);" :style="item.open ? 'transform:rotate(90deg);display:block;transition:transform 0.3s;' : 'display:block;transition:transform 0.3s;'">▶</span>
+                    </div>
+                    <div class="faq-a" v-if="item.open" v-html="item.a"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <div class="page-footer">
+        <span class="footer-paw">🐾</span>
+        <div class="footer-text">宠物救助收养系统 · 技术支持：上海大学计算机专业毕业设计项目</div>
+        <div class="footer-text" style="margin-top:4px;font-size:12px;color:var(--text-muted);">© 2026 宠物救助收养系统 · 让爱不流浪</div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui@2.15.13/lib/index.js"></script>
+<script>
+    Vue.use(ELEMENT);
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                faqList: [
+                    {
+                        q: '如何申请领养一只宠物？',
+                        a: '登录后进入宠物列表页，找到心仪的宠物，点击「申请领养」按钮，填写养宠经验、居住条件、家庭成员等信息后提交即可。管理员审核通过后会通知您签署领养协议。',
+                        open: false
+                    },
+                    {
+                        q: '领养申请被拒绝后可以重新申请吗？',
+                        a: '可以。您需要根据审核意见补充或修改申请材料后重新提交。同一宠物同一申请人只能有一条待审核申请。',
+                        open: false
+                    },
+                    {
+                        q: '什么是紧急程度的宠物？',
+                        a: '紧急程度分为三级：一般、紧急、非常紧急。紧急宠物通常是有严重伤病急需救治或长期滞留救助站的宠物，系统会在列表页优先展示。',
+                        open: false
+                    },
+                    {
+                        q: '志愿者积分有什么用？',
+                        a: '志愿者通过完成任务和每日签到获得积分，积分累计到一定数量可以提升等级（共6级：新手上路→公益达人→公益标兵→公益精英→公益骨干→公益之星）。高等级志愿者在排行榜中展示，可获得更多荣誉。',
+                        open: false
+                    },
+                    {
+                        q: '如何成为志愿者？',
+                        a: '在登录页面注册账号，系统管理员审核后将您的账户角色设置为「志愿者」，即可获得志愿者权限。志愿者可以接取救助站发布的志愿任务。',
+                        open: false
+                    },
+                    {
+                        q: '健康档案中的到期提醒是什么意思？',
+                        a: '在为宠物录入疫苗或体检记录时，可以设置下次到期日期。系统会在健康档案管理页面显示即将到期的提醒，帮助您及时带宠物进行健康检查。',
+                        open: false
+                    },
+                    {
+                        q: '领养后还需要做什么？',
+                        a: '领养成功后，救助站可能会定期对您进行回访，了解宠物适应情况。您有义务配合回访工作，如实反馈宠物的健康和生活状况。回访记录可在领养申请详情页查看。',
+                        open: false
+                    },
+                    {
+                        q: '一个宠物可以有多位申请人吗？',
+                        a: '可以。当同一宠物有多位申请人提交申请时，管理员可以在领养申请管理页面的待审核视图中按宠物分组，点击「对比筛选」横向对比各申请人的信息，选择最合适的申请人通过审核。',
+                        open: false
+                    },
+                    {
+                        q: '机构管理员和系统管理员有什么区别？',
+                        a: '系统管理员拥有全系统权限，可管理所有用户和机构数据；机构管理员只能管理其所属机构的宠物、领养申请、健康档案和志愿任务，数据互不干扰。',
+                        open: false
+                    },
+                    {
+                        q: '忘记了登录密码怎么办？',
+                        a: '目前系统密码重置功能由管理员后台操作。如忘记密码，请联系系统管理员重置密码后使用临时密码登录。',
+                        open: false
+                    }
+                ]
+            };
+        },
+        mounted() {
+            // 锚点导航激活状态
+            const anchors = document.querySelectorAll('.anchor-btn');
+            const sections = document.querySelectorAll('.section');
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        anchors.forEach(a => a.classList.remove('active'));
+                        const id = entry.target.id;
+                        const active = document.querySelector('.anchor-btn[href="#' + id + '"]');
+                        if (active) active.classList.add('active');
+                    }
+                });
+            }, { threshold: 0.3 });
+            sections.forEach(s => observer.observe(s));
+        },
+        methods: {
+            toggleFaq(idx) {
+                this.faqList[idx].open = !this.faqList[idx].open;
+            }
+        }
+    });
+</script>
+<script>
+// 替换分页器箭头图标（‹ ›）
+document.addEventListener('DOMContentLoaded', function() {
+    function fixPaginationIcons() {
+        document.querySelectorAll('.el-pagination .btn-prev .el-icon').forEach(function(el) {
+            el.textContent = '‹';
+            el.style.fontSize = '18px';
+            el.style.fontWeight = '700';
+            el.style.fontFamily = '"Segoe UI Symbol", "Arial Unicode MS", sans-serif';
+        });
+        document.querySelectorAll('.el-pagination .btn-next .el-icon').forEach(function(el) {
+            el.textContent = '›';
+            el.style.fontSize = '18px';
+            el.style.fontWeight = '700';
+            el.style.fontFamily = '"Segoe UI Symbol", "Arial Unicode MS", sans-serif';
+        });
+    }
+    fixPaginationIcons();
+    setTimeout(fixPaginationIcons, 500);
+    setTimeout(fixPaginationIcons, 1000);
+});
+</script>
+</body>
+</html>

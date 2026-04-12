@@ -221,6 +221,24 @@ public class AdoptionApplicationController {
     }
 
     /**
+     * 获取某宠物的所有待审核申请（用于多申请人对比）
+     * 仅返回 status=0 的申请
+     */
+    @GetMapping("/compare/{petId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('INSTITUTION_ADMIN')")
+    public ResponseResult compareApplicants(@PathVariable Long petId) {
+        try {
+            List<AdoptionApplication> applications = applicationService.findPendingByPetId(petId);
+            Map<String, Object> data = new HashMap<>();
+            data.put("applications", applications);
+            data.put("count", applications.size());
+            return ResponseResult.ok().data(data);
+        } catch (Exception e) {
+            return ResponseResult.error("获取对比数据失败：" + e.getMessage());
+        }
+    }
+
+    /**
      * 获取当前用户ID（辅助方法）
      */
     private Long getCurrentUserId() {

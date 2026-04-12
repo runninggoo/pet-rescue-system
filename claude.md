@@ -1,14 +1,10 @@
-  ## 📋 创建claude.md文件
+# 宠物救助收养系统 - 项目规范
 
-  ```markdown
-  # 宠物救助收养系统 - 项目规范
+## 🎯 项目概述
 
-  ## 🎯 项目概述
+宠物救助收养系统是一个基于Spring Boot + Vue.js的前后端分离Web应用，旨在解决上海地区流浪宠物救助收养领域的数字化管理问题。系统覆盖从"救助发现→领养审核→健康管理→后续跟踪"的全业务流程，支持多角色在线协同工作。
 
-  宠物救助收养系统是一个基于Spring Boot +
-  Vue.js的前后端分离Web应用，旨在解决上海地区流浪宠物救助收养领域的数字化管理问题。系统覆盖从"救助发现→领养审核→健康管理→后续跟踪"的全业务流程，支持多角色在线协同工作。
-
-  ## 🛠️ 技术栈
+## 🛠️ 技术栈
 
   ### 后端技术栈
   - **框架**：Spring Boot 2.7.0
@@ -238,13 +234,27 @@
      mysql -u root -p < sql/test_data.sql
 
   2. 后端启动：
-  cd backend
-  mvn clean install
-  mvn spring-boot:run
-  3. 前端启动：
-  cd frontend
-  npm install
-  npm run dev
+ cd backend
+ mvn clean install
+ mvn spring-boot:run
+ 3. 前端启动：
+ cd frontend
+ npm install
+ npm run dev
+
+ **⚠️ 重要：前端文件同步规范**
+ Spring Boot 的 static 资源目录（`backend/src/main/resources/static/`）与 Vite 开发目录（`frontend/public/`）是**两套独立的 HTML 文件**。
+ - `frontend/public/`：由 Vite 开发服务器（端口 5173）直接提供，实时反映最新代码
+ - `backend/src/main/resources/static/`：由 Spring Boot（端口 8081）直接提供，仅在 `mvn clean install` 时从源码复制
+
+ **每次修改前端 HTML 文件后，必须手动同步到后端 static 目录**（否则通过 8081 端口访问到的仍是旧版）：
+ ```powershell
+ # PowerShell 同步所有前端文件到后端 static 目录
+ $src = "C:\Users\33169\Desktop\计算机\毕业设计\项目\frontend\public"
+ $dst = "C:\Users\33169\Desktop\计算机\毕业设计\项目\backend\src\main\resources\static"
+ Get-ChildItem "$src\*.html" | ForEach-Object { Copy-Item "$src\$($_.Name)" "$dst\$($_.Name)" -Force }
+ ```
+ 重启后端服务后生效。
 
   开发流程
 
@@ -324,13 +334,10 @@
 
   如有任何问题，欢迎提交Issue或联系项目维护者。
 
----最后更新：2026-04-03（品种筛选 Bug 完全修复）
-版本：1.1.1
-状态：品种筛选修复完成，志愿者成长体系完成，P2 JWT Token 刷新待实现，P0 论文截图采集
-新增：品种筛选修复（批量 children 填充 + SecurityConfig permitAll + 前端 loadBreedsByCategory）
-重要：品种管理弹窗使用原生 div 覆盖层替代 el-dialog（解决 Vue 隔离问题）
-MyBatis isNull/isNotNull 极易写反，详见下方注意事项章节
-UI 规范：温馨治愈宠物风（陶土珊瑚色系 #E07A5F），详见下方「前端 UI 设计规范」章节
+---最后更新：2026-04-12（v1.2.1 health-record.html DOM结构修复）
+版本：1.2.1
+状态：v1.2.0 UI优化全部完成 | health-record.html DOM修复 | 宠物数据冲突修复（v1.1.6）
+新增：v1.2.1 health-record.html 多余DOM闭合标签导致Vue模板解析失败，已修复
 
   ## 🎨 前端 UI 设计规范（2026-04-02 新增）
 
@@ -491,3 +498,373 @@ UI 规范：温馨治愈宠物风（陶土珊瑚色系 #E07A5F），详见下方
   ```
 
   ## 🎯 更新完成（v1.1.2）
+
+  ---
+
+  ## 📌 v1.1.3 更新（2026-04-11）UI全面优化
+
+  ### 背景
+  2026-04-11 对9个前端页面进行了系统化UI全面优化，修复了CSS变量不一致、布局缺陷、Vue挂载bug等问题。
+
+  ### 阶段一：修复破坏性 bug（P0）
+
+  | 文件 | 问题 | 修复内容 |
+  |------|------|---------|
+  | `pet-list.html` | `--radius: 16px`，缺少4个变量 | 改为 `--radius: 20px`，补全 `--primary-bg`/`--bg`/`--warm-gray2` |
+  | `pet-detail.html` | 变量名不一致（`--border-radius`） | 统一为 `--radius`，补全缺失变量 |
+  | `shelter-recommendation.html` | 重复变量 `--shadow` | 删除重复，与 `--card-shadow` 合并 |
+  | `pet-list.html` | 统计卡片 `auto-fit` 挤压网格区域 | 改为 `grid-template-columns: repeat(4, 1fr)` 固定4列 |
+  | `pet-list.html` | 宠物网格 `auto-fit` 最后一行不撑满 | 改为 `auto-fill` + `minmax(260px, 1fr)` |
+
+  ### 阶段二：统一 Element UI 覆盖（P1）
+
+  为 `pet-list.html` 和 `pet-detail.html` 补全了以下覆盖样式：
+  - 爪印 SVG 装饰背景（`.page-bg-paws`）
+  - 页面包装容器（`.page-wrapper`，`position: relative; z-index: 1`）
+  - 分页器圆形激活状态
+  - 加载遮罩透明度
+  - 对话框/消息框/标签统一圆角
+  - 表格描述表头暖色背景
+
+  ### 阶段三：消除 Vue 隔离风险（P2）
+
+  **`user-management.html` 重大修复**：
+  - 该文件**原本缺少 `<div id="app">`**，导致 Vue 实例从未挂载，所有 axios 请求无法触发，用户列表无法加载
+  - 修复：添加 `<div id="app" class="page-wrapper">` 包裹内容
+  - 同时将 `el-dialog` 替换为**原生 div 遮罩层**（符合 CLAUDE.md 规范，避免 Vue 隔离问题）
+  - 表单验证从 `$refs.userForm.validate()` 改为手动 JS 校验
+
+  **`health-record.html` / `volunteer-task.html`**（第一轮标记为无需改动，第二轮已修复）：
+  - 第一轮：已有 `<div id="app">`，`el-dialog` 当时未处理
+  - 第二轮（2026-04-11 下午）：详情弹窗 + 添加/编辑/发布/完成任务弹窗全部改为原生 div 遮罩层
+  - 表单校验全部改为手动 JS 校验，状态标签从 `<el-tag>` 改为原生 `.status-inline span`
+
+  ### 阶段四：视觉细节打磨（P3）
+
+  **`pet-list.html` 横幅导航精简**：
+  - 原9个导航链接（用户管理/领养审核/数据统计/健康档案/任务管理等）全部平铺 → 改为常驻3个（个人中心/救助站/帮助）+ 1个「管理 ▼」下拉菜单
+  - 横幅右侧冗余统计徽章（待领养/已领养数字，与下方 stats-bar 重复）已删除
+
+  **`pet-list.html` 管理下拉菜单**：
+  - 点击「管理 ▼」展开白色下拉面板（用户管理/领养审核/数据统计/健康档案/任务管理）
+  - 点击任意项跳转并关闭菜单，点击外部自动关闭（`document.addEventListener('click')`）
+  - 角色控制：仅 `admin`/`institution_admin`/`volunteer` 可见
+
+  ### 数据库修复
+
+  **`follow_up_record` 表结构不完整**：
+  - 原表只有：`id`, `adoption_id`, `user_id`, `status`, `feedback`, `created_time`, `updated_time`, `deleted`
+  - 缺少：`follow_up_date`, `follower_id`, `pet_condition`, `content`, `images`
+  - 修复：`ALTER TABLE` 添加了所有缺失字段
+  - 测试数据：申请 `app_id=29`（宠物旺财）已有2条回访记录（2026-04-05、2026-04-12）
+
+  ### 新增 CSS 规范
+
+  所有页面必须使用统一 CSS 变量体系（不得出现例外）：
+
+  ```css
+  :root {
+      --primary: #E07A5F;        --primary-dark: #c96a50;  --primary-light: #f0a28a;
+      --primary-bg: rgba(224, 122, 95, 0.08);
+      --sage: #81B29A;            --sage-light: #a8cdb8;
+      --amber: #F4A261;
+      --warm-white: #FDF6F0;      --warm-cream: #FAEEE7;
+      --warm-gray: #f0ebe7;      --warm-gray2: #ede6df;
+      --text-dark: #3D405B;       --text-muted: #8A8EA0;
+      --bg: var(--warm-white);
+      --card-shadow: 0 4px 20px rgba(224, 122, 95, 0.10);
+      --card-shadow-hover: 0 12px 40px rgba(224, 122, 95, 0.20);
+      --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      --radius: 20px;             --radius-sm: 12px;
+  }
+  ```
+
+  ### 新增页面结构模板
+
+  所有页面 HTML 结构模板（必须遵循）：
+
+  ```html
+  <body>
+  <!-- 爪印装饰背景（可选） -->
+  <div class="page-bg-paws">
+      <svg ... viewBox="0 0 24 24"><path d="..."/></svg>
+      <!-- 可放置多个爪印 SVG -->
+  </div>
+  <!-- Vue 挂载根（必须 id="app"） -->
+  <div id="app" class="page-wrapper">
+      <!-- 页面内容 -->
+  </div>
+  <script src="...vue.js"><script>
+  <script src="...element-ui/index.js"><script>
+  <script src="...axios.min.js"><script>
+  <script>
+      Vue.use(ELEMENT);
+      new Vue({ el: '#app', ... })
+  </script>
+  ```
+
+  ### 回访调查功能入口
+
+  位置：领养审核 → 已完成标签 → 点击任意申请行（如旺财） → 右侧抽屉 → 「回访记录」Tab
+  - 添加按钮（管理员/机构管理员可见）
+  - 时间线展示已有回访记录
+  - API: `GET /api/follow-up/list/{adoptionId}`, `POST /api/follow-up/add`
+
+  ### 第二轮优化补充（2026-04-11 下午）
+
+  **`stats.html` 骨架屏 HTML 结构**：
+  - 加载时显示 6 张统计卡骨架 + 2 个图表骨架（CSS 已定义但 HTML 未使用，现已完整添加）
+  - 修复 `startPlaceholder`/`endPlaceholder` 日期选择器占位符显示
+
+  **`shelter-recommendation.html` CSS 变量补充**：
+  - 补充 `--shadow`/`--shadow-hover` 变量，避免 CSS 引用未定义变量报错
+
+  **`pet-detail.html` 健康档案可见性优化**：
+  - 健康档案卡片可见条件从 `pet.status === 0` 改为 `isLoggedIn`
+  - 所有登录角色均可查看宠物健康档案
+
+  **`adoption-list.html` 原生遮罩层**：
+  - 详情抽屉已使用 `.custom-modal-overlay` 原生遮罩层（`el-drawer` 样式自定义）
+  - 回访记录表单使用独立 `.custom-modal-overlay` 遮罩层
+
+  **`profile.html` / `simple-stats.html` / `help.html`**：
+  - 三个页面均已具备 `.page-bg-paws`、`.page-wrapper`、完整 CSS 变量体系
+
+  ## 🎯 更新完成（v1.1.3）
+
+  ---
+
+  ## 📌 v1.1.4 更新（2026-04-11）JWT Token 刷新功能完全落地
+
+  ### 背景
+
+  后端 `AuthController` + `RefreshTokenService` + `refresh_token` 表的完整实现早已存在，
+  但前端 `auth.js` 仅在 `login.html` 和 `register.html` 中引入，其余 11 个页面全部缺失，
+  导致 Access Token 过期后**不会自动刷新**，用户体验中断。
+
+  ### 修复内容
+
+  **前端 - 所有需要认证的页面均已补充引入 `auth.js`**：
+
+  | 页面 | 引入位置 |
+  |------|---------|
+  | `login.html` | ✅ 原本已有 |
+  | `register.html` | ✅ 原本已有 |
+  | `pet-list.html` | ✅ 新增 |
+  | `pet-detail.html` | ✅ 新增 |
+  | `adoption-list.html` | ✅ 新增 |
+  | `health-record.html` | ✅ 新增 |
+  | `volunteer-task.html` | ✅ 新增 |
+  | `stats.html` | ✅ 新增 |
+  | `profile.html` | ✅ 新增 |
+  | `user-management.html` | ✅ 新增 |
+  | `shelter-recommendation.html` | ✅ 新增 |
+  | `pet-hospital.html` | ✅ 新增 |
+  | `simple-stats.html` | ✅ 新增 |
+
+  所有文件已同步到 `backend/src/main/resources/static/` 目录。
+
+  ### JWT Token 刷新机制说明（论文可用）
+
+  **双 Token 架构**：
+  - Access Token（JWT）：短期（30分钟），存 localStorage + Cookie，每次 API 请求携带
+  - Refresh Token：长期（7天），存 localStorage + 数据库，用于 Access Token 过期后刷新
+
+  **工作流程**：
+  1. 登录时后端生成双 Token，返回前端
+  2. 每次 API 请求，axios 请求拦截器自动在 `Authorization: Bearer <token>` 中附加 Access Token
+  3. Access Token 过期时后端返回 401，前端 axios 响应拦截器自动用 Refresh Token 调用 `/api/auth/refresh`
+  4. 后端验证 Refresh Token（查库 + 检查过期），返回新 Access Token
+  5. 前端保存新 Token 后重试被拦截的原请求，用户无感知
+
+  **安全特性**：
+  - 令牌分离：Access Token 不含刷新能力，Refresh Token 存服务端数据库
+  - 主动注销：删除数据库 Refresh Token 即可立即使会话失效
+  - 设备追踪：记录创建时的 User-Agent 和 IP 地址
+  - 刷新队列：防止多请求并发时多次刷新（雪崩防护）
+
+  ### ⚠️ 前端开发新规范（2026-04-11 新增）
+
+  **所有页面必须引入 `auth.js`**：
+
+  ```html
+  <!-- Vue + Element UI + Axios 之后，Vue 实例初始化之前 -->
+  <script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
+  <script src="js/auth.js"></script>  <!-- ← 必须引入！ -->
+  <script>
+      Vue.use(ELEMENT);
+      new Vue({ el: '#app', ... })
+  </script>
+  ```
+
+  **`auth.js` 提供以下全局函数**（`window.` 导出）：
+  - `saveAuth(token, refreshToken, user)` — 登录后保存认证信息
+  - `clearAuth()` — 注销时清除认证信息
+  - `getRefreshToken()` — 获取 Refresh Token
+  - `getStoredUser()` — 获取 localStorage 中的用户信息
+  - `writeJwtCookie(token)` — 写入 PET_JWT Cookie（供 Spring Security 页面认证）
+
+  ### ⚠️ user-management.html 角色统计修复（2026-04-11 新增）
+
+  **问题**：统计卡片的 Vue 绑定写错了 key 名，导致宠物医院计数永远为 0。
+
+  - `roleCount` 对象定义：`pet_hospital: 0`（带下划线）
+  - 模板引用：`{{ roleCount.hospital }}`（少了下划线）→ `undefined` → 显示 0
+
+  **修复**：将模板中的 `roleCount.hospital` 改为 `roleCount.pet_hospital`。
+
+  数据库中实际有 4 个宠物医院用户（`pet_hospital` 角色）。
+
+  ## 🎯 更新完成（v1.1.4）
+
+  ---
+
+  ## 📌 v1.1.5 更新（2026-04-11）P2 收尾完善 — 排版层级统一 + 移动端适配
+
+  ### 背景
+
+  2026-04-11 下午完成，执行 P2 收尾完善两个子任务。
+
+  ### P2-1：文字排版层级统一
+
+  **修改文件**：`simple-stats.html`、`stats.html`、`adoption-list.html`
+
+  - 主标题：**Nunito 800 / 26px / line-height 1.2**
+  - 副标题：**Nunito 400 / 14px / line-height 1.6**
+  - 统计数字：**Nunito 800 / 34px / line-height 1**
+  - 标签说明：**Nunito 600 / 12px / letter-spacing 0.02em**
+  - 卡片标题：**Nunito 700 / 17px / line-height 1.4**
+  - `simple-stats.html` 背景升级为 `linear-gradient(160deg, var(--warm-white) 0%, var(--warm-cream) 60%, #f5e8df 100%)`
+
+  ### P2-2：移动端响应式适配（共 9 个页面）
+
+  | 页面 | 响应式改动 |
+  |------|-----------|
+  | `simple-stats.html` | 900px/600px/375px 三级，含表格滚动/触摸友好 |
+  | `adoption-list.html` | 横幅精简/卡片单列/抽屉全屏/触摸按钮 |
+  | `volunteer-task.html` | 900px 断点 + 弹窗全屏适配 |
+  | `stats.html` | 600px/480px/375px 多级响应式 |
+  | `help.html` | 900px/600px + 流程步骤移动端纵向布局 |
+  | `health-record.html` | 增强 600px/375px 断点 |
+  | `user-management.html` | 900px/600px/375px 三级响应式 |
+  | `profile.html` | 增强 + 快速入口网格适配 |
+  | `shelter-recommendation.html` | 全面重写：救助站网格/评分区域/按钮组全屏 |
+
+  **统一响应式规范**：
+  - 900px：横幅纵向 + 双列卡片
+  - 600px：横幅极简 + 统计双列 + 表单全宽 + 触摸按钮 36-38px
+  - 375px：单列布局
+  - `@media (hover: none)` 禁用无谓 hover
+  - `@media (prefers-reduced-motion)` 尊重系统动画偏好
+
+  ### 前端开发新规范补充
+
+  **P2-2 响应式开发规范（2026-04-11 新增）**：
+
+  所有新页面必须包含完整响应式断点：
+  ```css
+  /* 平板：横幅精简 + 双列统计 */
+  @media (max-width: 900px) {
+      .hero-banner { flex-direction: column; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  /* 移动端：单列卡片 + 触摸友好 */
+  @media (max-width: 600px) {
+      .page-content { padding: 12px 12px 32px; }
+      .hero-banner { padding: 14px 16px; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .el-button, button { min-height: 36px; padding: 8px 14px; }
+  }
+  /* 超小屏 */
+  @media (max-width: 375px) {
+      .stats-grid { grid-template-columns: 1fr; }
+  }
+  @media (hover: none) {
+      .card:hover { transform: none !important; box-shadow: var(--card-shadow); }
+  }
+  ```
+
+  ## 🎯 更新完成（v1.1.5）
+
+---
+
+## 📌 v1.1.6 更新（2026-04-12）宠物数据大规模冲突修复
+
+### 背景
+
+2026-04-12 发现数据库中大量宠物的 `description`、`health_status`、`personality` 字段与品种严重不符。
+这是数据录入/OCR 识别错误在批量导入时造成的大规模数据混乱——某些宠物记录被错误地写入了另一只宠物的描述。
+
+### 问题分析
+
+**根本原因**：数据录入时按字段逐行填入，但顺序混乱：
+- `笨笨`（id=15）品种为哈士奇，但 description 里写的是"玳瑁猫花花"的内容
+- `黑猫警长`（id=4）品种为折耳猫，但 description 写的是"灰色混血犬阿灰"
+- `阿福`（id=17）品种为柴犬，但 description 写的是"黑猫黑豆"
+
+**影响范围**：14只宠物 `description/health_status/personality` 字段与品种冲突，1条健康档案 `record_type` 错误。
+
+### 已修复的宠物（14只）
+
+| id | 名字 | 品种 | 修复内容 |
+|----|------|------|---------|
+| 4 | 黑猫警长 | 英国折耳猫 | description/health_status/personality 修正为折耳猫描述 |
+| 8 | 豆豆 | 泰迪犬 | description/health_status/personality 修正为泰迪犬描述 |
+| 10 | 奶茶 | 波斯猫/暹罗 | description/personality 修正为暹罗猫描述 |
+| 12 | 小灰 | 美国短毛猫 | description 修正为美短猫描述（原本误写了萨摩耶） |
+| 14 | 贝塔 | 萨摩耶 | description 修正为比熊犬描述 |
+| 15 | 笨笨 | 哈士奇 | description/health_status/personality 修正为哈士奇正确描述 |
+| 17 | 阿福 | 柴犬 | description 修正为柴犬描述（原本误写了黑猫） |
+| 18 | 多多 | 金毛 | description 修正为金毛犬描述（原本误写了美短猫） |
+| 27 | 毛茸茸 | 仓鼠 | description/personality 修正为仓鼠描述（原本误写了兔子） |
+| 28 | 小白兔 | 仓鼠 | description 修正为家兔描述（品种和描述颠倒） |
+| 29 | 灰灰 | 荷兰猪 | description 修正为荷兰猪描述（原本误写了安哥拉兔） |
+| 30 | 小瓜子 | 天竺鼠 | description 修正为仓鼠描述（原本误写了兔子） |
+| 31 | 小团子 | 天竺鼠 | description 修正为仓鼠描述（原本误写了仓鼠，重复） |
+| 33 | 小年 | 萨摩耶 | description/personality 修正为萨摩耶正确描述 |
+
+### 修复脚本
+
+- `sql/_fix_pet_conflicts.py` — 本次修复脚本
+- `sql/_verify_fixes.py` — 验证脚本
+- `sql/_query_pets4.py` / `_query_pets3.py` — 数据导出工具
+- `sql/_pets_output.json` — 原始数据快照
+
+### 数据完整性说明
+
+- `pet.id`、`pet.breed`、`pet.category_type` 均正确，无需修改
+- 所有健康档案 `health_record.pet_id` 外键正确
+- 所有领养申请 `adoption_application.pet_id` 外键正确
+- 修复仅影响文字描述字段，不影响关联关系
+
+## 🎯 更新完成（v1.1.6）
+
+---
+
+## 📌 v1.2.1 更新（2026-04-12）health-record.html DOM 结构修复
+
+### 问题现象
+
+访问 `health-record.html` 后，页面显示 Vue 表达式文字（如 `{{editForm.id}}`、`{{getRoleNameH(currentRole)}}`），所有功能失效。
+
+### 根本原因
+
+行 846-848 区域多出了两个多余的 `</div>` 闭合标签，破坏了 `#app` 内 Vue 模板的 DOM 层级结构。
+
+### 修复方案
+
+删除多余的 `</span>` 和两个 `</div>`，恢复正确的 DOM 结构。
+
+### 预防经验
+
+**Vue 表达式 `{{...}}` 直接显示的常见原因**：
+1. `</div><!-- end #app -->` 提前闭合
+2. DOM 标签未匹配闭合（本例多余 `</div>`）
+3. HTML 结构被截断或嵌套错误
+
+### URL 说明
+
+- Vite 开发：`http://localhost:5173/health-record.html`
+- 后端：`http://localhost:8081/api/health-record.html`（注意 `/api` 前缀，因为 `context-path: /api`）
+
+## 🎯 更新完成（v1.2.1）

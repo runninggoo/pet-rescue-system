@@ -16,6 +16,18 @@
             --sage: #81B29A;
             --sage-light: #a8cdb8;
             --amber: #F4A261;
+            --sky: #87CEEB;
+            --sky-light: #B0E2FF;
+            --sky-bg: rgba(135, 206, 235, 0.12);
+            --lavender: #B8A9C9;
+            --lavender-light: #D8CCE8;
+            --lavender-bg: rgba(184, 169, 201, 0.12);
+            --mint: #98D8C8;
+            --mint-light: #B8EBE0;
+            --mint-bg: rgba(152, 216, 200, 0.12);
+            --success: #52c788;
+            --danger: #e05d5d;
+            --info: #5b8dee;
             --warm-white: #FDF6F0;
             --warm-cream: #FAEEE7;
             --warm-gray: #f0ebe7;
@@ -33,12 +45,22 @@
         *:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
         body {
             margin: 0; padding: 0;
-            background: var(--bg);
+            background: linear-gradient(160deg, var(--warm-white) 0%, var(--warm-cream) 60%, #f5e8df 100%);
             font-family: "Nunito", "PingFang SC", "Microsoft YaHei", sans-serif;
             -webkit-font-smoothing: antialiased;
             -webkit-tap-highlight-color: transparent;
             color: var(--text-dark);
             min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background-image:
+                radial-gradient(ellipse 400px 300px at 95% 5%, rgba(224,122,95,0.06) 0%, transparent 70%),
+                radial-gradient(ellipse 300px 400px at 5% 90%, rgba(129,178,154,0.05) 0%, transparent 70%),
+                radial-gradient(ellipse 200px 200px at 80% 80%, rgba(244,162,97,0.04) 0%, transparent 70%),
+                radial-gradient(ellipse 150px 250px at 20% 30%, rgba(184,169,201,0.04) 0%, transparent 70%);
+            pointer-events: none; z-index: 0;
         }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: var(--warm-gray); border-radius: 3px; }
@@ -46,11 +68,19 @@
         ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
         /* Element UI 暖色覆盖 */
-        .el-button--primary { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; }
-        .el-button--primary:hover { background-color: var(--primary-dark) !important; border-color: var(--primary-dark) !important; }
-        .el-button--success { background-color: var(--sage) !important; border-color: var(--sage) !important; border-radius: var(--radius-sm) !important; }
-        .el-button--warning { background-color: var(--amber) !important; border-color: var(--amber) !important; border-radius: var(--radius-sm) !important; }
-        .el-button--danger { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; }
+        .el-button--primary { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+        .el-button--primary:hover { background-color: var(--primary-dark) !important; border-color: var(--primary-dark) !important; transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(224,122,95,0.35) !important; }
+        .el-button--primary:active { transform: translateY(0px) scale(0.97) !important; box-shadow: 0 2px 8px rgba(224,122,95,0.2) !important; }
+        .el-button--success { background-color: var(--sage) !important; border-color: var(--sage) !important; border-radius: var(--radius-sm) !important; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+        .el-button--success:hover { transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(129,178,154,0.35) !important; }
+        .el-button--success:active { transform: translateY(0px) scale(0.97) !important; }
+        .el-button--warning { background-color: var(--amber) !important; border-color: var(--amber) !important; border-radius: var(--radius-sm) !important; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+        .el-button--warning:hover { transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(244,162,97,0.35) !important; }
+        .el-button--warning:active { transform: translateY(0px) scale(0.97) !important; }
+        .el-button--danger { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+        .el-button--danger:hover { transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(224,122,95,0.35) !important; }
+        .el-button--danger:active { transform: translateY(0px) scale(0.97) !important; }
+        .el-button:focus { box-shadow: 0 0 0 3px rgba(224,122,95,0.15) !important; }
         .el-button { border-radius: var(--radius-sm) !important; }
         .el-input__inner:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(224,122,95,0.12) !important; }
         .el-textarea__inner:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(224,122,95,0.12) !important; }
@@ -72,6 +102,85 @@
         .el-form-item__label { color: var(--text-dark); font-weight: 600; }
         .el-input__inner { border-radius: var(--radius-sm) !important; }
         .el-textarea__inner { border-radius: var(--radius-sm) !important; }
+
+        /* ========== 原生遮罩层（替代 el-dialog 避免 Vue 隔离） ========== */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 2000;
+            background: rgba(61, 64, 91, 0.5); backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-panel {
+            background: white; border-radius: var(--radius);
+            max-width: 95vw; max-height: 85vh;
+            overflow: hidden; display: flex; flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 18px 24px; border-bottom: 1px solid var(--warm-gray);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white; flex-shrink: 0;
+        }
+        .modal-header h3 { margin: 0; font-size: 16px; font-weight: 700; }
+        .modal-close { cursor: pointer; font-size: 22px; opacity: 0.8; line-height: 1; }
+        .modal-close:hover { opacity: 1; }
+        .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+        .modal-footer {
+            display: flex; gap: 10px; justify-content: flex-end;
+            padding: 16px 24px; border-top: 1px solid var(--warm-gray); flex-shrink: 0;
+        }
+        /* 表单 */
+        .form-grid { display: flex; flex-direction: column; gap: 14px; }
+        .form-row { display: flex; flex-direction: column; }
+        .form-row-half { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+        .form-row label { font-size: 13px; font-weight: 600; color: var(--text-dark); margin-bottom: 6px; }
+        .form-row label .required { color: var(--primary); }
+        .form-row input, .form-row select, .form-row textarea {
+            width: 100%; padding: 9px 12px; border: 1.5px solid var(--warm-gray);
+            border-radius: var(--radius-sm); font-size: 14px; font-family: inherit;
+            color: var(--text-dark); background: white; transition: border-color 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
+        }
+        .form-row input:focus, .form-row select:focus, .form-row textarea:focus {
+            outline: none; border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(224, 122, 95, 0.12);
+        }
+        .form-row input.input-error, .form-row select.input-error { border-color: var(--primary); }
+        .error-msg { font-size: 12px; color: var(--primary); margin-top: 4px; display: block; }
+        .radio-item { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+        .radio-item input { cursor: pointer; accent-color: var(--primary); }
+        /* 按钮 */
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 9px 20px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; transition: var(--transition); }
+        .btn-primary:hover:not(:disabled) { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(224,122,95,0.3); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-success { background: var(--sage); color: white; border: none; padding: 9px 20px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; transition: var(--transition); }
+        .btn-success:hover { background: #6a9b82; transform: translateY(-1px); }
+        .btn-warning { background: var(--amber); color: white; border: none; padding: 9px 20px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; transition: var(--transition); }
+        .btn-warning:hover { background: #e08c3b; transform: translateY(-1px); }
+        .btn-cancel { background: white; color: var(--text-dark); border: 1.5px solid var(--warm-gray); padding: 9px 20px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; transition: var(--transition); }
+        .btn-cancel:hover { border-color: var(--text-muted); background: var(--warm-gray); }
+        /* 详情网格 */
+        .task-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .task-detail-item { display: flex; flex-direction: column; gap: 4px; }
+        .task-detail-item.full { grid-column: 1 / -1; }
+        .task-detail-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+        .task-detail-value { font-size: 14px; color: var(--text-dark); }
+        /* 状态内联 */
+        .status-inline { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
+        .status-inline.task-status-0 { background: rgba(244,162,97,0.12); color: #d98a32; }
+        .status-inline.task-status-1 { background: rgba(129,178,154,0.12); color: #5a8a6e; }
+        .status-inline.task-status-2 { background: rgba(224,122,95,0.12); color: var(--primary); }
+        .status-inline.task-status-3 { background: rgba(144,147,153,0.12); color: #606266; }
+        /* 优先级标签 */
+        .priority-inline { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+        .priority-inline.priority-0 { background: rgba(129,178,154,0.1); color: #5a8a6e; }
+        .priority-inline.priority-1 { background: rgba(244,162,97,0.1); color: #d98a32; }
+        .priority-inline.priority-2 { background: rgba(224,122,95,0.1); color: var(--primary); animation: urgentPulse 2s infinite; }
+        /* 过渡动画 */
+        .modal-fade-enter-active, .modal-fade-leave-active { transition: opacity 0.25s; }
+        .modal-fade-enter, .modal-fade-leave-to { opacity: 0; }
+        .modal-slide-enter-active, .modal-slide-leave-active { transition: transform 0.25s, opacity 0.25s; }
+        .modal-slide-enter, .modal-slide-leave-to { transform: translateY(20px); opacity: 0; }
         .el-input-number { border-radius: var(--radius-sm) !important; }
         .el-select { border-radius: var(--radius-sm) !important; }
         .el-date-editor.el-input { border-radius: var(--radius-sm) !important; }
@@ -116,7 +225,7 @@
         .page-bg-paws svg { position: absolute; fill: var(--primary); opacity: 0.04; }
         .page-content {
             position: relative; z-index: 1;
-            max-width: 1400px; margin: 0 auto;
+            max-width: 1600px; margin: 0 auto;
             padding: 24px 24px 40px;
         }
 
@@ -133,17 +242,16 @@
             position: relative; overflow: hidden;
         }
         .hero-banner::before {
-            content: ''; position: absolute;
-            top: -40px; right: -40px;
-            width: 160px; height: 160px;
-            background: radial-gradient(circle, rgba(224,122,95,0.08) 0%, transparent 70%);
-            border-radius: 50%;
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--amber), var(--sage));
         }
         .hero-banner::after {
             content: ''; position: absolute;
-            bottom: -30px; left: 40%;
-            width: 120px; height: 120px;
-            background: radial-gradient(circle, rgba(129,178,154,0.08) 0%, transparent 70%);
+            top: -40px; right: -40px;
+            width: 180px; height: 180px;
+            background: radial-gradient(circle, rgba(224,122,95,0.08) 0%, transparent 70%);
             border-radius: 50%;
         }
         .hero-left { display: flex; align-items: center; gap: 20px; }
@@ -155,6 +263,11 @@
             font-size: 32px;
             box-shadow: 0 8px 24px rgba(224,122,95,0.3);
             flex-shrink: 0;
+            animation: gentleBounce 3s ease-in-out infinite;
+        }
+        @keyframes gentleBounce {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-4px) rotate(2deg); }
         }
         .hero-title-group h1 { margin: 0 0 4px; font-size: 24px; font-weight: 800; color: var(--text-dark); }
         .hero-title-group h1 span { color: var(--primary); }
@@ -162,10 +275,16 @@
         .hero-right { display: flex; align-items: center; gap: 12px; }
         .hero-paw { font-size: 28px; animation: float 3s ease-in-out infinite; opacity: 0.3; }
         .hero-paw:nth-child(2) { animation-delay: 0.8s; opacity: 0.2; }
-        .nav-links { display: flex; gap: 12px; font-size: 13px; flex-wrap: wrap; }
-        .nav-links a { color: var(--text-muted); text-decoration: none; transition: var(--transition); padding: 4px 0; }
-        .nav-links a:hover { color: var(--primary); }
-        .nav-links span { color: var(--warm-gray2); }
+        .hero-right { display: flex; align-items: center; gap: 6px; }
+        .nav-link {
+            padding: 6px 14px; border-radius: var(--radius-sm);
+            text-decoration: none; color: var(--text-muted);
+            font-size: 13px; font-weight: 600;
+            transition: var(--transition); cursor: pointer;
+        }
+        .nav-link:hover { background: var(--warm-gray); color: var(--text-dark); }
+        .nav-link.danger { color: var(--primary); }
+        .nav-link.danger:hover { background: #fef0ee; color: var(--primary); }
 
         /* ========== 角色提示 ========== */
         .role-hint {
@@ -179,6 +298,16 @@
             font-weight: 600;
             animation: fadeSlideDown 0.5s ease 0.1s both;
         }
+        .role-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
+            margin-left: 6px; vertical-align: middle;
+        }
+        .role-badge-admin { background: rgba(254,240,238,0.95); color: var(--primary); border: 1px solid rgba(224,122,95,0.3); }
+        .role-badge-institution-admin { background: rgba(227,242,253,0.95); color: #1565c0; border: 1px solid rgba(21,101,192,0.3); }
+        .role-badge-volunteer { background: rgba(255,248,225,0.95); color: #c97a10; border: 1px solid rgba(245,127,23,0.3); }
+        .role-badge-adopter { background: rgba(232,245,233,0.95); color: #2e7d32; border: 1px solid rgba(46,125,50,0.3); }
+        .role-badge-pet-hospital { background: rgba(135,206,235,0.12); color: #1565c0; border: 1px solid rgba(135,206,235,0.3); }
 
         /* ========== 统计概览 ========== */
         .stats-overview {
@@ -189,6 +318,7 @@
         }
         .stat-card {
             background: white;
+            border: 1px solid rgba(224, 122, 95, 0.3);
             border-radius: var(--radius);
             padding: 22px;
             box-shadow: var(--card-shadow);
@@ -257,15 +387,24 @@
             transition: var(--transition);
             border-left: 4px solid var(--warm-gray2);
             animation: cardEnter 0.5s ease both;
+            position: relative; overflow: hidden;
+        }
+        .task-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 3px;
         }
         .task-card:hover {
             box-shadow: var(--card-shadow-hover);
-            transform: translateX(4px);
+            transform: translateY(-4px) translateX(2px);
         }
         .task-card.status-0 { border-left-color: var(--sage); }
+        .task-card.status-0::before { background: linear-gradient(90deg, var(--sage), var(--sage-light)); }
         .task-card.status-1 { border-left-color: var(--amber); }
+        .task-card.status-1::before { background: linear-gradient(90deg, var(--amber), #f7c59f); }
         .task-card.status-2 { border-left-color: var(--text-muted); }
+        .task-card.status-2::before { background: linear-gradient(90deg, var(--text-muted), #b0b4c0); }
         .task-card.status-3 { border-left-color: var(--primary); }
+        .task-card.status-3::before { background: linear-gradient(90deg, var(--primary), var(--amber)); }
         .task-card-header {
             display: flex; justify-content: space-between; align-items: flex-start;
             margin-bottom: 12px; gap: 12px;
@@ -321,25 +460,52 @@
         .empty-state .title { font-size: 16px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; }
         .empty-state .desc { font-size: 13px; color: var(--text-muted); }
 
-        /* ========== 响应式 ========== */
-        @media (max-width: 480px) {
-            .page-content { padding: 16px 12px 32px; }
-            .hero-banner { padding: 20px; flex-direction: column; align-items: flex-start; gap: 16px; }
-            .hero-title-group h1 { font-size: 20px; }
+        /* ========== P2-2 响应式布局 ========== */
+        /* 平板：横幅精简 + 双列统计 */
+        @media (max-width: 900px) {
+            .hero-banner { flex-direction: column; align-items: flex-start; gap: 16px; padding: 20px 24px; }
             .hero-right { display: none; }
-            .stats-overview { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-            .stat-card { padding: 16px; }
-            .stat-num { font-size: 24px; }
+            .stats-overview { grid-template-columns: repeat(2, 1fr); }
+        }
+        /* 移动端：单列卡片 + 触摸友好 */
+        @media (max-width: 600px) {
+            .page-content { padding: 12px 12px 32px; }
+            .hero-banner { padding: 14px 16px; }
+            .hero-left { gap: 12px; }
+            .hero-icon { width: 48px; height: 48px; font-size: 22px; border-radius: 12px; }
+            .hero-title-group h1 { font-size: 20px; }
+            .hero-title-group p { font-size: 13px; }
+            .stats-overview { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .stat-card { padding: 14px 12px; }
+            .stat-num { font-size: 22px; }
+            .stat-label { font-size: 12px; }
             .filter-row { flex-direction: column; align-items: stretch; }
-            .filter-row .el-select, .filter-row .el-input { width: 100% !important; }
-            .task-card { padding: 16px; }
-            .task-meta { gap: 10px; font-size: 12px; }
+            .filter-row > * { min-width: 100% !important; width: 100% !important; }
+            .task-card { padding: 14px; }
+            .task-meta { gap: 8px; font-size: 12px; }
             .task-desc { font-size: 12px; }
             .task-title { font-size: 15px; }
+            /* 触摸友好：按钮最小点击区域 44px */
+            .el-button, button, .btn-primary, .btn-success, .btn-warning, .btn-cancel {
+                min-height: 38px; padding: 8px 14px;
+            }
+            /* 弹窗全屏 */
+            .modal-overlay { padding: 0 !important; align-items: flex-end !important; }
+            .modal-panel { border-radius: 20px 20px 0 0 !important; max-height: 92vh; width: 100% !important; }
+        }
+        @media (max-width: 480px) {
+            .page-content { padding: 10px 10px 32px; }
+            .hero-banner { padding: 12px; gap: 12px; }
+            .stats-overview { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .stat-card { padding: 12px 10px; }
+            .stat-icon { width: 40px; height: 40px; font-size: 20px; margin-bottom: 8px; }
+        }
+        @media (max-width: 375px) {
+            .hero-title-group h1 { font-size: 18px; }
+            .stats-overview { grid-template-columns: 1fr; }
         }
         @media (hover: none) {
-            .stat-card:hover { transform: none; box-shadow: var(--card-shadow); }
-            .task-card:hover { transform: none; box-shadow: var(--card-shadow); }
+            .stat-card:hover, .task-card:hover { transform: none !important; box-shadow: var(--card-shadow); }
         }
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -413,12 +579,16 @@
             padding: 22px; box-shadow: var(--card-shadow);
         }
         .skeleton-line {
-            background: linear-gradient(90deg, #f0ebe7 25%, #faeee7 50%, #f0ebe7 75%);
-            background-size: 400% 100%;
-            animation: shimmer 1.8s ease infinite;
+            background: linear-gradient(90deg,
+                rgba(224,122,95,0.08) 0%,
+                rgba(129,178,154,0.1) 33%,
+                rgba(244,162,97,0.08) 66%,
+                rgba(224,122,95,0.08) 100%);
+            background-size: 300% 100%;
+            animation: warmShimmer 2s ease infinite;
             border-radius: 6px;
         }
-        @keyframes shimmer {
+        @keyframes warmShimmer {
             0% { background-position: 100% 0; }
             100% { background-position: -100% 0; }
         }
@@ -443,7 +613,7 @@
             transform: translate(30%, -30%);
             transition: var(--transition);
         }
-        .task-card:hover { box-shadow: var(--card-shadow-hover); transform: translateX(6px); }
+        .task-card:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-4px) translateX(2px); }
         .task-card:hover::after { transform: translate(20%, -20%) scale(1.3); }
 
         /* ========== 任务类型标签渐变版本 ========== */
@@ -551,6 +721,34 @@
         .levelup-banner-icon { font-size: 48px; margin-bottom: 8px; }
         .levelup-banner-title { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
         .levelup-banner-desc { font-size: 14px; opacity: 0.85; }
+
+        /* ========== 分页箭头 ========== */
+        .el-pagination .btn-prev,
+        .el-pagination .btn-next {
+            font-family: "Segoe UI", sans-serif !important;
+        }
+        .el-pagination .btn-prev .el-icon,
+        .el-pagination .btn-next .el-icon {
+            display: none !important;
+        }
+        .el-pagination .btn-prev::after {
+            content: "‹" !important;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            font-family: "Segoe UI", sans-serif !important;
+            display: inline-block;
+            line-height: 1;
+        }
+        .el-pagination .btn-next::after {
+            content: "›" !important;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            font-family: "Segoe UI", sans-serif !important;
+            display: inline-block;
+            line-height: 1;
+        }
     </style>
 </head>
 <body>
@@ -566,10 +764,17 @@
 <div class="page-wrapper">
     <!-- 爪印背景 -->
     <div class="page-bg-paws">
+        <!-- 爪印 -->
         <svg style="top:8%;left:5%;width:60px;transform:rotate(-18deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
         <svg style="top:40%;right:8%;width:48px;transform:rotate(12deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
         <svg style="bottom:12%;left:10%;width:56px;transform:rotate(-10deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
         <svg style="bottom:5%;right:12%;width:40px;transform:rotate(25deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        <!-- 爱心 -->
+        <svg style="top:20%;left:15%;width:40px;transform:rotate(-10deg);opacity:0.04" viewBox="0 0 24 24"><path fill="#E07A5F" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <svg style="bottom:25%;right:10%;width:35px;transform:rotate(15deg);opacity:0.035" viewBox="0 0 24 24"><path fill="#81B29A" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <!-- 星星 -->
+        <svg style="top:5%;right:18%;width:35px;transform:rotate(8deg);opacity:0.04" viewBox="0 0 24 24"><path fill="#F4A261" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+        <svg style="bottom:8%;left:30%;width:30px;transform:rotate(-20deg);opacity:0.035" viewBox="0 0 24 24"><path fill="#B8A9C9" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
     </div>
 
     <div class="page-content" id="app">
@@ -578,35 +783,27 @@
             <div class="hero-left">
                 <div class="hero-icon">📋</div>
                 <div class="hero-title-group">
-                    <h1>志愿<span>任务</span>管理</h1>
+                    <h1><span class="title-icon">🤝</span>志愿<span>任务</span>管理</h1>
                     <p>协同救助，传递爱心与温暖</p>
                 </div>
             </div>
-        <div class="hero-right">
-            <div class="nav-links">
-                <a href="pet-list.html">首页</a>
-                <span>|</span>
-                <a href="profile.html">个人中心</a>
-                <span v-if="currentRole === 'admin'">|</span>
-                <a v-if="currentRole === 'admin'" href="user-management.html">用户管理</a>
-                <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'">|</span>
-                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="adoption-list.html">领养审核</a>
-                <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'">|</span>
-                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="stats.html">数据统计</a>
-                <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'">|</span>
-                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="health-record.html">健康档案</a>
-                <span>|</span>
-                <span @click="logout" style="color:var(--primary);cursor:pointer;font-weight:600">退出登录</span>
-                <span style="margin-left:8px;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:700;"
-                      :style="'background:' + (currentRole==='admin'?'#fef0ee':currentRole==='institution_admin'?'#e3f2fd':currentRole==='volunteer'?'#fff8e1':'#e8f5e9') + ';color:' + (currentRole==='admin'?'var(--primary)':currentRole==='institution_admin'?'#1565c0':currentRole==='volunteer'?'#f57f17':'#2e7d32')">
-                    {{ getRoleName(currentRole) }}
+            <div class="hero-right">
+                <a href="pet-list.html" class="nav-link">首页</a>
+                <a href="profile.html" class="nav-link">个人中心</a>
+                <a v-if="currentRole === 'admin'" href="user-management.html" class="nav-link">用户管理</a>
+                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="adoption-list.html" class="nav-link">领养审核</a>
+                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="stats.html" class="nav-link">数据统计</a>
+                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin' || currentRole === 'pet_hospital'" href="health-record.html" class="nav-link">健康档案</a>
+                <a v-if="currentRole === 'pet_hospital'" href="pet-hospital.html" class="nav-link">🏥 医疗档案</a>
+                <span class="nav-link danger" @click="logout">退出登录</span>
+                <span class="role-badge" :class="getRoleBadgeClass()">
+                    {{ getRoleIcon(currentRole) }} {{ getRoleName(currentRole) }}
                 </span>
-            </div>
         <!-- 积分卡片（志愿者可见） -->
         <div v-if="currentRole === 'volunteer'" class="points-card" @click="goProfile" style="margin-left:12px">
             <div class="points-card-icon">⭐</div>
             <div class="points-card-info">
-                <div class="points-card-label">我的积分</div>
+                <div class="points-card-label">⭐我的积分</div>
                 <div class="points-card-value">{{ myPoints }}</div>
             </div>
             <div class="points-card-level">{{ currentLevelName || 'Lv.1' }}</div>
@@ -639,22 +836,22 @@
             </div>
             <div class="stat-card total" style="animation-delay:0.05s">
                 <div class="stat-icon">📋</div>
-                <div class="stat-num">{{ taskStats.total || 0 }}</div>
+                <div class="stat-num">{{ animateNumbers.total !== undefined ? animateNumbers.total : (taskStats.total || 0) }}</div>
                 <div class="stat-label">全部任务</div>
             </div>
             <div class="stat-card pending" style="animation-delay:0.1s">
                 <div class="stat-icon">⏳</div>
-                <div class="stat-num">{{ taskStats.pending || 0 }}</div>
+                <div class="stat-num">{{ animateNumbers.pending !== undefined ? animateNumbers.pending : (taskStats.pending || 0) }}</div>
                 <div class="stat-label">待领取</div>
             </div>
             <div class="stat-card inprogress" style="animation-delay:0.15s">
                 <div class="stat-icon">🚀</div>
-                <div class="stat-num">{{ taskStats.inProgress || 0 }}</div>
+                <div class="stat-num">{{ animateNumbers.inProgress !== undefined ? animateNumbers.inProgress : (taskStats.inProgress || 0) }}</div>
                 <div class="stat-label">进行中</div>
             </div>
             <div class="stat-card completed" style="animation-delay:0.2s">
                 <div class="stat-icon">✅</div>
-                <div class="stat-num">{{ taskStats.completed || 0 }}</div>
+                <div class="stat-num">{{ animateNumbers.completed !== undefined ? animateNumbers.completed : (taskStats.completed || 0) }}</div>
                 <div class="stat-label">已完成</div>
             </div>
         </div>
@@ -672,10 +869,10 @@
         <div class="tab-card">
             <el-tabs v-model="activeTab" @tab-click="handleTabClick">
                 <el-tab-pane label="全部任务" name="all"></el-tab-pane>
-                <el-tab-pane label="待领取" name="0"></el-tab-pane>
-                <el-tab-pane label="进行中" name="1"></el-tab-pane>
-                <el-tab-pane label="已完成" name="2"></el-tab-pane>
-                <el-tab-pane label="已取消" name="3"></el-tab-pane>
+                <el-tab-pane label="📋待领取" name="0"></el-tab-pane>
+                <el-tab-pane label="🔄进行中" name="1"></el-tab-pane>
+                <el-tab-pane label="✅已完成" name="2"></el-tab-pane>
+                <el-tab-pane label="❌已取消" name="3"></el-tab-pane>
                 <el-tab-pane label="我的任务" name="mine" v-if="currentRole === 'volunteer'"></el-tab-pane>
             </el-tabs>
         </div>
@@ -715,7 +912,7 @@
                     icon="el-icon-plus"
                     @click="handleCreate"
                     style="margin-left: auto;">
-                    发布任务
+                    ➕发布任务
                 </el-button>
             </div>
         </div>
@@ -740,12 +937,12 @@
             </div>
 
             <div v-if="tasks.length === 0 && !loading" class="empty-state">
-                <span class="icon">📋</span>
-                <div class="title">暂无任务</div>
+                <span class="icon">🌟</span>
+                <div class="title">暂无志愿任务</div>
                 <div class="desc" v-if="currentRole === 'admin' || currentRole === 'institution_admin'">
                     点击右上角「发布任务」创建第一个任务
                 </div>
-                <div class="desc" v-else>当前没有符合筛选条件的任务</div>
+                <div class="desc" v-else>稍后再来看看吧，每一份爱心都值得被记录 🌱</div>
             </div>
 
             <div
@@ -758,15 +955,15 @@
                 <div class="task-card-header">
                     <div class="task-tags">
                         <span class="task-type-tag" :class="'type-' + task.taskType">
-                            {{ getTaskTypeText(task.taskType) }}
+                            {{ getTaskTypeIcon(task.taskType) }} {{ getTaskTypeText(task.taskType) }}
                         </span>
-                        <span class="priority-tag" :class="'priority-' + task.priority">
-                            {{ getPriorityText(task.priority) }}
+                        <span class="priority-inline" :class="'priority-' + task.priority">
+                            {{ getPriorityIcon(task.priority) }} {{ getPriorityText(task.priority) }}
+                        </span>
+                        <span class="status-inline" :class="'task-status-' + task.status">
+                            {{ getStatusIcon(task.status) }} {{ getStatusText(task.status) }}
                         </span>
                     </div>
-                    <el-tag :type="getStatusType(task.status)" size="small" style="font-weight:700;">
-                        {{ getStatusText(task.status) }}
-                    </el-tag>
                 </div>
 
                 <div class="task-title">{{ task.title }}</div>
@@ -785,14 +982,14 @@
                 <div class="task-actions">
                     <el-button type="text" size="small" style="color:var(--primary);font-weight:700;" @click="handleDetail(task)">查看详情</el-button>
                     <template v-if="task.status === 0 && currentRole === 'volunteer'">
-                        <el-button type="success" size="small" icon="el-icon-check" @click="handleClaim(task)">立即领取</el-button>
+                        <el-button type="success" size="small" icon="el-icon-check" @click="handleClaim(task)">🤝领取任务</el-button>
                     </template>
                     <template v-if="task.status === 1 && (currentRole === 'volunteer' || currentRole === 'admin')">
-                        <el-button type="warning" size="small" icon="el-icon-circle-check" @click="handleComplete(task)">标记完成</el-button>
+                        <el-button type="warning" size="small" icon="el-icon-circle-check" @click="handleComplete(task)">🎉完成任务</el-button>
                     </template>
                     <template v-if="(currentRole === 'admin' || currentRole === 'institution_admin') && task.status !== 2">
                         <el-button type="text" size="small" style="color:var(--sage);font-weight:700;" @click="handleEdit(task)">编辑</el-button>
-                        <el-button type="text" size="small" style="color:#d98a32;font-weight:700;" @click="handleCancel(task)">取消</el-button>
+                        <el-button type="text" size="small" style="color:#d98a32;font-weight:700;" @click="handleCancel(task)">❌取消任务</el-button>
                         <el-button type="text" size="small" style="color:var(--primary);font-weight:700;" @click="handleDelete(task)">删除</el-button>
                     </template>
                 </div>
@@ -809,116 +1006,210 @@
             style="margin-top:24px;">
         </el-pagination>
 
-        <!-- 详情对话框 -->
-        <el-dialog title="任务详情" :visible.sync="detailDialogVisible" width="650px" top="8vh" append-to-body>
-            <el-descriptions :column="2" border v-if="currentTask">
-                <el-descriptions-item label="任务标题" :span="2" style="font-weight:700;">{{ currentTask.title }}</el-descriptions-item>
-                <el-descriptions-item label="任务类型">
-                    <span class="task-type-tag" :class="'type-' + currentTask.taskType">
-                        {{ getTaskTypeText(currentTask.taskType) }}
-                    </span>
-                </el-descriptions-item>
-                <el-descriptions-item label="紧急程度">
-                    <span class="priority-tag" :class="'priority-' + currentTask.priority">
-                        {{ getPriorityText(currentTask.priority) }}
-                    </span>
-                </el-descriptions-item>
-                <el-descriptions-item label="任务状态">
-                    <el-tag :type="getStatusType(currentTask.status)" style="font-weight:700;">{{ getStatusText(currentTask.status) }}</el-tag>
-                </el-descriptions-item>
-                <el-descriptions-item label="奖励积分">
-                    <span style="color:var(--amber);font-weight:700;">⭐ {{ currentTask.rewardPoints || 0 }} 积分</span>
-                </el-descriptions-item>
-                <el-descriptions-item label="任务地点">{{ currentTask.location || '-' }}</el-descriptions-item>
-                <el-descriptions-item label="关联救助站">{{ currentTask.shelterName || '-' }}</el-descriptions-item>
-                <el-descriptions-item label="期望完成">{{ formatDate(currentTask.expectedDate) }}</el-descriptions-item>
-                <el-descriptions-item label="联系电话">{{ currentTask.contactPhone || '-' }}</el-descriptions-item>
-                <el-descriptions-item label="预计耗时">{{ currentTask.estimatedHours ? currentTask.estimatedHours + '小时' : '-' }}</el-descriptions-item>
-                <el-descriptions-item label="发布时间" :span="2">{{ formatDateTime(currentTask.publishDate) }}</el-descriptions-item>
-                <el-descriptions-item label="任务描述" :span="2">
-                    <div style="white-space:pre-wrap;">{{ currentTask.description || '无' }}</div>
-                </el-descriptions-item>
-                <el-descriptions-item label="任务总结" :span="2" v-if="currentTask.result">
-                    <div style="white-space:pre-wrap;">{{ currentTask.result }}</div>
-                </el-descriptions-item>
-            </el-descriptions>
-            <div slot="footer">
-                <el-button @click="detailDialogVisible = false">关闭</el-button>
-                <el-button type="success" v-if="currentTask && currentTask.status === 0 && currentRole === 'volunteer'" icon="el-icon-check" @click="detailDialogVisible = false; handleClaim(currentTask)">领取任务</el-button>
-                <el-button type="warning" v-if="currentTask && currentTask.status === 1 && (currentRole === 'volunteer' || currentRole === 'admin')" icon="el-icon-circle-check" @click="detailDialogVisible = false; handleComplete(currentTask)">标记完成</el-button>
+        <!-- 任务详情对话框（原生遮罩层，替代 el-dialog 避免 Vue 隔离） -->
+        <transition name="modal-fade">
+            <div v-if="detailDialogVisible" class="modal-overlay" @click.self="detailDialogVisible = false">
+                <transition name="modal-slide">
+                    <div v-if="detailDialogVisible" class="modal-panel" style="width:660px;" @click.stop>
+                        <div class="modal-header">
+                            <h3>📋 任务详情</h3>
+                            <span class="modal-close" @click="detailDialogVisible = false">✕</span>
+                        </div>
+                        <div class="modal-body" v-if="currentTask">
+                            <div class="task-detail-grid">
+                                <div class="task-detail-item full">
+                                    <span class="task-detail-label">任务标题</span>
+                                    <span class="task-detail-value bold" style="font-size:15px;">{{ currentTask.title }}</span>
+                                </div>
+                                <div class="task-detail-item">
+                                    <span class="task-detail-label">任务类型</span>
+                                    <span class="task-type-tag" :class="'type-' + currentTask.taskType">{{ getTaskTypeIcon(currentTask.taskType) }} {{ getTaskTypeText(currentTask.taskType) }}</span>
+                                </div>
+                                <div class="task-detail-item">
+                                    <span class="task-detail-label">紧急程度</span>
+                                    <span class="priority-inline" :class="'priority-' + currentTask.priority">{{ getPriorityIcon(currentTask.priority) }} {{ getPriorityText(currentTask.priority) }}</span>
+                                </div>
+                                <div class="task-detail-item">
+                                    <span class="task-detail-label">任务状态</span>
+                                    <span class="status-inline" :class="'task-status-' + currentTask.status">{{ getStatusIcon(currentTask.status) }} {{ getStatusText(currentTask.status) }}</span>
+                                </div>
+                                <div class="task-detail-item">
+                                    <span class="task-detail-label">奖励积分</span>
+                                    <span style="color:var(--amber);font-weight:700;">⭐ {{ currentTask.rewardPoints || 0 }} 积分</span>
+                                </div>
+                                <div class="task-detail-item">
+                                    <span class="task-detail-label">任务地点</span>
+                                    <span>{{ currentTask.location || '-' }}</span>
+                                </div>
+                                <div class="task-detail-item">
+                                    <span class="task-detail-label">关联救助站</span>
+                                    <span>{{ currentTask.shelterName || '-' }}</span>
+                                </div>
+                                <div class="task-detail-item">
+                                    <span class="task-detail-label">期望完成</span>
+                                    <span>{{ formatDate(currentTask.expectedDate) }}</span>
+                                </div>
+                                <div class="task-detail-item">
+                                    <span class="task-detail-label">联系电话</span>
+                                    <span>{{ currentTask.contactPhone || '-' }}</span>
+                                </div>
+                                <div class="task-detail-item">
+                                    <span class="task-detail-label">预计耗时</span>
+                                    <span>{{ currentTask.estimatedHours ? currentTask.estimatedHours + '小时' : '-' }}</span>
+                                </div>
+                                <div class="task-detail-item full">
+                                    <span class="task-detail-label">发布时间</span>
+                                    <span>{{ formatDateTime(currentTask.publishDate) }}</span>
+                                </div>
+                                <div class="task-detail-item full">
+                                    <span class="task-detail-label">任务描述</span>
+                                    <span style="white-space:pre-wrap;">{{ currentTask.description || '无' }}</span>
+                                </div>
+                                <div class="task-detail-item full" v-if="currentTask.result">
+                                    <span class="task-detail-label">任务总结</span>
+                                    <span style="white-space:pre-wrap;">{{ currentTask.result }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn-cancel" @click="detailDialogVisible = false">关闭</button>
+                            <button class="btn-success" v-if="currentTask && currentTask.status === 0 && currentRole === 'volunteer'"
+                                @click="detailDialogVisible = false; handleClaim(currentTask)">领取任务</button>
+                            <button class="btn-warning" v-if="currentTask && currentTask.status === 1 && (currentRole === 'volunteer' || currentRole === 'admin')"
+                                @click="detailDialogVisible = false; handleComplete(currentTask)">标记完成</button>
+                        </div>
+                    </div>
+                </transition>
             </div>
-        </el-dialog>
+        </transition>
 
-        <!-- 发布/编辑任务对话框 -->
-        <el-dialog :title="editForm.id ? '编辑任务' : '发布新任务'" :visible.sync="editDialogVisible" width="700px" top="8vh" append-to-body>
-            <el-form :model="editForm" :rules="editRules" ref="editFormRef" label-width="110px">
-                <el-form-item label="任务标题" prop="title">
-                    <el-input v-model="editForm.title" placeholder="请输入任务标题"></el-input>
-                </el-form-item>
-                <el-form-item label="任务类型" prop="taskType">
-                    <el-select v-model="editForm.taskType" placeholder="请选择类型" style="width: 100%;">
-                        <el-option label="🚑 救助任务" value="rescue"></el-option>
-                        <el-option label="🚚 运输任务" value="transport"></el-option>
-                        <el-option label="💚 照护任务" value="care"></el-option>
-                        <el-option label="🎉 活动支持" value="event"></el-option>
-                        <el-option label="🏥 医疗协助" value="medical"></el-option>
-                        <el-option label="🏠 临时寄养" value="foster"></el-option>
-                        <el-option label="📋 其他" value="other"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="紧急程度" prop="priority">
-                    <el-radio-group v-model="editForm.priority">
-                        <el-radio :label="0">普通</el-radio>
-                        <el-radio :label="1">紧急</el-radio>
-                        <el-radio :label="2">非常紧急</el-radio>
-                    </el-radio-group>
-                </el-form-item>
-                <el-form-item label="任务地点" prop="location">
-                    <el-input v-model="editForm.location" placeholder="请输入任务地点"></el-input>
-                </el-form-item>
-                <el-form-item label="关联救助站">
-                    <el-select v-model="editForm.shelterId" placeholder="请选择救助站（可选）" clearable filterable style="width: 100%;">
-                        <el-option v-for="s in shelterOptions" :key="s.id" :label="s.name + ' - ' + (s.regionName || s.regionCode || '')" :value="s.id"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="期望完成日期">
-                    <el-date-picker v-model="editForm.expectedDate" type="date" placeholder="选择日期"
-                        value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
-                </el-form-item>
-                <el-form-item label="联系电话">
-                    <el-input v-model="editForm.contactPhone" placeholder="请输入联系电话"></el-input>
-                </el-form-item>
-                <el-form-item label="奖励积分">
-                    <el-input-number v-model="editForm.rewardPoints" :min="0" :max="1000" style="width: 100%;"></el-input-number>
-                </el-form-item>
-                <el-form-item label="预计耗时(小时)">
-                    <el-input-number v-model="editForm.estimatedHours" :min="0" :max="720" :precision="1" :step="0.5" style="width: 100%;"></el-input-number>
-                </el-form-item>
-                <el-form-item label="所需人数">
-                    <el-input-number v-model="editForm.requiredPeople" :min="1" :max="100" style="width: 100%;"></el-input-number>
-                </el-form-item>
-                <el-form-item label="任务描述" prop="description">
-                    <el-input type="textarea" v-model="editForm.description" :rows="4" placeholder="请详细描述任务内容"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer">
-                <el-button @click="editDialogVisible = false">取消</el-button>
-                <el-button type="primary" icon="el-icon-check" @click="handleSave" :loading="saveLoading">{{ editForm.id ? '更新' : '发布' }}</el-button>
+        <!-- 发布/编辑任务对话框（原生遮罩层，替代 el-dialog 避免 Vue 隔离） -->
+        <transition name="modal-fade">
+            <div v-if="editDialogVisible" class="modal-overlay" @click.self="editDialogVisible = false">
+                <transition name="modal-slide">
+                    <div v-if="editDialogVisible" class="modal-panel" style="width:700px;" @click.stop>
+                        <div class="modal-header">
+                            <h3>{{ editForm.id ? '编辑任务' : '发布新任务' }}</h3>
+                            <span class="modal-close" @click="editDialogVisible = false">✕</span>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-grid">
+                                <div class="form-row">
+                                    <label>任务标题 <span class="required">*</span></label>
+                                    <input type="text" v-model="editForm.title" placeholder="请输入任务标题" maxlength="100"
+                                        :class="{'input-error': formErrors.title}">
+                                    <span v-if="formErrors.title" class="error-msg">{{ formErrors.title }}</span>
+                                </div>
+                                <div class="form-row-half">
+                                    <div class="form-row">
+                                        <label>任务类型 <span class="required">*</span></label>
+                                        <select v-model="editForm.taskType" :class="{'input-error': formErrors.taskType}">
+                                            <option value="">请选择类型</option>
+                                            <option value="rescue">🚑 救助任务</option>
+                                            <option value="transport">🚚 运输任务</option>
+                                            <option value="care">💚 照护任务</option>
+                                            <option value="event">🎉 活动支持</option>
+                                            <option value="medical">🏥 医疗协助</option>
+                                            <option value="foster">🏠 临时寄养</option>
+                                            <option value="other">📋 其他</option>
+                                        </select>
+                                        <span v-if="formErrors.taskType" class="error-msg">{{ formErrors.taskType }}</span>
+                                    </div>
+                                    <div class="form-row">
+                                        <label>紧急程度 <span class="required">*</span></label>
+                                        <div class="radio-group" style="display:flex;gap:16px;align-items:center;padding:7px 0;">
+                                            <label class="radio-item"><input type="radio" v-model="editForm.priority" :value="0"> 普通</label>
+                                            <label class="radio-item"><input type="radio" v-model="editForm.priority" :value="1"> 紧急</label>
+                                            <label class="radio-item"><input type="radio" v-model="editForm.priority" :value="2"> 非常紧急</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <label>任务地点 <span class="required">*</span></label>
+                                    <input type="text" v-model="editForm.location" placeholder="请输入任务地点" maxlength="200"
+                                        :class="{'input-error': formErrors.location}">
+                                    <span v-if="formErrors.location" class="error-msg">{{ formErrors.location }}</span>
+                                </div>
+                                <div class="form-row">
+                                    <label>关联救助站</label>
+                                    <select v-model="editForm.shelterId">
+                                        <option value="">请选择救助站（可选）</option>
+                                        <option v-for="s in shelterOptions" :key="s.id" :value="s.id">{{ s.name }} - {{ s.regionName || s.regionCode || '' }}</option>
+                                    </select>
+                                </div>
+                                <div class="form-row-half">
+                                    <div class="form-row">
+                                        <label>期望完成日期</label>
+                                        <input type="date" v-model="editForm.expectedDate">
+                                    </div>
+                                    <div class="form-row">
+                                        <label>联系电话</label>
+                                        <input type="text" v-model="editForm.contactPhone" placeholder="请输入联系电话" maxlength="20">
+                                    </div>
+                                </div>
+                                <div class="form-row-half">
+                                    <div class="form-row">
+                                        <label>奖励积分</label>
+                                        <input type="number" v-model.number="editForm.rewardPoints" min="0" max="1000" step="1" placeholder="0"
+                                            style="width:100%;padding:9px 12px;border:1.5px solid var(--warm-gray);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;color:var(--text-dark);background:white;box-sizing:border-box;">
+                                    </div>
+                                    <div class="form-row">
+                                        <label>预计耗时(小时)</label>
+                                        <input type="number" v-model.number="editForm.estimatedHours" min="0" max="720" step="0.5" placeholder="0"
+                                            style="width:100%;padding:9px 12px;border:1.5px solid var(--warm-gray);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;color:var(--text-dark);background:white;box-sizing:border-box;">
+                                    </div>
+                                    <div class="form-row">
+                                        <label>所需人数</label>
+                                        <input type="number" v-model.number="editForm.requiredPeople" min="1" max="100" step="1" placeholder="1"
+                                            style="width:100%;padding:9px 12px;border:1.5px solid var(--warm-gray);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;color:var(--text-dark);background:white;box-sizing:border-box;">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <label>任务描述 <span class="required">*</span></label>
+                                    <textarea v-model="editForm.description" placeholder="请详细描述任务内容" rows="4" maxlength="2000"
+                                        :class="{'input-error': formErrors.description}"
+                                        style="width:100%;padding:9px 12px;border:1.5px solid var(--warm-gray);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;color:var(--text-dark);background:white;transition:border-color 0.2s,box-shadow 0.2s;resize:vertical;box-sizing:border-box;line-height:1.6;"></textarea>
+                                    <span v-if="formErrors.description" class="error-msg">{{ formErrors.description }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn-cancel" @click="editDialogVisible = false">取消</button>
+                            <button class="btn-primary" @click="handleSave" :disabled="saveLoading">
+                                {{ saveLoading ? '发布中...' : (editForm.id ? '更新' : '发布') }}
+                            </button>
+                        </div>
+                    </div>
+                </transition>
             </div>
-        </el-dialog>
+        </transition>
 
-        <!-- 完成任务对话框 -->
-        <el-dialog title="完成任务" :visible.sync="completeDialogVisible" width="500px" top="8vh" append-to-body>
-            <el-form>
-                <el-form-item label="任务总结">
-                    <el-input type="textarea" v-model="completeResult" :rows="4" placeholder="请输入任务完成总结"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer">
-                <el-button @click="completeDialogVisible = false">取消</el-button>
-                <el-button type="primary" icon="el-icon-circle-check" @click="confirmComplete" :loading="completeLoading">确认完成</el-button>
+        <!-- 完成任务对话框（原生遮罩层，替代 el-dialog 避免 Vue 隔离） -->
+        <transition name="modal-fade">
+            <div v-if="completeDialogVisible" class="modal-overlay" @click.self="completeDialogVisible = false">
+                <transition name="modal-slide">
+                    <div v-if="completeDialogVisible" class="modal-panel" style="width:500px;" @click.stop>
+                        <div class="modal-header" style="background:linear-gradient(135deg, var(--sage) 0%, #5a9b7a 100%);">
+                            <h3>✅ 完成任务</h3>
+                            <span class="modal-close" @click="completeDialogVisible = false">✕</span>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-row">
+                                <label>任务总结</label>
+                                <textarea v-model="completeResult" placeholder="请输入任务完成总结" rows="4" maxlength="2000"
+                                    style="width:100%;padding:9px 12px;border:1.5px solid var(--warm-gray);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;color:var(--text-dark);background:white;transition:border-color 0.2s,box-shadow 0.2s;resize:vertical;box-sizing:border-box;line-height:1.6;"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn-cancel" @click="completeDialogVisible = false">取消</button>
+                            <button class="btn-success" @click="confirmComplete" :disabled="completeLoading">
+                                {{ completeLoading ? '提交中...' : '确认完成' }}
+                            </button>
+                        </div>
+                    </div>
+                </transition>
             </div>
-        </el-dialog>
+        </transition>
         <!-- 积分获得动画 -->
         <div class="points-toast" v-if="showPointsToast">
             <div class="points-toast-inner">
@@ -936,6 +1227,7 @@
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
 <script src="https://unpkg.com/element-ui@2.15.13/lib/index.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
+<script src="js/auth.js"></script>
 <script>
     Vue.use(ELEMENT);
 
@@ -958,39 +1250,53 @@
 
     new Vue({
         el: '#app',
-        data: {
-            tasks: [], shelterOptions: [],
-            loading: false, saveLoading: false, completeLoading: false,
-            total: 0, currentPage: 1, pageSize: 10,
-            taskStats: {},
-            activeTab: 'all', currentRole: '', currentUser: {},
-            detailDialogVisible: false, editDialogVisible: false, completeDialogVisible: false,
-            currentTask: null, completeResult: '', completeTaskId: null,
-            filters: { keyword: '', taskType: '', priority: '' },
-            // 成长中心数据
-            myPoints: 0,
-            currentLevelName: 'Lv.1',
-            showPointsToast: false,
-            toastPoints: 0,
-            toastLeveledUp: false,
-            toastNewLevel: 0,
-            toastLevelName: '',
-            showLevelupBanner: false,
-            levelupBadge: '🌱',
-            levelupNewLevel: 1,
-            levelupName: '新手上路',
-            levelupDesc: '继续加油！',
-            editForm: {
-                id: null, title: '', taskType: '', priority: 0, location: '',
-                shelterId: null, expectedDate: '', contactPhone: '',
-                rewardPoints: 20, estimatedHours: 2, requiredPeople: 1, description: ''
-            },
-            editRules: {
-                title: [{ required: true, message: '请输入任务标题', trigger: 'blur' }],
-                taskType: [{ required: true, message: '请选择任务类型', trigger: 'change' }],
-                location: [{ required: true, message: '请输入任务地点', trigger: 'blur' }],
-                description: [{ required: true, message: '请输入任务描述', trigger: 'blur' }]
-            }
+        data() {
+            return {
+                tasks: [],
+                shelterOptions: [],
+                loading: false,
+                saveLoading: false,
+                completeLoading: false,
+                total: 0,
+                currentPage: 1,
+                pageSize: 10,
+                formErrors: {},
+                taskStats: {},
+                activeTab: 'all',
+                currentRole: '',
+                currentUser: {},
+                detailDialogVisible: false,
+                editDialogVisible: false,
+                completeDialogVisible: false,
+                currentTask: null,
+                completeResult: '',
+                completeTaskId: null,
+                filters: { keyword: '', taskType: '', priority: '' },
+                animateNumbers: {},
+                myPoints: 0,
+                currentLevelName: 'Lv.1',
+                showPointsToast: false,
+                toastPoints: 0,
+                toastLeveledUp: false,
+                toastNewLevel: 0,
+                toastLevelName: '',
+                showLevelupBanner: false,
+                levelupBadge: '🌱',
+                levelupNewLevel: 1,
+                levelupName: '新手上路',
+                levelupDesc: '继续加油！',
+                editForm: {
+                    id: null, title: '', taskType: '', priority: 0, location: '',
+                    shelterId: null, expectedDate: '', contactPhone: '',
+                    rewardPoints: 20, estimatedHours: 2, requiredPeople: 1, description: ''
+                },
+                editRules: {
+                    title: [{ required: true, message: '请输入任务标题', trigger: 'blur' }],
+                    taskType: [{ required: true, message: '请选择任务类型', trigger: 'change' }],
+                    location: [{ required: true, message: '请输入任务地点', trigger: 'blur' }],
+                    description: [{ required: true, message: '请输入任务描述', trigger: 'blur' }]
+                }
+            };
         },
         mounted() {
             this.loadUserInfo();
@@ -1014,9 +1320,22 @@
                     priority: this.filters.priority !== '' ? this.filters.priority : null,
                     status: this.activeTab !== 'all' ? this.activeTab : null
                 };
-                const url = this.activeTab === 'mine'
-                    ? '/api/volunteer-task/my-tasks'
-                    : '/api/volunteer-task/available';
+                // 管理员/机构管理员：所有标签都用 /list（返回全部任务）
+                // 志愿者："待领取"和"全部任务"用 /available（返回所有待领取任务，适合志愿者浏览）
+                const isAdminOrInstitution = this.currentRole === 'admin' || this.currentRole === 'institution_admin';
+                let url;
+                if (isAdminOrInstitution) {
+                    // 管理员/机构管理员：所有标签都用 /list
+                    url = '/api/volunteer-task/list';
+                } else {
+                    // 志愿者："全部任务"和"待领取"用 /available
+                    //         "我的"/"进行中"/"已完成"/"已取消"用 /my-tasks
+                    if (this.activeTab === 'all' || this.activeTab === '0') {
+                        url = '/api/volunteer-task/available';
+                    } else {
+                        url = '/api/volunteer-task/my-tasks';
+                    }
+                }
                 axios.get(url, { params: params })
                     .then(res => {
                         this.loading = false;
@@ -1032,8 +1351,29 @@
             loadStats() {
                 axios.get('/api/volunteer-task/stats')
                     .then(res => {
-                        if (res.data.code === 200) this.taskStats = res.data.data.stats || {};
+                        if (res.data.code === 200) {
+                            this.taskStats = res.data.data.stats || {};
+                            this.$nextTick(() => {
+                                this.animateNum('total', this.taskStats.total || 0);
+                                this.animateNum('pending', this.taskStats.pending || 0);
+                                this.animateNum('inProgress', this.taskStats.inProgress || 0);
+                                this.animateNum('completed', this.taskStats.completed || 0);
+                            });
+                        }
                     });
+            },
+            animateNum(key, target) {
+                const duration = 1200;
+                const start = performance.now();
+                const from = 0;
+                const update = (now) => {
+                    const elapsed = now - start;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const eased = 1 - Math.pow(1 - progress, 3);
+                    this.$set(this.animateNumbers, key, Math.round(from + (target - from) * eased));
+                    if (progress < 1) requestAnimationFrame(update);
+                };
+                requestAnimationFrame(update);
             },
             loadShelters() {
                 axios.get('/api/shelter/list', { params: { page: 1, pageSize: 100 } })
@@ -1066,7 +1406,7 @@
             handleDetail(task) { this.currentTask = task; this.detailDialogVisible = true; },
             handleCreate() {
                 this.editForm = { id: null, title: '', taskType: '', priority: 0, location: '', shelterId: null, expectedDate: '', contactPhone: '', rewardPoints: 20, estimatedHours: 2, requiredPeople: 1, description: '' };
-                this.$nextTick(() => { this.$refs.editFormRef && this.$refs.editFormRef.clearValidate(); });
+                this.formErrors = {};
                 this.editDialogVisible = true;
             },
             handleEdit(task) {
@@ -1080,28 +1420,30 @@
                     requiredPeople: task.requiredPeople || 1,
                     description: task.description || ''
                 };
-                this.$nextTick(() => { this.$refs.editFormRef && this.$refs.editFormRef.clearValidate(); });
+                this.formErrors = {};
                 this.editDialogVisible = true;
             },
             handleSave() {
-                this.$refs.editFormRef.validate(valid => {
-                    if (!valid) return;
-                    this.saveLoading = true;
-                    const url = this.editForm.id ? '/api/volunteer-task/update' : '/api/volunteer-task/create';
-                    const method = this.editForm.id ? 'put' : 'post';
-                    axios[method](url, this.editForm)
-                        .then(res => {
-                            this.saveLoading = false;
-                            if (res.data.code === 200) {
-                                this.$message.success(this.editForm.id ? '更新成功' : '发布成功');
-                                this.editDialogVisible = false;
-                                this.loadTasks(); this.loadStats();
-                            } else {
-                                this.$message.error(res.data.message || '操作失败');
-                            }
-                        })
-                        .catch(() => { this.saveLoading = false; });
-                });
+                this.formErrors = {};
+                if (!this.editForm.title || !this.editForm.title.trim()) { this.formErrors.title = '请输入任务标题'; return; }
+                if (!this.editForm.taskType) { this.formErrors.taskType = '请选择任务类型'; return; }
+                if (!this.editForm.location || !this.editForm.location.trim()) { this.formErrors.location = '请输入任务地点'; return; }
+                if (!this.editForm.description || !this.editForm.description.trim()) { this.formErrors.description = '请输入任务描述'; return; }
+                this.saveLoading = true;
+                const url = this.editForm.id ? '/api/volunteer-task/update' : '/api/volunteer-task/create';
+                const method = this.editForm.id ? 'put' : 'post';
+                axios[method](url, this.editForm)
+                    .then(res => {
+                        this.saveLoading = false;
+                        if (res.data.code === 200) {
+                            this.$message.success(this.editForm.id ? '更新成功' : '发布成功');
+                            this.editDialogVisible = false;
+                            this.loadTasks(); this.loadStats();
+                        } else {
+                            this.$message.error(res.data.message || '操作失败');
+                        }
+                    })
+                    .catch(() => { this.saveLoading = false; });
             },
             handleClaim(task) {
                 this.$confirm('确认领取任务「' + task.title + '」？', '领取确认', { type: 'info' })
@@ -1190,9 +1532,14 @@
                 const map = { rescue: '救助', transport: '运输', care: '照护', event: '活动', medical: '医疗', foster: '寄养', other: '其他' };
                 return map[type] || '其他';
             },
+            getTaskTypeIcon(type) {
+                const map = { rescue: '🏠', transport: '🚗', care: '💚', event: '🎉', medical: '💊', foster: '🏥', other: '📋' };
+                return map[type] || '📋';
+            },
             getStatusText(status) { const map = { 0: '待领取', 1: '进行中', 2: '已完成', 3: '已取消' }; return map[status] || '未知'; },
-            getStatusType(status) { const map = { 0: 'success', 1: 'warning', 2: 'info', 3: 'danger' }; return map[status] || 'info'; },
+            getStatusIcon(status) { const map = { 0: '📋', 1: '🚀', 2: '🏆', 3: '❌' }; return map[status] || '📋'; },
             getPriorityText(priority) { const map = { 0: '普通', 1: '紧急', 2: '非常紧急' }; return map[priority] || '普通'; },
+            getPriorityIcon(priority) { const map = { 0: '✔', 1: '⚡', 2: '🚨' }; return map[priority] || '✔'; },
             formatDate(date) {
                 if (!date) return '-';
                 if (typeof date === 'string') return date.substring(0, 10);
@@ -1207,16 +1554,54 @@
             },
             formatDateForEdit(date) { return this.formatDate(date); },
             getRoleName(role) {
-                const map = { admin: '管理员', adopter: '领养人', volunteer: '志愿者', institution_admin: '机构管理员', hospital: '宠物医院' };
+                const map = { admin: '管理员', adopter: '领养人', volunteer: '志愿者', institution_admin: '机构管理员', pet_hospital: '宠物医院' };
                 return map[role] || role || '用户';
+            },
+            getRoleIcon(role) {
+                const map = { admin: '👑', adopter: '🏠', volunteer: '🌟', institution_admin: '🏢', pet_hospital: '🏥' };
+                return map[role] || '🐾';
+            },
+            getRoleBadgeClass() {
+                const map = {
+                    admin: 'role-badge-admin',
+                    adopter: 'role-badge-adopter',
+                    volunteer: 'role-badge-volunteer',
+                    institution_admin: 'role-badge-institution-admin',
+                    pet_hospital: 'role-badge-pet-hospital'
+                };
+                return 'role-badge ' + (map[this.currentRole] || 'role-badge-volunteer');
             },
             logout() {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
+                localStorage.removeItem('refreshToken');
+                document.cookie = 'PET_JWT=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
                 window.location.href = 'login.html';
             }
         }
     });
+</script>
+<script>
+// 替换分页器箭头图标（‹ ›）
+document.addEventListener('DOMContentLoaded', function() {
+    function fixPaginationIcons() {
+        document.querySelectorAll('.el-pagination .btn-prev .el-icon').forEach(function(el) {
+            el.textContent = '‹';
+            el.style.fontSize = '18px';
+            el.style.fontWeight = '700';
+            el.style.fontFamily = '"Segoe UI Symbol", "Arial Unicode MS", sans-serif';
+        });
+        document.querySelectorAll('.el-pagination .btn-next .el-icon').forEach(function(el) {
+            el.textContent = '›';
+            el.style.fontSize = '18px';
+            el.style.fontWeight = '700';
+            el.style.fontFamily = '"Segoe UI Symbol", "Arial Unicode MS", sans-serif';
+        });
+    }
+    fixPaginationIcons();
+    setTimeout(fixPaginationIcons, 500);
+    setTimeout(fixPaginationIcons, 1000);
+});
 </script>
 </body>
 </html>

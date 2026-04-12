@@ -3,6 +3,7 @@ package com.pet.rescue;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * 宠物救助收养系统启动类
@@ -13,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication
 @MapperScan("com.pet.rescue.mapper")
+@EnableScheduling
 public class PetRescueSystemApplication {
 
     public static void main(String[] args) {

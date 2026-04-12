@@ -67,10 +67,10 @@ public class HealthRecordController {
     }
 
     /**
-     * 添加健康档案（管理员/机构管理员）
+     * 添加健康档案（管理员/机构管理员/宠物医院）
      */
     @PostMapping("/add")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('INSTITUTION_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('INSTITUTION_ADMIN') or hasRole('PET_HOSPITAL')")
     public ResponseResult add(@RequestBody HealthRecord record) {
         try {
             if (record.getRecordDate() == null) {
@@ -88,10 +88,10 @@ public class HealthRecordController {
     }
 
     /**
-     * 更新健康档案
+     * 更新健康档案（管理员/机构管理员/宠物医院）
      */
     @PutMapping("/update")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('INSTITUTION_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('INSTITUTION_ADMIN') or hasRole('PET_HOSPITAL')")
     public ResponseResult update(@RequestBody HealthRecord record) {
         try {
             boolean success = healthRecordService.updateRecord(record);
@@ -106,7 +106,7 @@ public class HealthRecordController {
     }
 
     /**
-     * 删除健康档案
+     * 删除健康档案（管理员/机构管理员）
      */
     @DeleteMapping("/delete/{recordId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('INSTITUTION_ADMIN')")
@@ -124,10 +124,10 @@ public class HealthRecordController {
     }
 
     /**
-     * 获取即将到期的健康提醒
+     * 获取即将到期的健康提醒（管理员/机构管理员/宠物医院）
      */
     @GetMapping("/reminders")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('INSTITUTION_ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('INSTITUTION_ADMIN') or hasRole('PET_HOSPITAL')")
     public ResponseResult getReminders(@RequestParam(defaultValue = "7") int days) {
         try {
             List<HealthRecord> reminders = healthRecordService.findUpcomingReminders(days);

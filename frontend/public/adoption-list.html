@@ -16,6 +16,18 @@
             --sage: #81B29A;
             --sage-light: #a8cdb8;
             --amber: #F4A261;
+            --sky: #87CEEB;
+            --sky-light: #B0E2FF;
+            --sky-bg: rgba(135, 206, 235, 0.12);
+            --lavender: #B8A9C9;
+            --lavender-light: #D8CCE8;
+            --lavender-bg: rgba(184, 169, 201, 0.12);
+            --mint: #98D8C8;
+            --mint-light: #B8EBE0;
+            --mint-bg: rgba(152, 216, 200, 0.12);
+            --success: #52c788;
+            --danger: #e05d5d;
+            --info: #5b8dee;
             --warm-white: #FDF6F0;
             --warm-cream: #FAEEE7;
             --warm-gray: #f0ebe7;
@@ -33,12 +45,22 @@
         *:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
         body {
             margin: 0; padding: 0;
-            background: var(--bg);
+            background: linear-gradient(160deg, var(--warm-white) 0%, var(--warm-cream) 60%, #f5e8df 100%);
             font-family: "Nunito", "PingFang SC", "Microsoft YaHei", sans-serif;
             -webkit-font-smoothing: antialiased;
             -webkit-tap-highlight-color: transparent;
             color: var(--text-dark);
             min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background-image:
+                radial-gradient(ellipse 400px 300px at 95% 5%, rgba(224,122,95,0.06) 0%, transparent 70%),
+                radial-gradient(ellipse 300px 400px at 5% 90%, rgba(129,178,154,0.05) 0%, transparent 70%),
+                radial-gradient(ellipse 200px 200px at 80% 80%, rgba(244,162,97,0.04) 0%, transparent 70%),
+                radial-gradient(ellipse 150px 250px at 20% 30%, rgba(184,169,201,0.04) 0%, transparent 70%);
+            pointer-events: none; z-index: 0;
         }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: var(--warm-gray); border-radius: 3px; }
@@ -46,11 +68,19 @@
         ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
         /* Element UI 暖色覆盖 */
-        .el-button--primary { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; }
-        .el-button--primary:hover { background-color: var(--primary-dark) !important; border-color: var(--primary-dark) !important; }
-        .el-button--success { background-color: var(--sage) !important; border-color: var(--sage) !important; border-radius: var(--radius-sm) !important; }
-        .el-button--warning { background-color: var(--amber) !important; border-color: var(--amber) !important; border-radius: var(--radius-sm) !important; }
-        .el-button--danger { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; }
+        .el-button--primary { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+        .el-button--primary:hover { background-color: var(--primary-dark) !important; border-color: var(--primary-dark) !important; transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(224,122,95,0.35) !important; }
+        .el-button--primary:active { transform: translateY(0px) scale(0.97) !important; box-shadow: 0 2px 8px rgba(224,122,95,0.2) !important; }
+        .el-button--success { background-color: var(--sage) !important; border-color: var(--sage) !important; border-radius: var(--radius-sm) !important; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+        .el-button--success:hover { transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(129,178,154,0.35) !important; }
+        .el-button--success:active { transform: translateY(0px) scale(0.97) !important; }
+        .el-button--warning { background-color: var(--amber) !important; border-color: var(--amber) !important; border-radius: var(--radius-sm) !important; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+        .el-button--warning:hover { transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(244,162,97,0.35) !important; }
+        .el-button--warning:active { transform: translateY(0px) scale(0.97) !important; }
+        .el-button--danger { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+        .el-button--danger:hover { transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(224,122,95,0.35) !important; }
+        .el-button--danger:active { transform: translateY(0px) scale(0.97) !important; }
+        .el-button:focus { box-shadow: 0 0 0 3px rgba(224,122,95,0.15) !important; }
         .el-button { border-radius: var(--radius-sm) !important; }
         .el-input__inner:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(224,122,95,0.12) !important; }
         .el-pager li.active { background-color: var(--primary) !important; color: white !important; border-radius: 50% !important; }
@@ -103,7 +133,7 @@
         .page-bg-paws svg { position: absolute; fill: var(--primary); opacity: 0.04; }
         .page-content {
             position: relative; z-index: 1;
-            max-width: 1200px; margin: 0 auto;
+            max-width: 1600px; margin: 0 auto;
             padding: 24px 24px 40px;
         }
 
@@ -119,10 +149,19 @@
             animation: fadeSlideDown 0.5s ease;
             position: relative; overflow: hidden;
         }
+        /* 横幅顶部渐变条 */
         .hero-banner::before {
-            content: ''; position: absolute;
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--amber), var(--sage));
+        }
+        .hero-banner::after {
+            content: '';
+            position: absolute;
             top: -40px; right: -40px;
-            width: 160px; height: 160px;
+            width: 180px; height: 180px;
             background: radial-gradient(circle, rgba(224,122,95,0.08) 0%, transparent 70%);
             border-radius: 50%;
         }
@@ -135,17 +174,28 @@
             font-size: 32px;
             box-shadow: 0 8px 24px rgba(224,122,95,0.3);
             flex-shrink: 0;
+            animation: gentleBounce 3s ease-in-out infinite;
         }
-        .hero-title-group h1 { margin: 0 0 4px; font-size: 24px; font-weight: 800; color: var(--text-dark); }
+        @keyframes gentleBounce {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-4px) rotate(2deg); }
+        }
+        .hero-title-group h1 { margin: 0 0 4px; font-size: 26px; font-weight: 800; color: var(--text-dark); text-shadow: 0 1px 4px rgba(224,122,95,0.1); line-height: 1.2; }
         .hero-title-group h1 span { color: var(--primary); }
-        .hero-title-group p { margin: 0; font-size: 14px; color: var(--text-muted); }
+        .hero-title-group p { margin: 0; font-size: 14px; color: var(--text-muted); font-weight: 600; }
         .hero-right { display: flex; align-items: center; gap: 12px; }
         .hero-paw { font-size: 28px; animation: float 3s ease-in-out infinite; opacity: 0.3; }
         .hero-paw:nth-child(2) { animation-delay: 0.8s; opacity: 0.2; }
-        .nav-links { display: flex; gap: 12px; font-size: 13px; flex-wrap: wrap; align-items: center; }
-        .nav-links a { color: var(--text-muted); text-decoration: none; transition: var(--transition); padding: 4px 0; font-weight: 600; }
-        .nav-links a:hover { color: var(--primary); }
-        .nav-links span { color: var(--warm-gray2); }
+        .hero-right { display: flex; align-items: center; gap: 6px; }
+        .nav-link {
+            padding: 6px 14px; border-radius: var(--radius-sm);
+            text-decoration: none; color: var(--text-muted);
+            font-size: 13px; font-weight: 600;
+            transition: var(--transition); cursor: pointer;
+        }
+        .nav-link:hover { background: var(--warm-gray); color: var(--text-dark); }
+        .nav-link.danger { color: var(--primary); }
+        .nav-link.danger:hover { background: #fef0ee; color: var(--primary); }
         .nav-user-chip {
             display: inline-flex; align-items: center; gap: 6px;
             padding: 5px 12px; border-radius: 20px;
@@ -154,11 +204,13 @@
         }
         .nav-user-chip:hover { border-color: var(--primary-light); }
         .nav-user-chip .role-badge {
-            padding: 1px 7px; border-radius: 10px; font-size: 11px; font-weight: 700;
+            padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+            display: inline-flex; align-items: center; gap: 3px;
         }
-        .role-badge-admin { background: #fef0ee; color: var(--primary); }
-        .role-badge-adopter { background: #e8f5e9; color: #2e7d32; }
-        .role-badge-institution_admin { background: #e3f2fd; color: #1565c0; }
+        .role-badge-admin { background: rgba(254,240,238,0.95); color: var(--primary); border: 1px solid rgba(224,122,95,0.25); }
+        .role-badge-adopter { background: rgba(232,245,233,0.95); color: #2e7d32; border: 1px solid rgba(46,125,50,0.25); }
+        .role-badge-institution_admin { background: rgba(227,242,253,0.95); color: #1565c0; border: 1px solid rgba(21,101,192,0.25); }
+        .role-badge-volunteer { background: rgba(255,248,225,0.95); color: #c97a10; border: 1px solid rgba(245,127,23,0.25); }
 
         /* ========== 状态标签栏 ========== */
         .status-tabs {
@@ -168,6 +220,13 @@
             margin-bottom: 20px;
             box-shadow: var(--card-shadow);
             animation: fadeSlideDown 0.5s ease 0.08s both;
+            position: relative; overflow: hidden;
+        }
+        .status-tabs::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--primary-light), var(--sage), var(--amber));
+            border-radius: var(--radius) var(--radius) 0 0;
         }
         .status-tabs-inner { display: flex; gap: 8px; flex-wrap: wrap; }
         .status-tab-btn {
@@ -185,11 +244,20 @@
             font-family: inherit;
         }
         .status-tab-btn:hover { border-color: var(--primary-light); color: var(--primary); }
-        .status-tab-btn.active {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: white;
+        .status-tab-btn.active { color: white; }
+        .status-tab-btn.active .tab-icon { animation: tabIconPop 0.3s ease; }
+        @keyframes tabIconPop {
+            0% { transform: scale(0.7); }
+            70% { transform: scale(1.2); }
+            100% { transform: scale(1); }
         }
+        /* 各状态激活颜色 */
+        .status-tab-btn[data-val="0"].active { background: var(--amber); border-color: var(--amber); }
+        .status-tab-btn[data-val="1"].active { background: var(--sage); border-color: var(--sage); }
+        .status-tab-btn[data-val="2"].active { background: var(--primary); border-color: var(--primary); }
+        .status-tab-btn[data-val="3"].active { background: #909399; border-color: #909399; }
+        .status-tab-btn[data-val="4"].active { background: #409EFF; border-color: #409EFF; }
+        .status-tab-btn[data-val="5"].active { background: #67C23A; border-color: #67C23A; }
         .tab-count {
             background: rgba(255,255,255,0.25);
             border-radius: 10px;
@@ -202,6 +270,7 @@
         .app-list { display: flex; flex-direction: column; gap: 16px; }
         .app-card {
             background: white;
+            border: 1px solid rgba(224, 122, 95, 0.3);
             border-radius: var(--radius);
             padding: 20px 24px;
             box-shadow: var(--card-shadow);
@@ -210,14 +279,47 @@
             animation: cardEnter 0.5s ease both;
             cursor: pointer;
             border-left: 4px solid transparent;
+            position: relative; overflow: hidden;
         }
-        .app-card:hover { box-shadow: var(--card-shadow-hover); transform: translateX(4px); }
+        /* 申请卡片顶部渐变色条 */
+        .app-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0;
+            height: 3px;
+        }
+        .app-card:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-4px) translateX(2px); }
         .app-card[data-status="0"] { border-left-color: var(--amber); }
+        .app-card[data-status="0"]::before { background: linear-gradient(90deg, var(--amber), #f7c59f); }
         .app-card[data-status="1"] { border-left-color: var(--sage); }
+        .app-card[data-status="1"]::before { background: linear-gradient(90deg, var(--sage), var(--sage-light)); }
         .app-card[data-status="2"] { border-left-color: var(--primary); }
+        .app-card[data-status="2"]::before { background: linear-gradient(90deg, var(--primary), var(--amber)); }
         .app-card[data-status="3"] { border-left-color: var(--text-muted); }
+        .app-card[data-status="3"]::before { background: linear-gradient(90deg, var(--text-muted), #b0b4c0); }
         .app-card[data-status="4"] { border-left-color: #409EFF; }
+        .app-card[data-status="4"]::before { background: linear-gradient(90deg, #409EFF, #79bbff); }
         .app-card[data-status="5"] { border-left-color: var(--sage); }
+        .app-card[data-status="5"]::before { background: linear-gradient(90deg, var(--sage), #52c788); }
+
+        /* ========== 申请状态自定义徽章 ========== */
+        .adoption-status-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 10px; border-radius: 20px;
+            font-size: 12px; font-weight: 700;
+        }
+        .adoption-status-badge.status-0 { background: rgba(244,162,97,0.12); color: #d98a32; }
+        .adoption-status-badge.status-1 { background: rgba(129,178,154,0.12); color: #5a8a6e; }
+        .adoption-status-badge.status-2 { background: rgba(224,122,95,0.12); color: var(--primary); }
+        .adoption-status-badge.status-3 { background: rgba(144,147,153,0.12); color: #606266; }
+        .adoption-status-badge.status-4 { background: rgba(64,158,255,0.12); color: #409EFF; }
+        .adoption-status-badge.status-5 { background: rgba(103,194,58,0.12); color: #67C23A; }
+        /* 申请紧急标签 */
+        .urgency-inline-tag {
+            display: inline-flex; align-items: center; gap: 3px;
+            padding: 2px 8px; border-radius: 12px;
+            font-size: 11px; font-weight: 700;
+            background: rgba(224,122,95,0.1); color: var(--primary);
+        }
 
         .app-pet-image {
             width: 88px; height: 88px;
@@ -254,18 +356,35 @@
             box-shadow: var(--card-shadow);
             animation: fadeSlideUp 0.5s ease;
         }
-        .empty-icon { font-size: 64px; margin-bottom: 16px; animation: float 3s ease-in-out infinite; display: block; }
+        .empty-icon { font-size: 64px; margin-bottom: 16px; animation: gentleBounce 2.5s ease-in-out infinite; display: block; }
         .empty-state .title { font-size: 16px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; }
         .empty-state .desc { font-size: 13px; color: var(--text-muted); }
+        .empty-state .empty-sub { margin-top: 8px; font-size: 12px; color: var(--text-muted); }
+        @keyframes gentleBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
 
         /* 骨架屏 */
         .skeleton-line {
             border-radius: 6px;
-            background: linear-gradient(90deg, var(--warm-gray) 25%, var(--warm-cream) 50%, var(--warm-gray) 75%);
-            background-size: 200% 100%;
-            animation: shimmerBg 1.5s infinite;
+            background: linear-gradient(90deg,
+                rgba(224,122,95,0.08) 0%,
+                rgba(129,178,154,0.1) 33%,
+                rgba(244,162,97,0.08) 66%,
+                rgba(224,122,95,0.08) 100%);
+            background-size: 300% 100%;
+            animation: warmShimmer 2s ease infinite;
         }
-        .shake { animation: shake 0.4s ease; }
+        @keyframes warmShimmer {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+        .skeleton-overlay {
+            position: fixed; inset: 0; z-index: 998;
+            background: rgba(253,246,240,0.85);
+            display: flex; align-items: center; justify-content: center;
+        }
 
         /* ========== 预加载覆盖层 ========== */
         .loading-overlay {
@@ -327,8 +446,8 @@
             transform: translate(30%, -30%);
             transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .app-card:hover { box-shadow: var(--card-shadow-hover); transform: translateX(6px); }
-        .app-card:hover::after { transform: translate(20%, -20%) scale(1.4); }
+        .app-card:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-4px) translateX(2px); }
+        .app-card:hover::after { transform: translate(20%, -20%) scale(1.4); opacity: 1; }
 
         /* ========== 状态标签栏增强 ========== */
         .status-tab-btn {
@@ -369,13 +488,13 @@
         }
         .skeleton-line {
             border-radius: 6px;
-            background: linear-gradient(90deg, #f0ebe7 25%, #faeee7 50%, #f0ebe7 75%);
-            background-size: 400% 100%;
-            animation: shimmer 1.8s ease infinite;
-        }
-        @keyframes shimmer {
-            0% { background-position: 100% 0; }
-            100% { background-position: -100% 0; }
+            background: linear-gradient(90deg,
+                rgba(224,122,95,0.08) 0%,
+                rgba(129,178,154,0.1) 33%,
+                rgba(244,162,97,0.08) 66%,
+                rgba(224,122,95,0.08) 100%);
+            background-size: 300% 100%;
+            animation: warmShimmer 2s ease infinite;
         }
 
         /* ========== 侧边抽屉增强 ========== */
@@ -438,6 +557,188 @@
         .slide-up-dialog-enter-active { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .slide-up-dialog-leave-active { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
         .slide-up-dialog-enter, .slide-up-dialog-leave-to { opacity: 0; transform: translateY(30px) scale(0.97); }
+
+        /* ========== 多申请人对比遮罩层 ========== */
+        .compare-group-header {
+            display: flex; align-items: center; justify-content: space-between;
+            background: white; border-radius: var(--radius); padding: 14px 18px;
+            box-shadow: var(--card-shadow);
+            animation: cardEnter 0.4s ease both;
+        }
+        .compare-group-pet { display: flex; align-items: center; gap: 12px; }
+        .compare-group-thumb {
+            width: 48px; height: 48px; border-radius: var(--radius-sm); overflow: hidden;
+            background: var(--warm-cream); display: flex; align-items: center; justify-content: center;
+        }
+        .compare-group-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .compare-group-name { font-size: 15px; font-weight: 800; color: var(--text-dark); }
+        .compare-overlay {
+            position: fixed; inset: 0; z-index: 3000;
+            background: rgba(61, 64, 91, 0.6);
+            backdrop-filter: blur(6px);
+            display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+        .compare-header {
+            background: linear-gradient(135deg, var(--warm-cream) 0%, var(--warm-white) 100%);
+            border-bottom: 1px solid var(--warm-gray);
+            padding: 18px 28px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-shrink: 0;
+        }
+        .compare-header-left { display: flex; align-items: center; gap: 14px; }
+        .compare-pet-thumb {
+            width: 52px; height: 52px; border-radius: var(--radius-sm);
+            overflow: hidden; background: var(--warm-cream);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 8px rgba(224,122,95,0.15);
+        }
+        .compare-pet-thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .compare-title { font-size: 18px; font-weight: 800; color: var(--text-dark); }
+        .compare-sub { font-size: 13px; color: var(--text-muted); font-weight: 600; }
+        .compare-close-btn {
+            font-size: 28px; line-height: 1; color: var(--text-muted);
+            cursor: pointer; padding: 4px 8px; border-radius: var(--radius-sm);
+            transition: var(--transition);
+            background: none; border: none;
+        }
+        .compare-close-btn:hover { color: var(--primary); background: var(--primary-bg); }
+        .compare-body {
+            flex: 1; overflow-y: auto; padding: 24px 28px;
+            display: flex; gap: 16px; align-items: flex-start;
+        }
+        .compare-card {
+            flex: 1; min-width: 260px; max-width: 400px;
+            background: white; border-radius: var(--radius);
+            box-shadow: var(--card-shadow);
+            display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+        .compare-card-top {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            padding: 16px 18px; color: white;
+        }
+        .compare-card-top-title { font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+        .compare-card-top-sub { font-size: 12px; opacity: 0.85; }
+        .compare-card-body { padding: 18px; flex: 1; }
+        .compare-row { display: flex; gap: 10px; margin-bottom: 12px; }
+        .compare-label { font-size: 12px; color: var(--text-muted); font-weight: 700; width: 72px; flex-shrink: 0; padding-top: 2px; }
+        .compare-value { font-size: 13px; color: var(--text-dark); word-break: break-all; }
+        .compare-reason { background: var(--warm-cream); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 13px; color: #606266; line-height: 1.7; margin-top: 4px; }
+        .compare-card-actions { padding: 14px 18px 18px; display: flex; gap: 8px; border-top: 1px solid var(--warm-gray); }
+        .compare-empty {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 16px;
+            color: var(--text-muted);
+        }
+        .compare-empty-icon { font-size: 56px; animation: float 3s ease-in-out infinite; }
+
+        /* ========== 回访记录 Tab & 时间线 ========== */
+        .followup-tabs { display: flex; gap: 6px; border-bottom: 2px solid var(--warm-gray2); padding-bottom: 0; }
+        .followup-tab-btn {
+            padding: 7px 16px; border: none; background: none; border-bottom: 2px solid transparent;
+            margin-bottom: -2px; cursor: pointer; font-size: 13px; font-weight: 700;
+            color: var(--text-muted); border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+            transition: var(--transition); font-family: inherit;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .followup-tab-btn:hover { color: var(--primary); background: var(--primary-bg); }
+        .followup-tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: var(--primary-bg); }
+        .followup-count-badge {
+            background: var(--primary); color: white; border-radius: 10px;
+            padding: 1px 7px; font-size: 11px; font-weight: 700;
+        }
+        .followup-timeline { padding: 4px 0 8px; }
+        .timeline-item {
+            display: flex; gap: 14px; padding-bottom: 20px; position: relative;
+        }
+        .timeline-item:last-child { padding-bottom: 0; }
+        .timeline-item:not(:last-child)::before {
+            content: ''; position: absolute; left: 7px; top: 20px; bottom: 0;
+            width: 2px; background: linear-gradient(to bottom, var(--primary-light), var(--warm-gray2));
+        }
+        .timeline-dot {
+            width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; margin-top: 4px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            box-shadow: 0 2px 6px rgba(224,122,95,0.3);
+        }
+        .timeline-content { flex: 1; background: var(--warm-cream); border-radius: var(--radius-sm); padding: 12px 14px; }
+        .timeline-date { font-size: 12px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+        .timeline-body { font-size: 13px; color: #606266; line-height: 1.7; margin-top: 4px; }
+        .timeline-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+        .el-pagination .btn-prev,
+        .el-pagination .btn-next {
+            font-family: "Segoe UI", sans-serif !important;
+        }
+        .el-pagination .btn-prev .el-icon,
+        .el-pagination .btn-next .el-icon {
+            display: none !important;
+        }
+        .el-pagination .btn-prev::after {
+            content: "‹" !important;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            font-family: "Segoe UI", sans-serif !important;
+            display: inline-block;
+            line-height: 1;
+        }
+        .el-pagination .btn-next::after {
+            content: "›" !important;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            font-family: "Segoe UI", sans-serif !important;
+            display: inline-block;
+            line-height: 1;
+        }
+
+        /* ========== P2-2 响应式布局 ========== */
+        /* 平板：横幅精简 + 双列 */
+        @media (max-width: 900px) {
+            .hero-banner { flex-direction: column; align-items: flex-start; gap: 16px; padding: 20px 24px; }
+            .hero-right { margin-left: 0 !important; width: 100%; }
+            .hero-paw { display: none; }
+            .app-card { flex-direction: column; gap: 12px; }
+            .app-card-image { width: 100%; height: 140px; }
+        }
+        /* 移动端：单列卡片 + 触摸友好 */
+        @media (max-width: 600px) {
+            .page-content { padding: 12px 12px 32px; }
+            .hero-banner { padding: 14px 16px; }
+            .hero-left { gap: 12px; }
+            .hero-icon { width: 48px; height: 48px; font-size: 22px; border-radius: 12px; }
+            .hero-title-group h1 { font-size: 20px; }
+            .hero-title-group p { font-size: 13px; }
+            .hero-right { gap: 8px; flex-wrap: wrap; }
+            .nav-links a, .nav-user-chip { font-size: 12px; }
+            .status-tabs { padding: 12px 14px; }
+            .status-tabs-inner { gap: 6px; }
+            .status-tab-btn { padding: 5px 12px; font-size: 12px; }
+            .filter-section { padding: 14px 16px; }
+            .filter-row { flex-direction: column; gap: 8px; }
+            .filter-row > * { min-width: 100% !important; width: 100% !important; }
+            .app-card { padding: 14px; }
+            .app-card-title { font-size: 15px !important; }
+            .app-card-meta { font-size: 12px; }
+            .app-card-actions { margin-top: 10px; }
+            .el-drawer { width: 100% !important; }
+            /* 触摸友好：按钮最小点击区域 44px */
+            .el-button, button, .el-link {
+                min-height: 36px;
+                padding: 8px 14px;
+            }
+        }
+        @media (max-width: 375px) {
+            .hero-title-group h1 { font-size: 18px; }
+            .status-tab-btn { padding: 4px 10px; font-size: 11px; }
+        }
+        @media (hover: none) {
+            .app-card:hover { transform: none !important; box-shadow: var(--card-shadow); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
     </style>
 </head>
 <body>
@@ -453,9 +754,16 @@
 <div class="page-wrapper">
     <!-- 爪印背景 -->
     <div class="page-bg-paws">
+        <!-- 爪印 -->
         <svg style="top:8%;left:5%;width:60px;transform:rotate(-15deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
         <svg style="top:40%;right:8%;width:48px;transform:rotate(12deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
         <svg style="bottom:12%;left:10%;width:56px;transform:rotate(-10deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        <!-- 爱心 -->
+        <svg style="top:20%;left:15%;width:40px;transform:rotate(-10deg);opacity:0.04" viewBox="0 0 24 24"><path fill="#E07A5F" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <svg style="bottom:25%;right:10%;width:35px;transform:rotate(15deg);opacity:0.035" viewBox="0 0 24 24"><path fill="#81B29A" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <!-- 星星 -->
+        <svg style="top:5%;right:18%;width:35px;transform:rotate(8deg);opacity:0.04" viewBox="0 0 24 24"><path fill="#F4A261" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+        <svg style="bottom:8%;left:30%;width:30px;transform:rotate(-20deg);opacity:0.035" viewBox="0 0 24 24"><path fill="#B8A9C9" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
     </div>
 
     <div class="page-content" id="app">
@@ -464,32 +772,25 @@
             <div class="hero-left">
                 <div class="hero-icon">📋</div>
                 <div class="hero-title-group">
-                    <h1>领养申请<span>管理</span></h1>
+                    <h1><span class="title-icon">🐾</span>领养申请<span>管理</span></h1>
                     <p>规范审核流程，为流浪宠物找到温暖的家</p>
                 </div>
             </div>
-        <div class="hero-right">
-            <div class="nav-links">
-                <a href="pet-list.html">首页</a>
-                <span>|</span>
-                <a href="profile.html">个人中心</a>
-                <span v-if="currentRole === 'admin'">|</span>
-                <a v-if="currentRole === 'admin'" href="user-management.html">用户管理</a>
-                <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'">|</span>
-                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="stats.html">数据统计</a>
-                <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'">|</span>
-                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="health-record.html">健康档案</a>
-                <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'">|</span>
-                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin' || currentRole === 'volunteer'" href="volunteer-task.html">任务管理</a>
-                <span>|</span>
-                <span @click="logout" style="color:var(--primary);cursor:pointer;font-weight:600">退出登录</span>
-                <span style="margin-left:8px;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:700;"
-                      :style="'background:' + (currentRole==='admin'?'#fef0ee':currentRole==='institution_admin'?'#e3f2fd':currentRole==='volunteer'?'#fff8e1':'#e8f5e9') + ';color:' + (currentRole==='admin'?'var(--primary)':currentRole==='institution_admin'?'#1565c0':currentRole==='volunteer'?'#f57f17':'#2e7d32')">
-                    {{ getRoleName(currentRole) }}
+            <div class="hero-right">
+                <a href="pet-list.html" class="nav-link">首页</a>
+                <a href="profile.html" class="nav-link">个人中心</a>
+                <a v-if="currentRole === 'admin'" href="user-management.html" class="nav-link">用户管理</a>
+                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="stats.html" class="nav-link">数据统计</a>
+                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin' || currentRole === 'pet_hospital'" href="health-record.html" class="nav-link">健康档案</a>
+                <a v-if="currentRole === 'pet_hospital'" href="pet-hospital.html" class="nav-link">🏥 医疗档案</a>
+                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin' || currentRole === 'volunteer'" href="volunteer-task.html" class="nav-link">任务管理</a>
+                <a href="help.html" class="nav-link danger">帮助中心</a>
+                <span class="nav-link danger" @click="logout">退出登录</span>
+                <span class="role-badge" :class="'role-badge-' + currentRole">
+                    {{ getRoleIcon(currentRole) }} {{ getRoleName(currentRole) }}
                 </span>
             </div>
         </div>
-</div>
 
         <!-- 状态标签栏 -->
         <div class="status-tabs">
@@ -498,8 +799,10 @@
                     v-for="tab in statusTabs"
                     :key="tab.value"
                     class="status-tab-btn"
+                    :data-val="tab.value"
                     :class="{ active: currentStatus === tab.value }"
                     @click="switchTab(tab.value)">
+                    <span class="tab-icon">{{ getStatusTabIcon(tab.value) }}</span>
                     {{ tab.label }}
                     <span class="tab-count">{{ getTabCount(tab.value) }}</span>
                 </button>
@@ -518,8 +821,68 @@
             </div>
         </div>
 
-        <!-- 申请列表 -->
-        <div class="app-list" v-else-if="applications.length > 0">
+        <!-- 申请列表（待审核视图：分组显示） -->
+        <template v-if="currentStatus === 0 && currentRole !== 'adopter' && applications.length > 0 && getPendingGroups() && getPendingGroups().length > 0">
+            <div
+                v-for="(group, gIdx) in getPendingGroups()"
+                :key="'group-' + group.petId"
+                style="margin-bottom: 20px;">
+                <!-- 分组头 -->
+                <div class="compare-group-header" :style="'animation-delay:' + (gIdx * 0.08) + 's'">
+                    <div class="compare-group-pet">
+                        <div class="compare-group-thumb">
+                            <img v-if="group.petImage" :src="group.petImage" :alt="group.petName" @error="e => e.target.style.display='none'">
+                            <span v-else style="font-size:24px;">🐾</span>
+                        </div>
+                        <div>
+                            <div class="compare-group-name">{{ group.petName }}</div>
+                            <div style="font-size:12px;color:var(--text-muted);font-weight:600;">{{ group.count }} 位申请人</div>
+                        </div>
+                    </div>
+                    <el-button type="primary" size="small" @click.stop="openCompare(group.petId)" style="border-radius:var(--radius-sm);">
+                        🔍 对比筛选
+                    </el-button>
+                </div>
+                <!-- 分组内申请卡片（简版） -->
+                <div class="app-list" style="margin-top:10px;">
+                    <div
+                        v-for="(app, aIdx) in group.apps"
+                        :key="app.id"
+                        class="app-card"
+                        :data-status="app.status"
+                        :style="'animation-delay:' + ((gIdx * 3 + aIdx) * 0.05 + 0.1) + 's'"
+                        @click.stop="openDetail(app)">
+                        <div class="app-pet-image">
+                            <span style="font-size:28px;">👤</span>
+                        </div>
+                        <div class="app-content">
+                            <div class="app-header">
+                                <span class="app-pet-name">{{ app.applicantName || '申请人 #' + app.applicantId }}</span>
+                                <el-tag type="warning" size="small" style="font-weight:700;">待审核</el-tag>
+                            </div>
+                            <div class="app-meta">
+                                <span class="app-meta-item">📅 {{ formatDate(app.applyDate) }}</span>
+                                <span class="app-meta-item" v-if="app.familyMembers">👨‍👩‍👧 {{ app.familyMembers }}</span>
+                            </div>
+                            <div class="app-reason" v-if="app.reason">💬 {{ app.reason }}</div>
+                            <div class="app-actions" @click.stop>
+                                <el-button type="text" size="small" style="color:var(--primary);font-weight:700;" @click.stop="openDetail(app)">详情</el-button>
+                                <el-button type="success" size="small" @click.stop="handleApprove(app)">通过</el-button>
+                                <el-button type="warning" size="small" @click.stop="handleNeedMore(app)">待补充</el-button>
+                                <el-button type="danger" size="small" @click.stop="handleReject(app)">拒绝</el-button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 提示 -->
+            <div v-if="getPendingGroups().length > 0" style="text-align:center;padding:16px 0;font-size:13px;color:var(--text-muted);">
+                以上为有多位申请人的宠物，点击「对比筛选」可横向对比申请人信息
+            </div>
+        </template>
+
+        <!-- 申请列表（其他状态：原有视图） -->
+        <div class="app-list" v-if="applications.length > 0 && !(currentStatus === 0 && currentRole !== 'adopter' && getPendingGroups() && getPendingGroups().length > 0)">
             <div
                 v-for="(app, index) in applications"
                 :key="app.id"
@@ -536,8 +899,10 @@
                 <div class="app-content">
                     <div class="app-header">
                         <span class="app-pet-name">{{ app.petName || '宠物 #' + app.petId }}</span>
-                        <el-tag :type="getStatusType(app.status)" size="small" style="font-weight:700;">{{ getStatusText(app.status) }}</el-tag>
-                        <el-tag v-if="app.urgencyLevel && app.urgencyLevel > 0" type="danger" size="small" effect="plain">紧急</el-tag>
+                    <span class="adoption-status-badge" :class="'status-' + app.status">
+                        {{ getStatusIcon(app.status) }} {{ getStatusText(app.status) }}
+                    </span>
+                        <span v-if="app.urgencyLevel && app.urgencyLevel > 0" class="urgency-inline-tag">🚨 紧急</span>
                     </div>
                     <div class="app-meta">
                         <span class="app-meta-item">👤 {{ app.applicantName || '申请人 #' + app.applicantId }}</span>
@@ -546,14 +911,14 @@
                     </div>
                     <div class="app-reason" v-if="app.reason">💬 {{ app.reason }}</div>
                     <div class="app-actions" @click.stop>
-                        <el-button type="text" size="small" style="color:var(--primary);font-weight:700;" @click.stop="openDetail(app)">查看详情</el-button>
+                        <el-button type="text" size="small" style="color:var(--primary);font-weight:700;" @click.stop="openDetail(app)">👁查看详情</el-button>
                         <template v-if="currentRole !== 'adopter' && app.status === 0">
                             <el-button type="success" size="small" @click.stop="handleApprove(app)">通过</el-button>
                             <el-button type="warning" size="small" @click.stop="handleNeedMore(app)">待补充</el-button>
                             <el-button type="danger" size="small" @click.stop="handleReject(app)">拒绝</el-button>
                         </template>
                         <el-button v-if="app.status === 4" type="primary" size="small" @click.stop="handleSignContract(app)">签署协议</el-button>
-                        <el-tag v-if="app.status === 5" type="success" size="small" style="font-weight:700;">已完成</el-tag>
+                        <el-tag v-if="app.status === 5" type="success" size="small" style="font-weight:700;">🎉已完成</el-tag>
                     </div>
                 </div>
             </div>
@@ -561,9 +926,10 @@
 
         <!-- 空状态 -->
         <div v-else class="empty-state">
-            <span class="empty-icon">📋</span>
+            <span class="empty-icon">🐾</span>
             <div class="title">暂无申请记录</div>
             <div class="desc">选择其他状态标签查看，或等待新的领养申请</div>
+            <div class="empty-sub">每一只小可爱都在等待一个温暖的家 🏠</div>
         </div>
 
         <el-pagination
@@ -594,7 +960,9 @@
                                     <el-descriptions-item label="申请人">{{ currentApp.applicantName || '申请人 #' + currentApp.applicantId }}</el-descriptions-item>
                                     <el-descriptions-item label="申请日期">{{ formatDate(currentApp.applyDate) }}</el-descriptions-item>
                                     <el-descriptions-item label="申请状态">
-                                        <el-tag :type="getStatusType(currentApp.status)" style="font-weight:700;">{{ getStatusText(currentApp.status) }}</el-tag>
+                                        <span class="adoption-status-badge" :class="'status-' + currentApp.status">
+                                        {{ getStatusIcon(currentApp.status) }} {{ getStatusText(currentApp.status) }}
+                                    </span>
                                     </el-descriptions-item>
                                     <el-descriptions-item label="家庭成员">{{ currentApp.familyMembers || '-' }}</el-descriptions-item>
                                     <el-descriptions-item label="居住条件">{{ currentApp.livingConditions || '-' }}</el-descriptions-item>
@@ -652,16 +1020,219 @@
                                     </div>
                                 </template>
 
-                                <!-- 已完成 -->
+                                <!-- 已完成（status=5）：Tab 切换「领养完成」和「回访记录」 -->
                                 <template v-if="currentApp.status === 5">
-                                    <div style="text-align:center;padding:24px 0;">
-                                        <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--sage),var(--sage-light));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 8px 24px rgba(129,178,154,0.3);">
-                                            <span style="font-size:32px;">✅</span>
+                                    <!-- Tab 切换 -->
+                                    <div class="followup-tabs" style="margin-bottom:16px;">
+                                        <button class="followup-tab-btn" :class="{ active: !followUpVisible }" @click="followUpVisible = false">✅ 领养完成</button>
+                                        <button class="followup-tab-btn" :class="{ active: followUpVisible }" @click="switchToFollowUp">
+                                            📋 回访记录
+                                            <span v-if="followUpRecords.length > 0" class="followup-count-badge">{{ followUpRecords.length }}</span>
+                                        </button>
+                                    </div>
+
+                                    <!-- 领养完成 Tab -->
+                                    <div v-if="!followUpVisible">
+                                        <div style="text-align:center;padding:12px 0 20px;">
+                                            <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--sage),var(--sage-light));display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 8px 24px rgba(129,178,154,0.3);">
+                                                <span style="font-size:32px;">✅</span>
+                                            </div>
+                                            <div style="font-size:18px;font-weight:700;color:var(--text-dark);margin-bottom:8px;">领养流程已完成</div>
+                                            <div style="font-size:13px;color:var(--text-muted);">恭喜您正式成为这只可爱宠物的新主人！</div>
                                         </div>
-                                        <div style="font-size:18px;font-weight:700;color:var(--text-dark);margin-bottom:8px;">领养流程已完成</div>
-                                        <div style="font-size:13px;color:var(--text-muted);">恭喜您正式成为这只可爱宠物的新主人！</div>
+                                        <!-- 添加回访记录入口（管理员/机构管理员可见） -->
+                                        <div v-if="currentRole !== 'adopter'" style="margin-top:16px;">
+                                            <div style="background:var(--warm-cream);border-radius:var(--radius-sm);padding:16px;border:1px solid var(--warm-gray2);">
+                                                <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;font-weight:600;">📌 领养后请定期回访，关注宠物适应情况</div>
+                                                <el-button type="primary" size="small" style="border-radius:var(--radius-sm);" @click="openFollowUpForm">
+                                                    ➕ 添加回访记录
+                                                </el-button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 回访记录 Tab -->
+                                    <div v-if="followUpVisible">
+                                        <!-- 添加按钮 -->
+                                        <div v-if="currentRole !== 'adopter'" style="margin-bottom:16px;text-align:right;">
+                                            <el-button type="primary" size="small" style="border-radius:var(--radius-sm);" @click="openFollowUpForm">➕ 添加回访</el-button>
+                                        </div>
+                                        <!-- 回访时间线 -->
+                                        <div v-if="followUpLoading" style="text-align:center;padding:32px 0;color:var(--text-muted);">
+                                            <span style="font-size:24px;animation:float 2s ease-in-out infinite;display:block;margin-bottom:8px;">🐾</span>
+                                            <span style="font-size:13px;font-weight:600;">加载中...</span>
+                                        </div>
+                                        <div v-else-if="followUpRecords.length === 0" style="text-align:center;padding:32px 0;color:var(--text-muted);">
+                                            <span style="font-size:40px;display:block;margin-bottom:12px;">📭</span>
+                                            <div style="font-size:14px;font-weight:700;margin-bottom:4px;">暂无回访记录</div>
+                                            <div style="font-size:12px;">点击上方「添加回访」开始记录</div>
+                                        </div>
+                                        <div v-else class="followup-timeline">
+                                            <div
+                                                v-for="(record, idx) in followUpRecords"
+                                                :key="record.id"
+                                                class="timeline-item">
+                                                <div class="timeline-dot"></div>
+                                                <div class="timeline-content">
+                                                    <div class="timeline-date">{{ formatDate(record.followUpDate) }}</div>
+                                                    <div class="timeline-condition" style="margin-bottom:4px;">
+                                                        <span style="font-size:13px;color:var(--text-dark);">
+                                                            🐾 宠物现状：
+                                                            <span style="font-weight:700;color:var(--primary);">{{ record.petCondition || '-' }}</span>
+                                                        </span>
+                                                    </div>
+                                                    <div v-if="record.content" class="timeline-body">{{ record.content }}</div>
+                                                    <div class="timeline-footer">
+                                                        <span style="font-size:11px;color:var(--text-muted);">回访人：{{ record.followerName || ('用户 #' + record.followerId) }}</span>
+                                                        <el-button v-if="currentRole === 'admin'" type="text" size="mini" style="color:var(--primary);font-size:11px;padding:0 4px;" @click="deleteFollowUpRecord(record)">删除</el-button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </template>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
+            </div>
+        </transition>
+
+        <!-- ========== 多申请人对比遮罩层 ========== -->
+        <transition name="fade-overlay">
+            <div v-if="compareVisible" class="compare-overlay" @click.self="closeCompare">
+                <!-- 对比头部 -->
+                <div class="compare-header">
+                    <div class="compare-header-left">
+                        <div class="compare-pet-thumb">
+                            <img v-if="compareApps[0]?.petImage" :src="compareApps[0].petImage" alt="宠物" @error="e => e.target.style.display='none'">
+                            <span v-else style="font-size:24px;">🐾</span>
+                        </div>
+                        <div>
+                            <div class="compare-title">{{ compareApps[0]?.petName || ('宠物 #' + comparePetId) }} — 申请人对比</div>
+                            <div class="compare-sub">共 {{ compareApps.length }} 位申请人 | 点击卡片「通过/拒绝」快速处理</div>
+                        </div>
+                    </div>
+                    <button class="compare-close-btn" @click="closeCompare">&times;</button>
+                </div>
+                <!-- 对比内容区 -->
+                <div class="compare-body">
+                    <!-- 骨架屏 -->
+                    <div v-if="compareLoading" class="compare-empty">
+                        <div style="font-size:40px;animation:pawBounce 1.2s ease-in-out infinite;">🐾</div>
+                        <div style="font-size:14px;font-weight:600;">正在加载申请人数据...</div>
+                    </div>
+                    <!-- 空状态 -->
+                    <div v-else-if="compareApps.length === 0" class="compare-empty">
+                        <div class="compare-empty-icon">📭</div>
+                        <div style="font-size:15px;font-weight:700;">暂无待审核申请人</div>
+                        <div style="font-size:13px;">所有申请均已被处理</div>
+                    </div>
+                    <!-- 申请人卡片横向排列 -->
+                    <div v-if="compareApps.length > 0">
+                        <div
+                            v-for="(app, idx) in compareApps"
+                            :key="app.id"
+                            class="compare-card"
+                            :style="'animation:cardEnter 0.4s ease ' + (idx * 0.1) + 's both;'">
+                            <div class="compare-card-top">
+                                <div class="compare-card-top-title">👤 {{ app.applicantName || ('申请人 #' + app.applicantId) }}</div>
+                                <div class="compare-card-top-sub">申请时间：{{ formatDate(app.applyDate) }}</div>
+                            </div>
+                            <div class="compare-card-body">
+                                <div class="compare-row">
+                                    <div class="compare-label">家庭成员</div>
+                                    <div class="compare-value">{{ app.familyMembers || '-' }}</div>
+                                </div>
+                                <div class="compare-row">
+                                    <div class="compare-label">居住条件</div>
+                                    <div class="compare-value">{{ app.livingConditions || '-' }}</div>
+                                </div>
+                                <div class="compare-row">
+                                    <div class="compare-label">工作情况</div>
+                                    <div class="compare-value">{{ app.workStatus || '-' }}</div>
+                                </div>
+                                <div class="compare-row">
+                                    <div class="compare-label">养宠经验</div>
+                                    <div class="compare-value">{{ app.experience || '-' }}</div>
+                                </div>
+                                <div class="compare-row" style="margin-bottom:0;">
+                                    <div class="compare-label">申请理由</div>
+                                </div>
+                                <div class="compare-reason" v-if="app.reason">{{ app.reason }}</div>
+                                <div class="compare-reason" v-else style="color:var(--text-muted);font-style:italic;">未填写</div>
+                            </div>
+                            <div class="compare-card-actions">
+                                <el-button type="success" size="small" style="flex:1;border-radius:var(--radius-sm);" @click="handleCompareApprove(app)">✅ 通过</el-button>
+                                <el-button type="danger" size="small" style="flex:1;border-radius:var(--radius-sm);" @click="handleCompareReject(app)">❌ 拒绝</el-button>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else-if="!compareLoading" class="compare-empty">
+                        <div class="compare-empty-icon">📭</div>
+                        <div style="font-size:15px;font-weight:700;">暂无待审核申请人</div>
+                        <div style="font-size:13px;">所有申请均已被处理</div>
+                    </div>
+                </div>
+            </div>
+        </transition>
+
+        <!-- ========== 回访表单遮罩层 ========== -->
+        <transition name="fade-overlay">
+            <div v-if="followUpFormVisible" class="custom-modal-overlay" @click.self="closeFollowUpForm">
+                <transition name="slide-up-dialog">
+                    <div v-if="followUpFormVisible" class="custom-dialog-box" @click.stop>
+                        <div class="custom-dialog-header">
+                            <span class="custom-dialog-title">📋 添加回访记录</span>
+                            <span class="custom-dialog-close" @click="closeFollowUpForm">&times;</span>
+                        </div>
+                        <div class="custom-dialog-body">
+                            <!-- 宠物信息提示 -->
+                            <div style="background:var(--warm-cream);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--text-muted);display:flex;gap:8px;align-items:center;">
+                                <span style="font-size:16px;">🐾</span>
+                                <div>
+                                    宠物：<span style="font-weight:700;color:var(--text-dark);">{{ currentApp?.petName || ('宠物 #' + currentApp?.petId) }}</span>
+                                    &nbsp;|&nbsp;
+                                    申请人：<span style="font-weight:700;color:var(--text-dark);">{{ currentApp?.applicantName || ('申请人 #' + currentApp?.applicantId) }}</span>
+                                </div>
+                            </div>
+                            <el-form :model="followUpForm" label-width="90px" size="small">
+                                <el-form-item label="回访日期" required>
+                                    <el-date-picker
+                                        v-model="followUpForm.followUpDate"
+                                        type="date"
+                                        placeholder="选择回访日期"
+                                        value-format="yyyy-MM-dd"
+                                        style="width:100%;"
+                                        :clearable="true">
+                                    </el-date-picker>
+                                </el-form-item>
+                                <el-form-item label="宠物现状" required>
+                                    <el-select v-model="followUpForm.petCondition" placeholder="请选择宠物现状" style="width:100%;">
+                                        <el-option v-for="opt in petConditionOptions" :key="opt" :label="opt" :value="opt"></el-option>
+                                    </el-select>
+                                </el-form-item>
+                                <el-form-item label="回访内容" required>
+                                    <el-input
+                                        v-model="followUpForm.content"
+                                        type="textarea"
+                                        :rows="5"
+                                        placeholder="请详细描述本次回访情况，包括宠物适应情况、生活环境、饮食状况等"
+                                        maxlength="500"
+                                        show-word-limit>
+                                    </el-input>
+                                </el-form-item>
+                                <el-form-item label="照片URL">
+                                    <el-input
+                                        v-model="followUpForm.images"
+                                        placeholder="可选，填写图片链接，多个用逗号分隔"
+                                        clearable>
+                                    </el-input>
+                                </el-form-item>
+                            </el-form>
+                            <div style="display:flex;gap:10px;margin-top:20px;">
+                                <el-button @click="closeFollowUpForm" style="flex:1;border-radius:var(--radius-sm);">取消</el-button>
+                                <el-button class="btn-gradient" @click="submitFollowUp" :loading="followUpSubmitting" style="flex:1;border-radius:var(--radius-sm);">提交记录</el-button>
                             </div>
                         </div>
                     </div>
@@ -674,6 +1245,7 @@
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
 <script src="https://unpkg.com/element-ui@2.15.13/lib/index.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
+<script src="js/auth.js"></script>
 <script>
     Vue.use(ELEMENT);
 
@@ -707,6 +1279,7 @@
         volunteer: '志愿者', institution_admin: '机构管理员'
     };
     const getRoleName = r => ROLE_NAMES[r] || r;
+    const getRoleIcon = r => ({ admin:'👑', adopter:'🏠', volunteer:'🌟', institution_admin:'🏢', hospital:'🏥' })[r] || '🐾';
 
     new Vue({
         el: '#app',
@@ -735,7 +1308,25 @@
                 { label: '待补充', value: 3 },
                 { label: '待签署', value: 4 },
                 { label: '已完成', value: 5 }
-            ]
+            ],
+            // 多申请人对比
+            compareVisible: false,
+            compareLoading: false,
+            comparePetId: null,
+            compareApps: [],
+            // 回访记录
+            followUpVisible: false,
+            followUpRecords: [],
+            followUpLoading: false,
+            followUpFormVisible: false,
+            followUpSubmitting: false,
+            followUpForm: {
+                followUpDate: '',
+                petCondition: '',
+                content: '',
+                images: ''
+            },
+            petConditionOptions: ['健康良好', '适应良好', '适应一般', '需关注', '有健康问题']
         },
         mounted() {
             const token = localStorage.getItem('token');
@@ -828,10 +1419,15 @@
                 // 切换到不同申请时重置表单，同一申请再次打开时保留用户已填写的内容
                 if (!this.currentApp || this.currentApp.id !== app.id) {
                     this.reviewForm = { status: 1, reviewComment: '' };
+                    // 切换申请时重置回访记录，避免数据显示错乱
+                    this.followUpVisible = false;
+                    this.followUpRecords = [];
                 }
                 this.currentApp = app;
                 this.drawerVisible = true;
             },
+            getStatusTabIcon(val) { const map = { '-1': '📋', '0': '⏳', '1': '✅', '2': '❌', '3': '📝', '4': '✍', '5': '🎉' }; return map[String(val)] || '📋'; },
+            getStatusIcon(status) { const map = { 0: '⏳', 1: '✅', 2: '❌', 3: '📝', 4: '✍', 5: '🎉' }; return map[status] || '📋'; },
             getStatusText(status) { const map = { 0: '待审核', 1: '已通过', 2: '已拒绝', 3: '待补充', 4: '待签署', 5: '已完成' }; return map[status] || '未知'; },
             getStatusType(status) { const map = { 0: 'warning', 1: 'success', 2: 'danger', 3: 'info', 4: 'primary', 5: 'success' }; return map[status] || 'info'; },
             formatDate(date) {
@@ -946,13 +1542,189 @@
                     .catch(() => { this.signLoading = false; });
             },
             getRoleName,
+            getRoleIcon,
             logout() {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
+                localStorage.removeItem('refreshToken');
+                document.cookie = 'PET_JWT=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
                 window.location.href = 'login.html';
+            },
+            // ========== 多申请人对比 ==========
+            getPendingGroups() {
+                if (this.currentStatus !== 0 || this.currentRole === 'adopter') return null;
+                const groups = {};
+                this.applications.forEach(app => {
+                    const pid = app.petId;
+                    if (!groups[pid]) {
+                        groups[pid] = { petId: pid, petName: app.petName || ('宠物 #' + pid), petImage: app.petImage, count: 0, apps: [] };
+                    }
+                    groups[pid].apps.push(app);
+                    groups[pid].count++;
+                });
+                return Object.values(groups).filter(g => g.count >= 2);
+            },
+            openCompare(petId) {
+                this.comparePetId = petId;
+                this.compareApps = [];
+                this.compareVisible = true;
+                this.compareLoading = true;
+                axios.get('/api/adoption/compare/' + petId)
+                    .then(res => {
+                        this.compareLoading = false;
+                        if (res.data.code === 200) {
+                            this.compareApps = res.data.data?.applications || [];
+                        } else {
+                            this.$message.error(res.data.message || '加载失败');
+                            this.compareVisible = false;
+                        }
+                    })
+                    .catch(() => {
+                        this.compareLoading = false;
+                        this.$message.error('加载对比数据失败');
+                    });
+            },
+            closeCompare() {
+                this.compareVisible = false;
+                this.compareApps = [];
+                this.comparePetId = null;
+            },
+            handleCompareApprove(app) {
+                this.$confirm('确认通过该申请人？', '快速通过', { type: 'success' })
+                    .then(() => {
+                        axios.put('/api/adoption/review/' + app.id, null, { params: { status: 1, reviewComment: '管理员快速通过' } })
+                            .then(res => {
+                                if (res.data.code === 200) {
+                                    this.$message.success('已通过该申请人');
+                                    this.closeCompare();
+                                    this.loadApplications();
+                                } else {
+                                    this.$message.error(res.data.message || '操作失败');
+                                }
+                            })
+                            .catch(() => {});
+                    })
+                    .catch(() => {});
+            },
+            handleCompareReject(app) {
+                this.$prompt('请填写拒绝原因', '快速拒绝', {
+                    type: 'warning',
+                    confirmButtonText: '确认拒绝',
+                    cancelButtonText: '取消',
+                    inputPattern: /\S+/,
+                    inputErrorMessage: '必须填写拒绝原因'
+                }).then(({ value }) => {
+                    axios.put('/api/adoption/review/' + app.id, null, { params: { status: 2, reviewComment: value } })
+                        .then(res => {
+                            if (res.data.code === 200) {
+                                this.$message.success('已拒绝该申请人');
+                                this.closeCompare();
+                                this.loadApplications();
+                            } else {
+                                this.$message.error(res.data.message || '操作失败');
+                            }
+                        })
+                        .catch(() => {});
+                }).catch(() => {});
+            },
+            // ========== 回访记录 ==========
+            switchToFollowUp() {
+                this.followUpVisible = true;
+                if (this.followUpRecords.length === 0) {
+                    this.loadFollowUpRecords();
+                }
+            },
+            loadFollowUpRecords() {
+                if (!this.currentApp || !this.currentApp.id) return;
+                this.followUpLoading = true;
+                axios.get('/api/follow-up/list/' + this.currentApp.id)
+                    .then(res => {
+                        this.followUpLoading = false;
+                        if (res.data.code === 200) {
+                            this.followUpRecords = res.data.data?.records || [];
+                        } else {
+                            this.followUpRecords = [];
+                        }
+                    })
+                    .catch(() => { this.followUpLoading = false; });
+            },
+            openFollowUpForm() {
+                this.followUpForm = { followUpDate: '', petCondition: '', content: '', images: '' };
+                this.followUpFormVisible = true;
+            },
+            closeFollowUpForm() {
+                this.followUpFormVisible = false;
+            },
+            submitFollowUp() {
+                if (!this.followUpForm.petCondition) {
+                    this.$message.warning('请选择宠物现状');
+                    return;
+                }
+                if (!this.followUpForm.content || !this.followUpForm.content.trim()) {
+                    this.$message.warning('请填写回访内容');
+                    return;
+                }
+                this.followUpSubmitting = true;
+                const payload = {
+                    adoptionId: this.currentApp.id,
+                    followUpDate: this.followUpForm.followUpDate || new Date().toISOString().substring(0, 10),
+                    petCondition: this.followUpForm.petCondition,
+                    content: this.followUpForm.content.trim(),
+                    images: this.followUpForm.images || ''
+                };
+                axios.post('/api/follow-up/add', payload)
+                    .then(res => {
+                        this.followUpSubmitting = false;
+                        if (res.data.code === 200) {
+                            this.$message.success('回访记录添加成功');
+                            this.closeFollowUpForm();
+                            this.loadFollowUpRecords();
+                        } else {
+                            this.$message.error(res.data.message || '添加失败');
+                        }
+                    })
+                    .catch(() => { this.followUpSubmitting = false; });
+            },
+            deleteFollowUpRecord(record) {
+                this.$confirm('确认删除该回访记录？', '删除确认', { type: 'warning' })
+                    .then(() => {
+                        axios.delete('/api/follow-up/delete/' + record.id)
+                            .then(res => {
+                                if (res.data.code === 200) {
+                                    this.$message.success('已删除');
+                                    this.loadFollowUpRecords();
+                                } else {
+                                    this.$message.error(res.data.message || '删除失败');
+                                }
+                            })
+                            .catch(() => {});
+                    })
+                    .catch(() => {});
             }
         }
     });
+</script>
+<script>
+// 替换分页器箭头图标（‹ ›）
+document.addEventListener('DOMContentLoaded', function() {
+    function fixPaginationIcons() {
+        document.querySelectorAll('.el-pagination .btn-prev .el-icon').forEach(function(el) {
+            el.textContent = '‹';
+            el.style.fontSize = '18px';
+            el.style.fontWeight = '700';
+            el.style.fontFamily = '"Segoe UI Symbol", "Arial Unicode MS", sans-serif';
+        });
+        document.querySelectorAll('.el-pagination .btn-next .el-icon').forEach(function(el) {
+            el.textContent = '›';
+            el.style.fontSize = '18px';
+            el.style.fontWeight = '700';
+            el.style.fontFamily = '"Segoe UI Symbol", "Arial Unicode MS", sans-serif';
+        });
+    }
+    fixPaginationIcons();
+    setTimeout(fixPaginationIcons, 500);
+    setTimeout(fixPaginationIcons, 1000);
+});
 </script>
 </body>
 </html>

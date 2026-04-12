@@ -12,39 +12,74 @@
             --primary: #E07A5F;
             --primary-dark: #c96a50;
             --primary-light: #f0a28a;
+            --primary-bg: rgba(224, 122, 95, 0.08);
             --sage: #81B29A;
             --sage-light: #a8cdb8;
             --amber: #F4A261;
+            --sky: #87CEEB;
+            --sky-light: #B0E2FF;
+            --sky-bg: rgba(135, 206, 235, 0.12);
+            --lavender: #B8A9C9;
+            --lavender-light: #D8CCE8;
+            --lavender-bg: rgba(184, 169, 201, 0.12);
+            --mint: #98D8C8;
+            --mint-light: #B8EBE0;
+            --mint-bg: rgba(152, 216, 200, 0.12);
+            --success: #52c788;
+            --danger: #e05d5d;
+            --info: #5b8dee;
             --warm-white: #FDF6F0;
             --warm-cream: #FAEEE7;
             --warm-gray: #f0ebe7;
+            --warm-gray2: #ede6df;
             --text-dark: #3D405B;
             --text-muted: #8A8EA0;
-            --card-shadow: 0 4px 20px rgba(224, 122, 95, 0.1);
-            --card-shadow-hover: 0 12px 32px rgba(224, 122, 95, 0.18);
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --radius: 16px;
-            --radius-sm: 10px;
+            --bg: var(--warm-white);
+            --card-shadow: 0 4px 20px rgba(224, 122, 95, 0.10);
+            --card-shadow-hover: 0 12px 40px rgba(224, 122, 95, 0.20);
+            --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius: 20px;
+            --radius-sm: 12px;
         }
 
         * { box-sizing: border-box; }
         *:focus { outline: none; }
         *:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 
+        /* ========== 多层装饰背景 ========== */
+        /* 第1层：暖色渐变底色 */
         body {
             margin: 0; padding: 0;
-            background-color: var(--warm-white);
+            background: linear-gradient(160deg, var(--warm-white) 0%, var(--warm-cream) 60%, #f5e8df 100%);
             font-family: "Nunito", "PingFang SC", "Microsoft YaHei", sans-serif;
             -webkit-font-smoothing: antialiased;
             -webkit-tap-highlight-color: transparent;
             color: var(--text-dark);
         }
 
+        /* 第2层：几何图形装饰（右上角大圆 + 左下角椭圆） */
         body::before {
             content: '';
             position: fixed; inset: 0;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24'%3E%3Cpath fill='%23E07A5F' fill-opacity='0.03' d='M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z'/%3E%3C/svg%3E");
+            background-image:
+                radial-gradient(ellipse 400px 300px at 95% 5%, rgba(224,122,95,0.06) 0%, transparent 70%),
+                radial-gradient(ellipse 300px 400px at 5% 90%, rgba(129,178,154,0.05) 0%, transparent 70%),
+                radial-gradient(ellipse 200px 200px at 80% 80%, rgba(244,162,97,0.04) 0%, transparent 70%),
+                radial-gradient(ellipse 150px 250px at 20% 30%, rgba(184,169,201,0.04) 0%, transparent 70%);
             pointer-events: none; z-index: 0;
+        }
+
+        /* 第3层：爪印点缀图案 */
+        body::after {
+            content: '';
+            position: fixed; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24'%3E%3Cpath fill='%23E07A5F' fill-opacity='0.04' d='M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z'/%3E%3C/svg%3E");
+            pointer-events: none; z-index: 0;
+            animation: bgFloat 20s ease-in-out infinite;
+        }
+        @keyframes bgFloat {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -52,23 +87,70 @@
         ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
-        .container { max-width: 1400px; margin: 0 auto; padding: 24px 20px; }
+        /* ========== 爪印装饰背景 ========== */
+        .page-bg-paws {
+            position: fixed; inset: 0; pointer-events: none; z-index: 0;
+        }
+        .page-bg-paws svg {
+            position: absolute; fill: var(--primary); opacity: 0.035;
+        }
+
+        /* ========== 页面容器 ========== */
+        .page-wrapper { position: relative; z-index: 1; }
+
+        /* ========== Element UI 统一覆盖 ========== */
+        .el-pager li.active { background: var(--primary) !important; color: white !important; border-radius: 50% !important; }
+        .el-pager li:hover { color: var(--primary) !important; }
+        .el-loading-mask { background: rgba(253,246,240,0.9) !important; }
+        .el-dialog { border-radius: var(--radius) !important; }
+        .el-message-box { border-radius: var(--radius) !important; }
+        .el-tag { border-radius: 20px !important; }
+        .el-tag--success { background-color: #e8f5ee !important; border-color: var(--sage) !important; color: var(--sage) !important; }
+        .el-tag--warning { background-color: #fef3e8 !important; border-color: var(--amber) !important; color: var(--amber) !important; }
+        .el-tag--danger { background-color: #fde8e8 !important; border-color: #e05d5d !important; color: #e05d5d !important; }
+        .el-descriptions th { background: var(--warm-cream) !important; }
+        .el-form-item__label { color: var(--text-dark); font-weight: 600; }
+
+        .container { max-width: 1600px; margin: 0 auto; padding: 24px 20px; }
 
         /* ========== 头部横幅 ========== */
         .header-banner {
             background: linear-gradient(135deg, #E07A5F 0%, #c96a50 40%, #F4A261 100%);
-            border-radius: var(--radius); padding: 32px 36px; margin-bottom: 20px;
+            border-radius: var(--radius); padding: 24px 32px; margin-bottom: 16px;
             display: flex; justify-content: space-between; align-items: center;
-            position: relative; overflow: hidden; box-shadow: 0 8px 32px rgba(224, 122, 95, 0.25);
+            position: relative; box-shadow: 0 8px 32px rgba(224, 122, 95, 0.25);
             animation: fadeSlideDown 0.5s ease;
+            flex-wrap: wrap; gap: 16px;
+            overflow: hidden;
         }
+        /* 横幅装饰：大圆形光晕 */
+        .header-banner::before {
+            content: ''; position: absolute;
+            top: -40px; right: -40px;
+            width: 220px; height: 220px;
+            background: rgba(255,255,255,0.07); border-radius: 50%;
+        }
+        /* 横幅装饰：小圆形光晕 */
+        .header-banner::after {
+            content: ''; position: absolute;
+            bottom: -30px; left: 30%;
+            width: 120px; height: 120px;
+            background: rgba(255,255,255,0.05); border-radius: 50%;
+        }
+        /* 横幅右侧额外装饰圆形 */
         @keyframes fadeSlideDown {
             from { opacity: 0; transform: translateY(-16px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .header-banner::before {
-            content: ''; position: absolute; top: -30px; right: -30px;
-            width: 180px; height: 180px; background: rgba(255,255,255,0.06); border-radius: 50%;
+        .banner-deco-circle {
+            position: absolute; right: 60px; top: -20px;
+            width: 80px; height: 80px; border-radius: 50%;
+            background: rgba(244,162,97,0.15); border: 2px solid rgba(255,255,255,0.08);
+        }
+        /* 横幅底部波浪分隔线 */
+        .banner-wave {
+            position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,255,0.05), rgba(255,255,255,0.3));
         }
         .banner-left { position: relative; z-index: 1; }
         .banner-emoji { font-size: 40px; margin-bottom: 8px; display: inline-block; animation: gentleBounce 3s ease-in-out infinite; }
@@ -76,14 +158,65 @@
             0%, 100% { transform: translateY(0) rotate(-3deg); }
             50% { transform: translateY(-6px) rotate(3deg); }
         }
-        .banner-title { font-size: 26px; font-weight: 800; color: white; margin: 0 0 4px; letter-spacing: -0.5px; }
-        .banner-subtitle { font-size: 14px; color: rgba(255,255,255,0.8); margin: 0; }
-        .banner-right { position: relative; z-index: 1; display: flex; gap: 12px; align-items: center; }
+        .banner-title-group { display: flex; align-items: center; gap: 14px; }
+        .banner-title { font-size: 26px; font-weight: 800; color: white; margin: 0 0 4px; letter-spacing: -0.5px; display: flex; align-items: center; gap: 10px; text-shadow: 0 2px 8px rgba(201,106,80,0.3); }
+        .banner-title-icon { font-size: 28px; display: inline-block; animation: gentleBounce 3s ease-in-out infinite; }
+        .banner-subtitle { font-size: 14px; color: rgba(255,255,255,0.85); margin: 0; font-weight: 600; text-shadow: 0 1px 4px rgba(201,106,80,0.2); }
+        .banner-right { position: relative; z-index: 1; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .banner-nav { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 13px; }
+        .banner-sep { color: rgba(255,255,255,0.35); }
+        .role-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 3px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
+            margin-left: 6px;
+        }
+        .role-badge.role-admin { background: rgba(254,240,238,0.95); color: #c96a50; border: 1px solid rgba(201,106,80,0.3); }
+        .role-badge.role-institution_admin { background: rgba(227,242,253,0.95); color: #1565c0; border: 1px solid rgba(21,101,192,0.3); }
+        .role-badge.role-volunteer { background: rgba(255,248,225,0.95); color: #c97a10; border: 1px solid rgba(245,127,23,0.3); }
+        .role-badge.role-adopter { background: rgba(232,245,233,0.95); color: #2e7d32; border: 1px solid rgba(46,125,50,0.3); }
+        .role-badge.role-hospital { background: rgba(243,229,245,0.95); color: #7b1fa2; border: 1px solid rgba(123,31,162,0.3); }
+        .role-badge { transition: var(--transition); }
+        .role-badge:hover { transform: scale(1.05); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .banner-stat { text-align: center; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); padding: 10px 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); }
         .banner-stat-num { font-size: 24px; font-weight: 800; color: white; display: block; line-height: 1; }
         .banner-stat-label { font-size: 11px; color: rgba(255,255,255,0.75); margin-top: 3px; display: block; }
-        .banner-link { color: white; text-decoration: none; font-size: 14px; padding: 8px 16px; border-radius: 8px; border: 1.5px solid rgba(255,255,255,0.5); transition: var(--transition); background: rgba(255,255,255,0.1); backdrop-filter: blur(4px); }
+        .banner-link { color: white; text-decoration: none; font-size: 14px; padding: 8px 14px; border-radius: 8px; border: 1.5px solid rgba(255,255,255,0.4); transition: var(--transition); background: rgba(255,255,255,0.1); backdrop-filter: blur(4px); }
         .banner-link:hover { background: rgba(255,255,255,0.25); border-color: white; }
+
+        /* 管理功能下拉菜单 */
+        .dropdown-wrap { position: relative; }
+        .banner-dropdown-btn {
+            color: white; font-size: 14px; padding: 8px 14px; border-radius: 8px;
+            border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(4px); cursor: pointer; font-family: inherit; font-weight: 600;
+            transition: var(--transition); display: flex; align-items: center; gap: 4px;
+        }
+        .banner-dropdown-btn:hover { background: rgba(255,255,255,0.25); border-color: white; }
+        .dropdown-menu {
+            position: fixed; z-index: 9999;
+            background: white; border-radius: var(--radius-sm); box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            min-width: 150px; overflow: visible; border: 1px solid var(--warm-gray);
+        }
+        .dropdown-item {
+            display: block; padding: 10px 16px; font-size: 13px; color: var(--text-dark);
+            text-decoration: none; transition: background 0.15s, color 0.15s;
+            border-bottom: 1px solid var(--warm-gray);
+        }
+        .dropdown-item:last-child { border-bottom: none; }
+        .dropdown-item:hover { background: var(--primary-bg); color: var(--primary); }
+
+        /* ========== 管理员快捷操作栏 ========== */
+        .admin-quick-bar {
+            display: flex; gap: 10px; align-items: center;
+            background: white; border-radius: var(--radius);
+            padding: 12px 16px; margin-bottom: 16px;
+            box-shadow: var(--card-shadow);
+            animation: fadeSlideDown 0.4s ease 0.05s both;
+        }
+        .admin-quick-bar::before {
+            content: '管理员操作：'; font-size: 13px; font-weight: 700;
+            color: var(--text-muted); margin-right: 4px; white-space: nowrap;
+        }
 
         /* ========== 筛选区域 ========== */
         .filter-section {
@@ -99,35 +232,91 @@
         /* Element UI 暖色覆盖 */
         .el-input__inner { border-radius: var(--radius-sm) !important; border-color: var(--warm-gray) !important; font-family: inherit !important; transition: border-color 0.2s !important; }
         .el-input__inner:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(224, 122, 95, 0.1) !important; }
-        .el-button--primary { background: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; font-family: inherit !important; font-weight: 600 !important; }
-        .el-button--primary:hover { background: var(--primary-dark) !important; border-color: var(--primary-dark) !important; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(224, 122, 95, 0.3); }
-        .el-button { border-radius: var(--radius-sm) !important; font-family: inherit !important; }
+        .el-button--primary { background: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; font-family: inherit !important; font-weight: 600 !important; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+        .el-button--primary:hover { background: var(--primary-dark) !important; border-color: var(--primary-dark) !important; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(224, 122, 95, 0.35); }
+        .el-button--primary:active { transform: translateY(0px) scale(0.97); box-shadow: 0 2px 8px rgba(224,122,95,0.2); }
+        .el-button { border-radius: var(--radius-sm) !important; font-family: inherit !important; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+        .el-button:focus { box-shadow: 0 0 0 3px rgba(224,122,95,0.15) !important; }
 
         /* ========== 统计卡片 ========== */
         .stats-bar {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 20px;
             animation: fadeSlideDown 0.5s ease 0.15s both;
         }
-        .stat-card { background: white; padding: 18px 20px; border-radius: var(--radius); box-shadow: var(--card-shadow); display: flex; align-items: center; gap: 14px; border: 1px solid rgba(224, 122, 95, 0.06); transition: var(--transition); }
-        .stat-card:hover { transform: translateY(-2px); box-shadow: var(--card-shadow-hover); }
-        .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+        @media (max-width: 900px) { .stats-bar { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 500px) { .stats-bar { grid-template-columns: 1fr; } }
+        .stat-card {
+            background: white; padding: 18px 20px; border-radius: var(--radius);
+            box-shadow: var(--card-shadow); display: flex; align-items: center; gap: 14px;
+            border: 1px solid rgba(224, 122, 95, 0.06); transition: var(--transition);
+            position: relative; overflow: hidden;
+        }
+        /* 统计卡片顶部彩色条 */
+        .stat-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0;
+            height: 3px;
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+        .stat-card:nth-child(1)::before { background: linear-gradient(90deg, var(--primary), var(--amber)); }
+        .stat-card:nth-child(2)::before { background: linear-gradient(90deg, var(--sage), var(--sage-light)); }
+        .stat-card:nth-child(3)::before { background: linear-gradient(90deg, var(--amber), #e8b87a); }
+        .stat-card:nth-child(4)::before { background: linear-gradient(90deg, var(--primary), var(--primary-dark)); }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: var(--card-shadow-hover); }
+        .stat-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
         .stat-icon.all { background: linear-gradient(135deg, #E07A5F, #F4A261); }
         .stat-icon.waiting { background: linear-gradient(135deg, #81B29A, #a8cdb8); }
         .stat-icon.adopted { background: linear-gradient(135deg, #F4A261, #e8b87a); }
         .stat-icon.urgent { background: linear-gradient(135deg, #E07A5F, #c96a50); }
         .stat-info { min-width: 0; }
-        .stat-num { font-size: 28px; font-weight: 800; color: var(--text-dark); line-height: 1; }
-        .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+        .stat-num { font-size: 30px; font-weight: 800; color: var(--text-dark); line-height: 1; }
+        .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 600; }
+
+        /* ========== 筛选区增强 ========== */
+        .filter-section {
+            background: white; padding: 20px 24px; border-radius: var(--radius); margin-bottom: 20px;
+            box-shadow: var(--card-shadow); animation: fadeSlideDown 0.5s ease 0.1s both;
+            border: 1px solid rgba(224, 122, 95, 0.06);
+            position: relative; overflow: hidden;
+        }
+        /* 筛选区顶部装饰条 */
+        .filter-section::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-light), var(--sage), var(--amber));
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
 
         /* ========== 宠物卡片网格 ========== */
-        .pet-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .pet-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+        @media (max-width: 1200px) { .pet-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 768px) { .pet-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
+        @media (max-width: 480px) { .pet-grid { grid-template-columns: 1fr; } }
         .pet-card {
             background: white; border-radius: var(--radius); overflow: hidden;
             box-shadow: var(--card-shadow); border: 1px solid rgba(224, 122, 95, 0.06);
             transition: var(--transition); cursor: pointer;
             animation: cardEnter 0.5s ease both;
+            position: relative;
         }
-        .pet-card:hover { transform: translateY(-4px) scale(1.01); box-shadow: var(--card-shadow-hover); }
+        /* 卡片顶部渐变色条 */
+        .pet-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--amber));
+            border-radius: var(--radius) var(--radius) 0 0;
+            z-index: 3;
+        }
+        /* 紧急程度非常紧急的卡片顶部特殊颜色 */
+        .pet-card.urgency-high::before {
+            background: linear-gradient(90deg, #E07A5F, #b85440);
+        }
+        .pet-card:hover { transform: translateY(-6px) scale(1.01); box-shadow: var(--card-shadow-hover); }
         @keyframes cardEnter {
             from { opacity: 0; transform: translateY(20px) scale(0.96); }
             to { opacity: 1; transform: translateY(0) scale(1); }
@@ -144,34 +333,99 @@
         .pet-image img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
         .pet-card:hover .pet-image img { transform: scale(1.06); }
         .pet-image .placeholder { font-size: 52px; opacity: 0.5; }
-        .corner-badges { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; justify-content: space-between; align-items: flex-start; z-index: 2; pointer-events: none; }
+        .corner-badges { position: absolute; top: 14px; left: 14px; right: 14px; display: flex; justify-content: space-between; align-items: flex-start; z-index: 2; pointer-events: none; }
+
+        /* 状态徽章（左上角） */
         .status-badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
         .status-0 { background: linear-gradient(135deg, #81B29A, #6a9b82); }
         .status-1 { background: linear-gradient(135deg, #F4A261, #e0933e); }
+
+        /* 紧急程度徽章（右上角） */
         .urgency-badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; color: white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .urgency-0 { background: rgba(129,178,154,0.85); backdrop-filter: blur(4px); }
         .urgency-1 { background: linear-gradient(135deg, #F4A261, #e0933e); }
-        .urgency-2 { background: linear-gradient(135deg, #E07A5F, #c96a50); animation: urgentPulse 2s infinite; }
+        .urgency-2 { background: linear-gradient(135deg, #E07A5F, #b85440); animation: urgentPulse 2s infinite; }
         @keyframes urgentPulse {
             0%, 100% { box-shadow: 0 2px 8px rgba(224, 122, 95, 0.3); }
             50% { box-shadow: 0 2px 16px rgba(224, 122, 95, 0.6); }
         }
-        .pet-info { padding: 14px 16px; }
+
+        /* 宠物类型角标（右下角图片上） */
+        .type-badge {
+            position: absolute; bottom: 10px; right: 10px;
+            width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; font-weight: 700;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            border: 2px solid rgba(255,255,255,0.9);
+            z-index: 2;
+            backdrop-filter: blur(4px);
+        }
+        .type-badge.cat { background: rgba(232,224,255,0.85); }
+        .type-badge.dog { background: rgba(255,243,224,0.85); }
+        .type-badge.small { background: rgba(228,245,233,0.85); }
+        .type-badge.bird { background: rgba(224,242,255,0.85); }
+        .type-badge.other { background: rgba(253,246,240,0.85); }
+
+        /* 宠物卡片信息区 */
+        .pet-info { padding: 16px; }
         .pet-name { font-size: 17px; font-weight: 700; color: var(--text-dark); margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
         .pet-meta { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
         .meta-tag { background: var(--warm-cream); color: var(--text-muted); padding: 2px 9px; border-radius: 6px; font-size: 12px; transition: var(--transition); }
         .meta-tag.gender-male { color: #6a9b82; background: #e8f5ee; }
         .meta-tag.gender-female { color: var(--primary); background: #fce8e2; }
         .meta-tag.gender-unknown { color: var(--text-muted); background: var(--warm-cream); }
+        /* 宠物类型小标签 */
+        .meta-tag.type-cat { color: #7b5ea7; background: #ede8f5; }
+        .meta-tag.type-dog { color: #c87c2a; background: #fdf3e8; }
+        .meta-tag.type-small { color: #4a9b6a; background: #e8f5ee; }
+        .meta-tag.type-bird { color: #4a7ab5; background: #e8f2ff; }
+        .meta-tag.type-other { color: #b57a5a; background: #fce8e2; }
         .pet-tags { display: flex; gap: 4px; flex-wrap: wrap; }
         .admin-actions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.2s; }
         .pet-card:hover .admin-actions { opacity: 1; }
 
-        /* ========== 骨架屏 ========== */
+        /* 卡片底部趣味装饰条 */
+        .pet-card-footer {
+            height: 4px; background: linear-gradient(90deg, var(--warm-gray) 0%, var(--warm-gray2) 50%, var(--warm-gray) 100%);
+            margin: 0 16px 12px;
+            border-radius: 2px; overflow: hidden;
+        }
+        .pet-card-footer-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-light), var(--amber));
+            border-radius: 2px;
+            transition: width 1s ease;
+        }
+
+        /* ========== 骨架屏增强 ========== */
         .skeleton-card { background: white; border-radius: var(--radius); overflow: hidden; box-shadow: var(--card-shadow); border: 1px solid rgba(224, 122, 95, 0.06); }
-        .skeleton-image { height: 200px; background: linear-gradient(90deg, #f0ebe7 25%, #FAEEE7 50%, #f0ebe7 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .skeleton-image {
+            height: 200px;
+            background: linear-gradient(90deg,
+                rgba(224,122,95,0.08) 0%,
+                rgba(129,178,154,0.1) 33%,
+                rgba(244,162,97,0.08) 66%,
+                rgba(224,122,95,0.08) 100%);
+            background-size: 300% 100%;
+            animation: warmShimmer 2s ease infinite;
+        }
         .skeleton-info { padding: 15px; }
-        .skeleton-line { height: 14px; background: linear-gradient(90deg, #f0ebe7 25%, #FAEEE7 50%, #f0ebe7 75%); background-size: 200% 100%; border-radius: 4px; margin-bottom: 8px; animation: shimmer 1.5s infinite; }
+        .skeleton-line {
+            height: 14px;
+            background: linear-gradient(90deg,
+                rgba(224,122,95,0.08) 0%,
+                rgba(129,178,154,0.1) 33%,
+                rgba(244,162,97,0.08) 66%,
+                rgba(224,122,95,0.08) 100%);
+            background-size: 300% 100%;
+            border-radius: 4px; margin-bottom: 8px;
+            animation: warmShimmer 2s ease infinite;
+        }
+        @keyframes warmShimmer {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
 
         /* ========== 分页 ========== */
         .pagination-wrap { display: flex; justify-content: center; margin-top: 28px; }
@@ -234,13 +488,17 @@
         /* ========== 移动端适配 ========== */
         @media (max-width: 768px) {
             .container { padding: 14px; }
-            .header-banner { padding: 20px; flex-direction: column; align-items: flex-start; gap: 16px; }
+            .header-banner { padding: 16px; flex-direction: column; align-items: flex-start; }
             .banner-title { font-size: 20px; }
-            .banner-right { width: 100%; justify-content: space-between; flex-wrap: wrap; }
+            .banner-right { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+            .banner-nav { width: 100%; gap: 4px; }
+            .banner-link { font-size: 12px; padding: 6px 10px; }
+            .banner-sep { display: none; }
+            .admin-quick-bar { flex-direction: column; align-items: flex-start; }
+            .admin-quick-bar::before { margin-bottom: 4px; }
             .stats-bar { grid-template-columns: repeat(2, 1fr); gap: 10px; }
             .stat-card { padding: 14px; gap: 10px; }
             .stat-num { font-size: 22px; }
-            .pet-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
             .pet-image { height: 150px; }
             .filter-row { flex-direction: column; align-items: stretch; }
             .filter-row .el-select, .filter-row .el-input, .search-input { width: 100% !important; min-width: unset !important; }
@@ -251,61 +509,102 @@
         }
 
         @media (max-width: 480px) {
-            .pet-grid { grid-template-columns: 1fr; }
+        }
+
+        .el-pagination .btn-prev,
+        .el-pagination .btn-next {
+            font-family: "Segoe UI", sans-serif !important;
+        }
+        .el-pagination .btn-prev .el-icon,
+        .el-pagination .btn-next .el-icon {
+            display: none !important;
+        }
+        .el-pagination .btn-prev::after {
+            content: "‹" !important;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            font-family: "Segoe UI", sans-serif !important;
+            display: inline-block;
+            line-height: 1;
+        }
+        .el-pagination .btn-next::after {
+            content: "›" !important;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            font-family: "Segoe UI", sans-serif !important;
+            display: inline-block;
+            line-height: 1;
         }
     </style>
 </head>
 <body>
-<div id="app">
+<!-- 爪印装饰背景 -->
+<div class="page-bg-paws">
+    <!-- 爪印装饰 -->
+    <svg style="top:5%;left:3%;width:120px;" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+    <svg style="top:15%;right:8%;width:80px;transform:rotate(30deg);" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+    <svg style="top:50%;left:1%;width:100px;transform:rotate(-20deg);" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+    <svg style="bottom:20%;right:5%;width:90px;transform:rotate(45deg);" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+    <svg style="bottom:5%;left:15%;width:70px;transform:rotate(-10deg);" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+    <svg style="top:35%;right:2%;width:60px;transform:rotate(15deg);" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+    <!-- 爱心装饰 -->
+    <svg style="top:25%;left:12%;width:50px;transform:rotate(-15deg);opacity:0.04;" viewBox="0 0 24 24"><path fill="#E07A5F" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+    <svg style="bottom:30%;right:12%;width:45px;transform:rotate(20deg);opacity:0.035;" viewBox="0 0 24 24"><path fill="#81B29A" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+    <!-- 星星装饰 -->
+    <svg style="top:8%;right:20%;width:40px;transform:rotate(10deg);opacity:0.04;" viewBox="0 0 24 24"><path fill="#F4A261" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+    <svg style="bottom:12%;left:30%;width:35px;transform:rotate(-25deg);opacity:0.035;" viewBox="0 0 24 24"><path fill="#B8A9C9" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+</div>
+<div id="app" class="page-wrapper">
     <!-- 头部横幅 -->
     <div class="header-banner">
         <div class="banner-left">
-            <div class="banner-emoji">🐾</div>
-            <h1 class="banner-title">宠物列表</h1>
-            <p class="banner-subtitle">发现身边待领养的可爱生命</p>
+            <div class="banner-title-group">
+                <h1 class="banner-title">🐾 宠物列表</h1>
+                <p class="banner-subtitle">发现身边待领养的可爱生命</p>
+            </div>
         </div>
-        <div class="banner-right">
-            <div class="banner-stat">
-                <span class="banner-stat-num">{{ total }}</span>
-                <span class="banner-stat-label">待领养</span>
+        <div class="banner-nav">
+            <a href="profile.html" class="banner-link">个人中心</a>
+            <span class="banner-sep">|</span>
+            <a href="shelter-recommendation.html" class="banner-link">救助站</a>
+            <span class="banner-sep">|</span>
+            <!-- 管理功能下拉 -->
+            <div class="dropdown-wrap" v-if="currentRole === 'admin' || currentRole === 'institution_admin' || currentRole === 'volunteer'">
+                <button class="banner-dropdown-btn" @click="toggleAdminMenu">
+                    管理 <span style="font-size:10px;">▼</span>
+                </button>
+                <div class="dropdown-menu" v-if="showAdminMenu" @click.stop ref="dropdownMenu" :style="dropdownStyle">
+                    <a v-if="currentRole === 'admin'" href="user-management.html" class="dropdown-item" @click="showAdminMenu=false">👤 用户管理</a>
+                    <a v-if="currentRole === 'admin' || currentRole === 'institution_admin' || currentRole === 'admin'" href="adoption-list.html" class="dropdown-item" @click="showAdminMenu=false">📋 领养审核</a>
+                    <a v-if="currentRole === 'admin' || currentRole === 'institution_admin' || currentRole === 'admin'" href="stats.html" class="dropdown-item" @click="showAdminMenu=false">📊 数据统计</a>
+                    <a v-if="currentRole === 'admin' || currentRole === 'institution_admin' || currentRole === 'admin'" href="health-record.html" class="dropdown-item" @click="showAdminMenu=false">💊 健康档案</a>
+                    <a v-if="currentRole === 'admin' || currentRole === 'institution_admin' || currentRole === 'volunteer'" href="volunteer-task.html" class="dropdown-item" @click="showAdminMenu=false">🤝 任务管理</a>
+                </div>
             </div>
-            <div class="banner-stat">
-                <span class="banner-stat-num" style="color: rgba(255,255,255,0.5);">{{ statusStats[1] || 0 }}</span>
-                <span class="banner-stat-label">已领养</span>
-            </div>
-            <!-- 角色化导航 -->
-            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                <a href="profile.html" class="banner-link">个人中心</a>
-                <span style="color:rgba(255,255,255,0.4)">|</span>
-                <a v-if="currentRole === 'admin'" href="user-management.html" class="banner-link">用户管理</a>
-                <span v-if="currentRole === 'admin'" style="color:rgba(255,255,255,0.4)">|</span>
-                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="adoption-list.html" class="banner-link">领养审核</a>
-                <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'" style="color:rgba(255,255,255,0.4)">|</span>
-                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="stats.html" class="banner-link">数据统计</a>
-                <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'" style="color:rgba(255,255,255,0.4)">|</span>
-                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="health-record.html" class="banner-link">健康档案</a>
-                <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'" style="color:rgba(255,255,255,0.4)">|</span>
-                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin' || currentRole === 'volunteer'" href="volunteer-task.html" class="banner-link">任务管理</a>
-                <span v-if="currentRole === 'admin' || currentRole === 'institution_admin' || currentRole === 'volunteer'" style="color:rgba(255,255,255,0.4)">|</span>
-                <a href="shelter-recommendation.html" class="banner-link">救助站</a>
-                <span style="color:rgba(255,255,255,0.4)">|</span>
-                <span @click="logout" class="banner-link" style="cursor:pointer;">退出登录</span>
-                <span style="margin-left:4px;padding:2px 10px;border-radius:10px;font-size:11px;font-weight:700;"
-                      :style="'background:' + (currentRole==='admin'?'rgba(254,240,238,0.9)':currentRole==='institution_admin'?'rgba(227,242,253,0.9)':currentRole==='volunteer'?'rgba(255,248,225,0.9)':currentRole==='adopter'?'rgba(232,245,233,0.9)':'rgba(243,229,245,0.9)') + ';color:' + (currentRole==='admin'?'#c96a50':currentRole==='institution_admin'?'#1565c0':currentRole==='volunteer'?'#f57f17':currentRole==='adopter'?'#2e7d32':'#7b1fa2')">
-                    {{ getRoleName(currentRole) }}
-                </span>
-            </div>
-            <el-button v-if="currentRole === 'admin'" type="warning" size="small" icon="el-icon-plus"
-                style="border-radius: 8px; font-weight: 600; background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.5); color: white;"
-                @click="openAddDialog">
-                新增宠物
-            </el-button>
-            <el-button v-if="currentRole === 'admin'" type="info" size="small" icon="el-icon-collection"
-                style="border-radius: 8px; font-weight: 600; background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.9);"
-                @click="openCatDialog">
-                品种管理
-            </el-button>
+            <span class="banner-sep">|</span>
+            <a href="help.html" class="banner-link">帮助中心</a>
+            <span class="banner-sep">|</span>
+            <span @click="logout" class="banner-link" style="cursor:pointer;">退出登录</span>
+            <span class="role-badge" :class="'role-' + currentRole">
+                {{ getRoleIcon(currentRole) }} {{ getRoleName(currentRole) }}
+            </span>
         </div>
+        <!-- 横幅装饰圆形 -->
+        <div class="banner-deco-circle"></div>
+        <!-- 横幅底部渐变条 -->
+        <div class="banner-wave"></div>
+    </div>
+
+    <!-- 管理员快捷操作栏 -->
+    <div class="admin-quick-bar" v-if="currentRole === 'admin'">
+        <el-button type="primary" icon="el-icon-plus" size="small" @click="openAddDialog" style="border-radius: 8px;">
+            ➕新增宠物
+        </el-button>
+        <el-button icon="el-icon-collection" size="small" @click="openCatDialog" style="border-radius: 8px;">
+            📂品种管理
+        </el-button>
     </div>
 
     <!-- 筛选区域 -->
@@ -334,8 +633,8 @@
             </el-select>
         </div>
         <div class="filter-actions">
-            <el-button type="primary" icon="el-icon-search" size="small" @click="handleSearch">搜索</el-button>
-            <el-button size="small" @click="handleReset">重置</el-button>
+            <el-button type="primary" icon="el-icon-search" size="small" @click="handleSearch">🔍搜索</el-button>
+            <el-button size="small" @click="handleReset">🔄重置</el-button>
             <el-button v-if="hasActiveFilters" type="text" size="small" style="color: var(--primary);" @click="handleReset">清除筛选</el-button>
             <span style="margin-left:auto; font-size:12px; color:var(--text-muted);">共找到 <strong style="color:var(--primary);">{{ total }}</strong> 只待领养宠物</span>
         </div>
@@ -399,16 +698,19 @@
     </div>
 
     <div v-else class="pet-grid">
-        <div v-for="(pet, index) in pets" :key="pet.id" class="pet-card" @click="handlePetDetail(pet.id)">
+        <div v-for="(pet, index) in pets" :key="pet.id" class="pet-card" :class="pet.urgencyLevel >= 2 ? 'urgency-high' : ''" @click="handlePetDetail(pet.id)">
             <div class="pet-image">
                 <img v-if="pet.imageUrl" :src="pet.imageUrl" @error="handleImgError" :alt="pet.name">
                 <span v-else class="placeholder">🐾</span>
+                <!-- 左上：状态徽章 / 右上：紧急程度徽章 -->
                 <div class="corner-badges">
                     <span class="status-badge" :class="'status-' + (pet.status || 0)">
-                        {{ pet.status === 0 ? '待领养' : '已领养' }}
+                        {{ pet.status === 0 ? '🐾 待领养' : '🏠 已领养' }}
                     </span>
-                    <span v-if="pet.urgencyLevel >= 2" class="urgency-badge urgency-2">紧急</span>
-                    <span v-else-if="pet.urgencyLevel >= 1" class="urgency-badge urgency-1">需关注</span>
+                    <!-- 紧急程度右上角徽章 -->
+                    <span v-if="pet.urgencyLevel >= 2" class="urgency-badge urgency-2">🚨 非常紧急</span>
+                    <span v-else-if="pet.urgencyLevel >= 1" class="urgency-badge urgency-1">⚠️ 紧急</span>
+                    <span v-else class="urgency-badge urgency-0">✔ 一般</span>
                 </div>
             </div>
             <div class="pet-info">
@@ -433,6 +735,10 @@
                     </el-tag>
                     <el-tag v-if="pet.personality" size="mini" type="info" style="border-radius:6px;">{{ pet.personality }}</el-tag>
                 </div>
+            </div>
+            <!-- 卡片底部趣味装饰条 -->
+            <div class="pet-card-footer">
+                <div class="pet-card-footer-bar" :style="'width:' + getHealthBarWidth(pet)"></div>
             </div>
         </div>
     </div>
@@ -626,6 +932,7 @@
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
 <script src="https://unpkg.com/element-ui@2.15.13/lib/index.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
+<script src="js/auth.js"></script>
 <script>
     Vue.use(ELEMENT);
 
@@ -664,6 +971,8 @@
             formBreedChildren: [],
             isAdmin: false,
             currentRole: '',
+            showAdminMenu: false,
+            dropdownStyle: {},
             showPetDialog: false,
             showDeleteDialog: false,
             dialogMode: 'add',
@@ -719,6 +1028,11 @@
             }
             this.loadPets();
             this.loadCategories();
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.dropdown-wrap')) {
+                    this.showAdminMenu = false;
+                }
+            });
         },
         methods: {
             loadPets() {
@@ -830,6 +1144,21 @@
                 this.loadPets();
             },
 
+            toggleAdminMenu() {
+                this.showAdminMenu = !this.showAdminMenu;
+                if (this.showAdminMenu) {
+                    this.$nextTick(() => {
+                        const btn = this.$el.querySelector('.dropdown-wrap .banner-dropdown-btn');
+                        const menu = this.$refs.dropdownMenu;
+                        if (btn && menu) {
+                            const rect = btn.getBoundingClientRect();
+                            menu.style.left = rect.left + 'px';
+                            menu.style.top = (rect.bottom + 6) + 'px';
+                        }
+                    });
+                }
+            },
+
             handlePageChange(page) {
                 this.currentPage = page;
                 this.loadPets();
@@ -838,6 +1167,33 @@
 
             handlePetDetail(petId) {
                 window.location.href = 'pet-detail.html?id=' + petId;
+            },
+
+            getPetTypeClass(type) {
+                if (!type) return 'other';
+                const t = type.toUpperCase();
+                if (t.includes('CAT')) return 'cat';
+                if (t.includes('DOG')) return 'dog';
+                if (t.includes('SMALL') || t.includes('兔') || t.includes('仓鼠')) return 'small';
+                if (t.includes('BIRD')) return 'bird';
+                return 'other';
+            },
+
+            getPetTypeEmoji(type) {
+                if (!type) return '🐾';
+                const t = type.toUpperCase();
+                if (t.includes('CAT')) return '🐱';
+                if (t.includes('DOG')) return '🐶';
+                if (t.includes('SMALL') || t.includes('兔') || t.includes('仓鼠')) return '🐰';
+                if (t.includes('BIRD')) return '🐦';
+                return '🐾';
+            },
+
+            getHealthBarWidth(pet) {
+                // 根据紧急程度计算进度条宽度（紧急程度越高进度条越短=越需要关注）
+                if (pet.urgencyLevel >= 2) return '25%';
+                if (pet.urgencyLevel >= 1) return '50%';
+                return '80%';
             },
 
             handleImgError(e) {
@@ -854,10 +1210,16 @@
                 const map = { admin:'管理员', adopter:'领养人', volunteer:'志愿者', institution_admin:'机构管理员', hospital:'宠物医院' };
                 return map[role] || role || '用户';
             },
+            getRoleIcon(role) {
+                const map = { admin:'👑', adopter:'🏠', volunteer:'🌟', institution_admin:'🏢', hospital:'🏥' };
+                return map[role] || '🐾';
+            },
 
             logout() {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
+                localStorage.removeItem('refreshToken');
+                document.cookie = 'PET_JWT=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
                 window.location.href = 'login.html';
             },
 
@@ -1069,6 +1431,28 @@
             }
         }
     });
+</script>
+<script>
+// 替换分页器箭头图标（‹ ›）
+document.addEventListener('DOMContentLoaded', function() {
+    function fixPaginationIcons() {
+        document.querySelectorAll('.el-pagination .btn-prev .el-icon').forEach(function(el) {
+            el.textContent = '‹';
+            el.style.fontSize = '18px';
+            el.style.fontWeight = '700';
+            el.style.fontFamily = '"Segoe UI Symbol", "Arial Unicode MS", sans-serif';
+        });
+        document.querySelectorAll('.el-pagination .btn-next .el-icon').forEach(function(el) {
+            el.textContent = '›';
+            el.style.fontSize = '18px';
+            el.style.fontWeight = '700';
+            el.style.fontFamily = '"Segoe UI Symbol", "Arial Unicode MS", sans-serif';
+        });
+    }
+    fixPaginationIcons();
+    setTimeout(fixPaginationIcons, 500);
+    setTimeout(fixPaginationIcons, 1000);
+});
 </script>
 </body>
 </html>

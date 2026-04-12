@@ -55,6 +55,11 @@ public interface AdoptionApplicationService extends IService<AdoptionApplication
     AdoptionApplication findById(Long applicationId);
 
     /**
+     * 根据宠物ID查询所有待审核申请（用于多申请人对比）
+     */
+    List<AdoptionApplication> findPendingByPetId(Long petId);
+
+    /**
      * 签署领养协议（状态4→5）
      */
     boolean signContract(Long applicationId);

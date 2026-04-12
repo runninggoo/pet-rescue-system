@@ -43,6 +43,13 @@ public interface AdoptionApplicationMapper extends BaseMapper<AdoptionApplicatio
      * 统计各状态的申请数量（用于前端状态标签栏）
      */
     @InterceptorIgnore(tenantLine = "true")
-    @Select("SELECT status, COUNT(*) as count FROM adoption_application GROUP BY status")
+    @Select("SELECT CAST(status AS SIGNED) AS status, COUNT(*) as count FROM adoption_application GROUP BY status")
     List<Map<String, Object>> countByStatus();
+
+    /**
+     * 根据宠物ID查询待审核申请（原生SQL，绕过MP拦截链，解决jsqlparser版本冲突）
+     */
+    @InterceptorIgnore(tenantLine = "true")
+    @Select("SELECT * FROM adoption_application WHERE pet_id = #{petId} AND status = 0 ORDER BY apply_date ASC")
+    List<AdoptionApplication> selectPendingByPetId(@Param("petId") Long petId);
 }

@@ -2,8 +2,10 @@ package com.pet.rescue.controller;
 
 import com.pet.rescue.dto.LoginRequest;
 import com.pet.rescue.dto.RegisterRequest;
+import com.pet.rescue.entity.RefreshToken;
 import com.pet.rescue.entity.User;
 import com.pet.rescue.service.OperationLogService;
+import com.pet.rescue.service.RefreshTokenService;
 import com.pet.rescue.service.UserService;
 import com.pet.rescue.utils.JwtTokenUtil;
 import com.pet.rescue.vo.ResponseResult;
@@ -16,6 +18,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -25,15 +29,18 @@ public class AuthController {
     private final UserService userService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final OperationLogService operationLogService;
+    private final RefreshTokenService refreshTokenService;
 
     public AuthController(JwtTokenUtil jwtTokenUtil,
             UserService userService,
             @Lazy BCryptPasswordEncoder passwordEncoder,
-            OperationLogService operationLogService) {
+            OperationLogService operationLogService,
+            RefreshTokenService refreshTokenService) {
         this.jwtTokenUtil = jwtTokenUtil;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.operationLogService = operationLogService;
+        this.refreshTokenService = refreshTokenService;
     }
 
     private String getIp(HttpServletRequest request) {
@@ -69,14 +76,59 @@ public class AuthController {
                     "用户登录成功，角色：" + user.getRole(),
                     getIp(request), user.getRole());
 
-            // 密码验证成功，生成JWT令牌
+            // 生成Access Token
             String jwt = jwtTokenUtil.generateToken(user.getPhone(), user.getId(), user.getRole());
 
-            // 返回token和用户信息（data方法支持链式调用，合并到同一对象）
-            return ResponseResult.ok().data("token", jwt).data("user", user);
+            // 生成Refresh Token
+            String deviceInfo = request.getHeader("User-Agent");
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(user, deviceInfo, getIp(request));
+
+            // 返回token和用户信息
+            Map<String, Object> data = new HashMap<>();
+            data.put("token", jwt);
+            data.put("refreshToken", refreshToken.getToken());
+            data.put("user", user);
+            return ResponseResult.ok().data(data);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseResult.error("登录失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 刷新Access Token
+     */
+    @PostMapping("/refresh")
+    public ResponseResult refresh(@RequestBody Map<String, String> request) {
+        try {
+            String refreshToken = request.get("refreshToken");
+            if (refreshToken == null || refreshToken.isEmpty()) {
+                return ResponseResult.error("刷新令牌不能为空");
+            }
+
+            // 验证Refresh Token
+            if (!refreshTokenService.validateRefreshToken(refreshToken)) {
+                return ResponseResult.error("刷新令牌无效或已过期");
+            }
+
+            // 获取用户信息
+            RefreshToken tokenEntity = refreshTokenService.findByToken(refreshToken);
+            User user = userService.findById(tokenEntity.getUserId());
+            if (user == null) {
+                return ResponseResult.error("用户不存在");
+            }
+
+            // 生成新的Access Token
+            String newJwt = jwtTokenUtil.generateToken(user.getPhone(), user.getId(), user.getRole());
+
+            // 返回新Token（不生成新的Refresh Token，复用旧的）
+            Map<String, Object> data = new HashMap<>();
+            data.put("token", newJwt);
+            data.put("refreshToken", refreshToken);
+            return ResponseResult.ok().data(data);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseResult.error("刷新失败：" + e.getMessage());
         }
     }
 
@@ -117,7 +169,17 @@ public class AuthController {
 
             // 注册成功后自动登录，生成Token
             String jwt = jwtTokenUtil.generateToken(newUser.getPhone(), newUser.getId(), newUser.getRole());
-            return ResponseResult.ok("注册成功").data("token", jwt).data("user", newUser);
+
+            // 生成Refresh Token
+            String deviceInfo = httpRequest.getHeader("User-Agent");
+            RefreshToken refreshToken = refreshTokenService.createRefreshToken(newUser, deviceInfo, getIp(httpRequest));
+
+            // 返回新Token（不生成新的Refresh Token，复用旧的）
+            Map<String, Object> data = new HashMap<>();
+            data.put("token", jwt);
+            data.put("refreshToken", refreshToken.getToken());
+            data.put("user", newUser);
+            return ResponseResult.ok("注册成功").data(data);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseResult.error("注册失败：" + e.getMessage());

@@ -1,5 +1,7 @@
 package com.pet.rescue.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.pet.rescue.dto.RegisterRequest;
 import com.pet.rescue.entity.User;
@@ -34,20 +36,33 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public List<User> findUsersByCondition(Map<String, Object> params) {
-        // 使用LambdaQueryWrapper构建动态查询
+        com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<User> queryWrapper = buildQueryWrapper(params);
+        return baseMapper.selectList(queryWrapper);
+    }
+
+    /**
+     * 根据条件查询用户列表（带分页，返回总数）
+     */
+    public IPage<User> findUsersByConditionWithPage(Map<String, Object> params, int page, int pageSize) {
+        com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<User> queryWrapper = buildQueryWrapper(params);
+        queryWrapper.orderByDesc(User::getCreatedTime);
+        return baseMapper.selectPage(new Page<>(page, pageSize), queryWrapper);
+    }
+
+    private com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<User> buildQueryWrapper(Map<String, Object> params) {
         com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<User> queryWrapper = new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<>();
         if (params != null) {
             if (params.containsKey("role")) {
-                queryWrapper = queryWrapper.eq(User::getRole, params.get("role"));
+                queryWrapper.eq(User::getRole, params.get("role"));
             }
             if (params.containsKey("status")) {
-                queryWrapper = queryWrapper.eq(User::getStatus, params.get("status"));
+                queryWrapper.eq(User::getStatus, params.get("status"));
             }
             if (params.containsKey("phone")) {
-                queryWrapper = queryWrapper.like(User::getPhone, params.get("phone"));
+                queryWrapper.like(User::getPhone, params.get("phone"));
             }
         }
-        return baseMapper.selectList(queryWrapper);
+        return queryWrapper;
     }
 
     @Override
@@ -70,7 +85,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public User register(RegisterRequest request) {
-        // 检查手机号是否已被注册
         if (findByPhone(request.getPhone()) != null) {
             throw new RuntimeException("该手机号已被注册");
         }

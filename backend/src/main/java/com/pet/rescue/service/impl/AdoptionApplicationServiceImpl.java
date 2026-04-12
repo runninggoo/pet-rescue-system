@@ -211,6 +211,13 @@ public class AdoptionApplicationServiceImpl extends ServiceImpl<AdoptionApplicat
     }
 
     @Override
+    public List<AdoptionApplication> findPendingByPetId(Long petId) {
+        // 用原生 @Select SQL 绕过 MP 拦截链，避免 jsqlparser 版本冲突
+        List<AdoptionApplication> list = applicationMapper.selectPendingByPetId(petId);
+        return enrichWithDetails(list);
+    }
+
+    @Override
     public boolean signContract(Long applicationId) {
         AdoptionApplication application = applicationMapper.selectById(applicationId);
         if (application == null) {
@@ -309,14 +316,11 @@ public class AdoptionApplicationServiceImpl extends ServiceImpl<AdoptionApplicat
                 .distinct()
                 .collect(java.util.stream.Collectors.toList());
 
-        List<Pet> pets = petIds.isEmpty() ? List.of() :
-                petMapper.selectList(new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<Pet>()
-                        .in(Pet::getId, petIds));
+        // 用原生 @Select SQL 批量查询，绕过 MP 拦截链避免 jsqlparser 冲突
+        List<Pet> pets = petIds.isEmpty() ? List.of() : petMapper.selectByIds(petIds);
         Map<Long, Pet> petMap = pets.stream().collect(java.util.stream.Collectors.toMap(Pet::getId, p -> p));
 
-        List<User> users = applicantIds.isEmpty() ? List.of() :
-                userMapper.selectList(new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<User>()
-                        .in(User::getId, applicantIds));
+        List<User> users = applicantIds.isEmpty() ? List.of() : userMapper.selectByIds(applicantIds);
         Map<Long, User> userMap = users.stream().collect(java.util.stream.Collectors.toMap(User::getId, u -> u));
 
         for (AdoptionApplication app : applications) {

@@ -216,4 +216,18 @@ public class VolunteerTaskController {
             return ResponseResult.error("获取任务统计失败：" + e.getMessage());
         }
     }
+
+    /**
+     * 获取全系统任务统计（管理员视角，无用户过滤）
+     */
+    @GetMapping("/system-stats")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('INSTITUTION_ADMIN')")
+    public ResponseResult getSystemStats() {
+        try {
+            Map<String, Object> stats = volunteerTaskService.getSystemStats();
+            return ResponseResult.ok().data("stats", stats);
+        } catch (Exception e) {
+            return ResponseResult.error("获取全系统任务统计失败：" + e.getMessage());
+        }
+    }
 }

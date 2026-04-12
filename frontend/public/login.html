@@ -576,6 +576,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
     <script src="https://unpkg.com/element-ui@2.15.13/lib/index.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
+    <script src="js/auth.js"></script>
     <script>
         Vue.use(ELEMENT);
 
@@ -652,8 +653,8 @@
                                 password: this.loginForm.password
                             });
                             if (response.data.code === 200) {
-                                localStorage.setItem('token', response.data.data.token);
-                                localStorage.setItem('user', JSON.stringify(response.data.data.user));
+                                const { token, refreshToken, user } = response.data.data;
+                                saveAuth(token, refreshToken, user);
                                 this.$message.success('登录成功！正在跳转...');
                                 setTimeout(() => { window.location.href = 'pet-list.html'; }, 800);
                             } else {

@@ -61,4 +61,9 @@ public interface VolunteerTaskService extends IService<VolunteerTask> {
      * 获取任务统计
      */
     Map<String, Object> getStats(Long userId);
+
+    /**
+     * 获取全系统任务统计（管理员视角，不按用户过滤）
+     */
+    Map<String, Object> getSystemStats();
 }

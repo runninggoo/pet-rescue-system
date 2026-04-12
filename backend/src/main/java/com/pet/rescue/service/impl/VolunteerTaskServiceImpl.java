@@ -207,4 +207,39 @@ public class VolunteerTaskServiceImpl extends ServiceImpl<VolunteerTaskMapper, V
 
         return stats;
     }
+
+    @Override
+    public Map<String, Object> getSystemStats() {
+        Map<String, Object> stats = new HashMap<>();
+        // 全系统总任务数（无过滤）
+        long total = baseMapper.selectCount(null);
+        // 待领取
+        long pending = baseMapper.selectCount(
+            new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<VolunteerTask>()
+                .eq(VolunteerTask::getStatus, 0)
+        );
+        // 进行中
+        long inProgress = baseMapper.selectCount(
+            new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<VolunteerTask>()
+                .eq(VolunteerTask::getStatus, 1)
+        );
+        // 已完成
+        long completed = baseMapper.selectCount(
+            new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<VolunteerTask>()
+                .eq(VolunteerTask::getStatus, 2)
+        );
+        // 已取消
+        long cancelled = baseMapper.selectCount(
+            new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<VolunteerTask>()
+                .eq(VolunteerTask::getStatus, 3)
+        );
+
+        stats.put("total", total);
+        stats.put("pending", pending);
+        stats.put("inProgress", inProgress);
+        stats.put("completed", completed);
+        stats.put("cancelled", cancelled);
+
+        return stats;
+    }
 }

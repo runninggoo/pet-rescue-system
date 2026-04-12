@@ -3,12 +3,18 @@ package com.pet.rescue.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.pet.rescue.entity.BaseEntity;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.util.Date;
 
 /**
  * 回访记录实体类
  * 对应数据库follow_up_record表
  */
+@Data
+@EqualsAndHashCode(callSuper = true)
+@TableName("follow_up_record")
 public class FollowUpRecord extends BaseEntity {
 
     /**
@@ -47,86 +53,17 @@ public class FollowUpRecord extends BaseEntity {
     @TableField("deleted")
     private Integer deleted;
 
-    /**
-     * 无参构造函数
-     */
-    public FollowUpRecord() {
-    }
+    // ===== 以下为非数据库字段，通过 enrichWithDetails 填充 =====
 
-    /**
-     * 全参构造函数
-     */
-    public FollowUpRecord(Long adoptionId, Date followUpDate, Long followerId,
-                         String content, String petCondition, String images) {
-        this.adoptionId = adoptionId;
-        this.followUpDate = followUpDate;
-        this.followerId = followerId;
-        this.content = content;
-        this.petCondition = petCondition;
-        this.images = images;
-    }
+    /** 回访人姓名（非数据库字段） */
+    @TableField(exist = false)
+    private String followerName;
 
-    // Getter和Setter方法
-    public Long getAdoptionId() {
-        return adoptionId;
-    }
+    /** 领养申请人姓名（非数据库字段） */
+    @TableField(exist = false)
+    private String applicantName;
 
-    public void setAdoptionId(Long adoptionId) {
-        this.adoptionId = adoptionId;
-    }
-
-    public Date getFollowUpDate() {
-        return followUpDate;
-    }
-
-    public void setFollowUpDate(Date followUpDate) {
-        this.followUpDate = followUpDate;
-    }
-
-    public Long getFollowerId() {
-        return followerId;
-    }
-
-    public void setFollowerId(Long followerId) {
-        this.followerId = followerId;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getPetCondition() {
-        return petCondition;
-    }
-
-    public void setPetCondition(String petCondition) {
-        this.petCondition = petCondition;
-    }
-
-    public String getImages() {
-        return images;
-    }
-
-    public void setImages(String images) {
-        this.images = images;
-    }
-
-    public Integer getDeleted() { return deleted; }
-    public void setDeleted(Integer deleted) { this.deleted = deleted; }
-
-    @Override
-    public String toString() {
-        return "FollowUpRecord{" +
-                "adoptionId=" + adoptionId +
-                ", followUpDate=" + followUpDate +
-                ", followerId=" + followerId +
-                ", content='" + content + '\'' +
-                ", petCondition='" + petCondition + '\'' +
-                ", images='" + images + '\'' +
-                "} " + super.toString();
-    }
+    /** 宠物名称（非数据库字段） */
+    @TableField(exist = false)
+    private String petName;
 }

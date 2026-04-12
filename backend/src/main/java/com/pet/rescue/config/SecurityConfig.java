@@ -79,8 +79,8 @@ public class SecurityConfig {
                 .antMatchers("/stats.html").hasAnyRole("ADMIN", "INSTITUTION_ADMIN")
                 // 领养申请页：管理员/机构管理员可访问，领养人只能看自己
                 .antMatchers("/adoption-list.html").hasAnyRole("ADMIN", "INSTITUTION_ADMIN", "ADOPTER")
-                // 健康档案页：管理员/机构管理员可访问
-                .antMatchers("/health-record.html").hasAnyRole("ADMIN", "INSTITUTION_ADMIN")
+                // 医疗档案页：管理员/机构管理员/宠物医院
+                .antMatchers("/health-record.html", "/pet-hospital.html").hasAnyRole("ADMIN", "INSTITUTION_ADMIN", "PET_HOSPITAL")
                 // 志愿者任务页：管理员/机构管理员/志愿者可访问
                 .antMatchers("/volunteer-task.html", "/task-list.html").hasAnyRole("ADMIN", "INSTITUTION_ADMIN", "VOLUNTEER")
                 // 其他所有请求需要认证

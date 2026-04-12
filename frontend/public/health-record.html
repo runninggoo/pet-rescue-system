@@ -16,6 +16,18 @@
             --sage: #81B29A;
             --sage-light: #a8cdb8;
             --amber: #F4A261;
+            --sky: #87CEEB;
+            --sky-light: #B0E2FF;
+            --sky-bg: rgba(135, 206, 235, 0.12);
+            --lavender: #B8A9C9;
+            --lavender-light: #D8CCE8;
+            --lavender-bg: rgba(184, 169, 201, 0.12);
+            --mint: #98D8C8;
+            --mint-light: #B8EBE0;
+            --mint-bg: rgba(152, 216, 200, 0.12);
+            --success: #52c788;
+            --danger: #e05d5d;
+            --info: #5b8dee;
             --warm-white: #FDF6F0;
             --warm-cream: #FAEEE7;
             --warm-gray: #f0ebe7;
@@ -33,12 +45,22 @@
         *:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
         body {
             margin: 0; padding: 0;
-            background: var(--bg);
+            background: linear-gradient(160deg, var(--warm-white) 0%, var(--warm-cream) 60%, #f5e8df 100%);
             font-family: "Nunito", "PingFang SC", "Microsoft YaHei", sans-serif;
             -webkit-font-smoothing: antialiased;
             -webkit-tap-highlight-color: transparent;
             color: var(--text-dark);
             min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background-image:
+                radial-gradient(ellipse 400px 300px at 95% 5%, rgba(224,122,95,0.06) 0%, transparent 70%),
+                radial-gradient(ellipse 300px 400px at 5% 90%, rgba(129,178,154,0.05) 0%, transparent 70%),
+                radial-gradient(ellipse 200px 200px at 80% 80%, rgba(244,162,97,0.04) 0%, transparent 70%),
+                radial-gradient(ellipse 150px 250px at 20% 30%, rgba(184,169,201,0.04) 0%, transparent 70%);
+            pointer-events: none; z-index: 0;
         }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: var(--warm-gray); border-radius: 3px; }
@@ -46,11 +68,19 @@
         ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
         /* Element UI 暖色覆盖 */
-        .el-button--primary { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; }
-        .el-button--primary:hover { background-color: var(--primary-dark) !important; border-color: var(--primary-dark) !important; }
-        .el-button--success { background-color: var(--sage) !important; border-color: var(--sage) !important; border-radius: var(--radius-sm) !important; }
-        .el-button--warning { background-color: var(--amber) !important; border-color: var(--amber) !important; border-radius: var(--radius-sm) !important; }
-        .el-button--danger { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; }
+        .el-button--primary { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+        .el-button--primary:hover { background-color: var(--primary-dark) !important; border-color: var(--primary-dark) !important; transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(224,122,95,0.35) !important; }
+        .el-button--primary:active { transform: translateY(0px) scale(0.97) !important; box-shadow: 0 2px 8px rgba(224,122,95,0.2) !important; }
+        .el-button--success { background-color: var(--sage) !important; border-color: var(--sage) !important; border-radius: var(--radius-sm) !important; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+        .el-button--success:hover { transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(129,178,154,0.35) !important; }
+        .el-button--success:active { transform: translateY(0px) scale(0.97) !important; }
+        .el-button--warning { background-color: var(--amber) !important; border-color: var(--amber) !important; border-radius: var(--radius-sm) !important; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+        .el-button--warning:hover { transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(244,162,97,0.35) !important; }
+        .el-button--warning:active { transform: translateY(0px) scale(0.97) !important; }
+        .el-button--danger { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+        .el-button--danger:hover { transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(224,122,95,0.35) !important; }
+        .el-button--danger:active { transform: translateY(0px) scale(0.97) !important; }
+        .el-button:focus { box-shadow: 0 0 0 3px rgba(224,122,95,0.15) !important; }
         .el-button { border-radius: var(--radius-sm) !important; }
         .el-input__inner:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(224,122,95,0.12) !important; }
         .el-textarea__inner:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(224,122,95,0.12) !important; }
@@ -67,7 +97,13 @@
         .el-dialog__title { font-weight: 700; color: var(--text-dark); font-size: 17px; }
         .el-dialog__body { padding: 24px; }
         .el-dialog__footer { padding: 12px 24px 20px; border-top: 1px solid var(--warm-gray); }
-        .el-table { border-radius: var(--radius-sm); overflow: hidden; }
+        .el-table { border-radius: var(--radius-sm); overflow: hidden; position: relative; }
+        .el-table::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--amber), var(--sage));
+            z-index: 1;
+        }
         .el-table th { background: var(--warm-cream) !important; color: var(--text-dark); font-weight: 700; }
         .el-table td { border-color: var(--warm-gray) !important; }
         .el-table--striped .el-table__body tr:nth-child(even) { background: rgba(250,238,231,0.4); }
@@ -78,6 +114,73 @@
         .el-select { border-radius: var(--radius-sm) !important; }
         .el-date-editor.el-input { border-radius: var(--radius-sm) !important; }
         .el-message-box { border-radius: var(--radius) !important; }
+
+        /* ========== 原生遮罩层（替代 el-dialog 避免 Vue 隔离） ========== */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 2000;
+            background: rgba(61, 64, 91, 0.5); backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .modal-panel {
+            background: white; border-radius: var(--radius);
+            width: 580px; max-width: 95vw; max-height: 85vh;
+            overflow: hidden; display: flex; flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 18px 24px; border-bottom: 1px solid var(--warm-gray);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white; flex-shrink: 0;
+        }
+        .modal-header h3 { margin: 0; font-size: 16px; font-weight: 700; }
+        .modal-close { cursor: pointer; font-size: 22px; opacity: 0.8; line-height: 1; }
+        .modal-close:hover { opacity: 1; }
+        .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+        .modal-footer {
+            display: flex; gap: 10px; justify-content: flex-end;
+            padding: 16px 24px; border-top: 1px solid var(--warm-gray); flex-shrink: 0;
+        }
+        /* 表单 */
+        .form-grid { display: flex; flex-direction: column; gap: 14px; }
+        .form-row { display: flex; flex-direction: column; }
+        .form-row label { font-size: 13px; font-weight: 600; color: var(--text-dark); margin-bottom: 6px; }
+        .form-row label .required { color: var(--primary); }
+        .form-row input, .form-row select, .form-row textarea {
+            width: 100%; padding: 9px 12px; border: 1.5px solid var(--warm-gray);
+            border-radius: var(--radius-sm); font-size: 14px; font-family: inherit;
+            color: var(--text-dark); background: white; transition: border-color 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
+        }
+        .form-row input:focus, .form-row select:focus, .form-row textarea:focus {
+            outline: none; border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(224, 122, 95, 0.12);
+        }
+        .form-row input.input-error, .form-row select.input-error { border-color: var(--primary); }
+        .error-msg { font-size: 12px; color: var(--primary); margin-top: 4px; display: block; }
+        .btn-primary {
+            background: var(--primary); color: white; border: none;
+            padding: 9px 20px; border-radius: var(--radius-sm); font-size: 14px;
+            font-weight: 600; font-family: inherit; cursor: pointer; transition: var(--transition);
+        }
+        .btn-primary:hover:not(:disabled) { background: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(224,122,95,0.3); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-cancel {
+            background: white; color: var(--text-dark); border: 1.5px solid var(--warm-gray);
+            padding: 9px 20px; border-radius: var(--radius-sm); font-size: 14px;
+            font-weight: 600; font-family: inherit; cursor: pointer; transition: var(--transition);
+        }
+        .btn-cancel:hover { border-color: var(--text-muted); background: var(--warm-gray); }
+        /* 状态内联标签 */
+        .status-inline { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+        .status-inline.status-0 { background: #e8f5ee; color: #2e7d32; }
+        .status-inline.status-1 { background: #fef3e8; color: #d98a32; }
+        .status-inline.status-2 { background: var(--warm-gray); color: var(--text-muted); }
+        /* 过渡动画 */
+        .modal-fade-enter-active, .modal-fade-leave-active { transition: opacity 0.25s; }
+        .modal-fade-enter, .modal-fade-leave-to { opacity: 0; }
+        .modal-slide-enter-active, .modal-slide-leave-active { transition: transform 0.25s, opacity 0.25s; }
+        .modal-slide-enter, .modal-slide-leave-to { transform: translateY(20px); opacity: 0; }
 
         @keyframes fadeSlideDown {
             from { opacity: 0; transform: translateY(-16px); }
@@ -132,7 +235,7 @@
         .page-content {
             position: relative;
             z-index: 1;
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             padding: 24px 24px 40px;
         }
@@ -154,32 +257,32 @@
         .hero-banner::before {
             content: '';
             position: absolute;
-            top: -40px;
-            right: -40px;
-            width: 160px;
-            height: 160px;
-            background: radial-gradient(circle, rgba(224,122,95,0.08) 0%, transparent 70%);
-            border-radius: 50%;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--amber), var(--sage));
+            border-radius: var(--radius) var(--radius) 0 0;
         }
         .hero-banner::after {
             content: '';
             position: absolute;
-            bottom: -30px;
-            left: 40%;
-            width: 120px;
-            height: 120px;
-            background: radial-gradient(circle, rgba(129,178,154,0.08) 0%, transparent 70%);
+            top: -40px; right: -40px;
+            width: 180px; height: 180px;
+            background: radial-gradient(circle, rgba(129,178,154,0.1) 0%, transparent 70%);
             border-radius: 50%;
         }
         .hero-left { display: flex; align-items: center; gap: 20px; }
         .hero-icon {
             width: 64px; height: 64px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            background: linear-gradient(135deg, var(--sage) 0%, var(--sage-light) 100%);
             border-radius: 18px;
             display: flex; align-items: center; justify-content: center;
             font-size: 32px;
-            box-shadow: 0 8px 24px rgba(224,122,95,0.3);
+            box-shadow: 0 8px 24px rgba(129,178,154,0.3);
             flex-shrink: 0;
+            animation: gentleBounce 3s ease-in-out infinite;
+        }
+        @keyframes gentleBounce {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-4px) rotate(2deg); }
         }
         .hero-title-group h1 {
             margin: 0 0 4px;
@@ -198,21 +301,21 @@
         .hero-paw:nth-child(2) { animation-delay: 0.8s; opacity: 0.2; }
 
         /* 导航链接 */
-        .nav-links {
-            display: flex; gap: 12px; font-size: 13px; flex-wrap: wrap;
+        .hero-right { display: flex; align-items: center; gap: 6px; }
+        .nav-link {
+            padding: 6px 14px; border-radius: var(--radius-sm);
+            text-decoration: none; color: var(--text-muted);
+            font-size: 13px; font-weight: 600;
+            transition: var(--transition); cursor: pointer;
         }
-        .nav-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: var(--transition);
-            padding: 4px 0;
-        }
-        .nav-links a:hover { color: var(--primary); }
-        .nav-links span { color: var(--warm-gray2); }
+        .nav-link:hover { background: var(--warm-gray); color: var(--text-dark); }
+        .nav-link.danger { color: var(--primary); }
+        .nav-link.danger:hover { background: #fef0ee; color: var(--primary); }
 
         /* ========== 筛选卡片 ========== */
         .filter-card {
             background: white;
+            border: 1px solid rgba(224, 122, 95, 0.35);
             border-radius: var(--radius);
             padding: 20px 24px;
             margin-bottom: 24px;
@@ -242,6 +345,7 @@
         }
         .stat-card {
             background: white;
+            border: 1px solid rgba(224, 122, 95, 0.35);
             border-radius: var(--radius);
             padding: 22px;
             box-shadow: var(--card-shadow);
@@ -291,6 +395,7 @@
         /* ========== 提示卡片 ========== */
         .hint-card {
             background: white;
+            border: 1px solid rgba(224, 122, 95, 0.35);
             border-radius: var(--radius);
             padding: 32px;
             text-align: center;
@@ -311,6 +416,7 @@
         }
         .content-card {
             background: white;
+            border: 1px solid rgba(224, 122, 95, 0.3);
             border-radius: var(--radius);
             padding: 24px;
             box-shadow: var(--card-shadow);
@@ -332,17 +438,17 @@
 
         /* ========== 记录类型标签 ========== */
         .record-type-tag {
-            display: inline-flex; align-items: center;
+            display: inline-flex; align-items: center; gap: 4px;
             padding: 3px 10px; border-radius: 20px;
             font-size: 12px; font-weight: 700;
             margin-right: 6px;
         }
-        .type-vaccine { background: #e8f5ee; color: #5a8a6e; }
-        .type-checkup { background: #ecf5ff; color: #2e7fc8; }
-        .type-treatment { background: #fce8e2; color: var(--primary); }
-        .type-surgery { background: #fef3e8; color: #d98a32; }
-        .type-dental { background: var(--warm-cream); color: var(--text-muted); }
-        .type-other { background: var(--warm-gray); color: var(--text-muted); }
+        .type-vaccine { background: rgba(129,178,154,0.12); color: #5a8a6e; border: 1px solid rgba(129,178,154,0.3); }
+        .type-checkup { background: rgba(64,158,255,0.08); color: #2e7fc8; border: 1px solid rgba(64,158,255,0.25); }
+        .type-treatment { background: rgba(224,122,95,0.1); color: var(--primary); border: 1px solid rgba(224,122,95,0.25); }
+        .type-surgery { background: rgba(244,162,97,0.12); color: #d98a32; border: 1px solid rgba(244,162,97,0.3); }
+        .type-dental { background: rgba(129,178,154,0.08); color: #6a9b82; border: 1px solid rgba(129,178,154,0.25); }
+        .type-other { background: var(--warm-gray); color: var(--text-muted); border: 1px solid var(--warm-gray2); }
 
         /* ========== 时间线 ========== */
         .timeline { position: relative; padding-left: 28px; }
@@ -361,17 +467,21 @@
         .timeline-item:last-child { padding-bottom: 0; }
         .timeline-dot {
             position: absolute; left: -24px; top: 6px;
-            width: 18px; height: 18px;
+            width: 22px; height: 22px;
             border-radius: 50%;
             border: 3px solid white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+            font-size: 12px; line-height: 22px; text-align: center;
+            display: flex; align-items: center; justify-content: center;
         }
         .timeline-dot.vaccine { background: var(--sage); }
         .timeline-dot.checkup { background: #409EFF; }
         .timeline-dot.treatment { background: var(--primary); }
         .timeline-dot.surgery { background: var(--amber); }
-        .timeline-dot.dental { background: var(--text-muted); }
+        .timeline-dot.dental { background: var(--sage-light); }
         .timeline-dot.other { background: var(--warm-gray2); }
+        /* .timeline-dot 中的 emoji */
+        .timeline-dot .dot-icon { font-size: 11px; line-height: 1; }
         .timeline-content {
             background: var(--warm-white);
             padding: 14px 16px;
@@ -430,6 +540,7 @@
         /* ========== 全量列表卡片 ========== */
         .table-card {
             background: white;
+            border: 1px solid rgba(224, 122, 95, 0.3);
             border-radius: var(--radius);
             padding: 24px;
             box-shadow: var(--card-shadow);
@@ -466,16 +577,24 @@
             border: 1px solid var(--warm-gray);
         }
 
-        /* ========== 骨架屏 ========== */
+        /* ========== 骨架屏增强 ========== */
         .skeleton-stat {
             background: white; border-radius: var(--radius);
             padding: 22px; box-shadow: var(--card-shadow);
         }
         .skeleton-line {
             border-radius: 6px;
-            background: linear-gradient(90deg, var(--warm-gray) 25%, var(--warm-cream) 50%, var(--warm-gray) 75%);
-            background-size: 200% 100%;
-            animation: shimmerBg 1.5s infinite;
+            background: linear-gradient(90deg,
+                rgba(224,122,95,0.08) 0%,
+                rgba(129,178,154,0.1) 33%,
+                rgba(244,162,97,0.08) 66%,
+                rgba(224,122,95,0.08) 100%);
+            background-size: 300% 100%;
+            animation: warmShimmer 2s ease infinite;
+        }
+        @keyframes warmShimmer {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
         }
         .skeleton-card {
             background: white; border-radius: var(--radius);
@@ -483,26 +602,37 @@
             box-shadow: var(--card-shadow);
         }
 
-        /* ========== 响应式 ========== */
-        @media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } .detail-grid { grid-template-columns: 1fr; } }
-        @media (max-width: 480px) {
-            .page-content { padding: 16px 12px 32px; }
-            .hero-banner { padding: 20px; flex-direction: column; align-items: flex-start; gap: 16px; }
-            .hero-title-group h1 { font-size: 20px; }
+        /* ========== P2-2 响应式布局 ========== */
+        @media (max-width: 900px) {
+            .two-col { grid-template-columns: 1fr; }
+            .detail-grid { grid-template-columns: 1fr; }
+            .hero-banner { flex-direction: column; align-items: flex-start; gap: 16px; padding: 20px 24px; }
             .hero-right { display: none; }
-            .filter-row { flex-direction: column; }
-            .filter-item { width: 100%; }
-            .stat-cards { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-            .stat-card { padding: 16px; gap: 12px; }
+        }
+        @media (max-width: 600px) {
+            .page-content { padding: 12px 12px 32px; }
+            .hero-banner { padding: 14px 16px; }
+            .hero-left { gap: 12px; }
+            .hero-icon { width: 48px; height: 48px; font-size: 22px; border-radius: 12px; }
+            .hero-title-group h1 { font-size: 20px; }
+            .hero-title-group p { font-size: 13px; }
+            .filter-row { flex-direction: column; align-items: stretch; }
+            .filter-item { width: 100% !important; }
+            .stat-cards { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .stat-card { padding: 14px 12px; }
             .stat-num { font-size: 22px; }
-            .content-card { padding: 16px; }
-            .table-card { padding: 16px; }
+            .content-card { padding: 14px; }
+            .table-card { padding: 14px; }
+            /* 触摸友好 */
+            .el-button, button { min-height: 36px; padding: 8px 14px; }
+        }
+        @media (max-width: 375px) {
+            .hero-title-group h1 { font-size: 18px; }
+            .stat-cards { grid-template-columns: 1fr; }
         }
         @media (hover: none) {
-            .stat-card:hover { transform: none; box-shadow: var(--card-shadow); }
-            .content-card:hover { transform: none; box-shadow: var(--card-shadow); }
-            .table-card:hover { box-shadow: var(--card-shadow); }
-            .timeline-content:hover { transform: none; box-shadow: none; }
+            .stat-card:hover, .content-card:hover { transform: none !important; box-shadow: var(--card-shadow); }
+            .table-card:hover, .timeline-content:hover { box-shadow: none; transform: none; }
         }
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -562,9 +692,13 @@
             box-shadow: 0 2px 12px rgba(224,122,95,0.06);
         }
         .skeleton-line {
-            background: linear-gradient(90deg, #f0ebe7 25%, #faeee7 50%, #f0ebe7 75%);
-            background-size: 400% 100%;
-            animation: shimmer 1.8s ease infinite;
+            background: linear-gradient(90deg,
+                rgba(224,122,95,0.08) 0%,
+                rgba(129,178,154,0.1) 33%,
+                rgba(244,162,97,0.08) 66%,
+                rgba(224,122,95,0.08) 100%);
+            background-size: 300% 100%;
+            animation: warmShimmer 2s ease infinite;
             border-radius: 6px;
         }
         .skeleton-table {
@@ -657,6 +791,10 @@
             box-shadow: 0 4px 20px rgba(224,122,95,0.15) !important;
         }
         .reminder-card .el-tag { font-weight: 600; }
+        .el-pagination .btn-prev .el-icon::before,
+        .el-pagination .btn-next .el-icon::before {
+            font-family: "Segoe UI Symbol", "Arial", sans-serif !important;
+        }
     </style>
 </head>
 <body>
@@ -672,10 +810,17 @@
 <div class="page-wrapper">
     <!-- 爪印背景 -->
     <div class="page-bg-paws">
+        <!-- 爪印 -->
         <svg style="top:8%;left:5%;width:64px;transform:rotate(-20deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
         <svg style="top:30%;right:8%;width:48px;transform:rotate(15deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
         <svg style="bottom:15%;left:12%;width:56px;transform:rotate(-10deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
         <svg style="bottom:5%;right:15%;width:40px;transform:rotate(25deg)" viewBox="0 0 24 24"><path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM6 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 6c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+        <!-- 爱心 -->
+        <svg style="top:20%;left:15%;width:40px;transform:rotate(-10deg);opacity:0.04" viewBox="0 0 24 24"><path fill="#81B29A" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <svg style="bottom:25%;right:10%;width:35px;transform:rotate(15deg);opacity:0.035" viewBox="0 0 24 24"><path fill="#E07A5F" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <!-- 星星 -->
+        <svg style="top:5%;right:18%;width:35px;transform:rotate(8deg);opacity:0.04" viewBox="0 0 24 24"><path fill="#F4A261" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+        <svg style="bottom:8%;left:30%;width:30px;transform:rotate(-20deg);opacity:0.035" viewBox="0 0 24 24"><path fill="#B8A9C9" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
     </div>
 
     <div class="page-content" id="app">
@@ -684,28 +829,21 @@
             <div class="hero-left">
                 <div class="hero-icon">🏥</div>
                 <div class="hero-title-group">
-                    <h1>健康档案<span>管理</span></h1>
+                    <h1><span class="title-icon">💚</span>健康档案<span>管理</span></h1>
                     <p>守护每一只小可爱的健康成长记录</p>
                 </div>
             </div>
             <div class="hero-right">
-                <div class="nav-links" style="position:absolute;right:24px;bottom:20px;">
-                    <a href="pet-list.html">首页</a><span>|</span>
-                    <a href="profile.html">个人中心</a>
-                    <span v-if="currentRole === 'admin'">|</span>
-                    <a v-if="currentRole === 'admin'" href="user-management.html">用户管理</a>
-                    <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'">|</span>
-                    <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="adoption-list.html">领养审核</a>
-                    <span v-if="currentRole === 'admin' || currentRole === 'institution_admin'">|</span>
-                    <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="stats.html">数据统计</a>
-                    <span>|</span>
-                    <span href="javascript:void(0)" @click="logout" style="color:var(--primary);cursor:pointer;font-weight:600">
-                        退出登录
-                    </span>
-                    <span :style="'background:' + (currentRole==='admin'?'#fef0ee':'#e3f2fd') + ';color:' + (currentRole==='admin'?'var(--primary)':'#1565c0') + ';padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;margin-left:6px'">
-                        {{ getRoleNameH(currentRole) }}
-                    </span>
-                </div>
+                <a href="pet-list.html" class="nav-link">首页</a>
+                <a href="profile.html" class="nav-link">个人中心</a>
+                <a v-if="currentRole === 'admin'" href="user-management.html" class="nav-link">用户管理</a>
+                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="adoption-list.html" class="nav-link">领养审核</a>
+                <a v-if="currentRole === 'admin' || currentRole === 'institution_admin' || currentRole === 'pet_hospital'" href="stats.html" class="nav-link">数据统计</a>
+                <a v-if="currentRole === 'pet_hospital'" href="pet-hospital.html" class="nav-link">🏥 医疗档案</a>
+                <span class="nav-link danger" @click="logout">退出登录</span>
+                <span :style="'background:' + (currentRole==='admin'?'#fef0ee':'#e3f2fd') + ';color:' + (currentRole==='admin'?'var(--primary)':'#1565c0') + ';padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;margin-left:6px'">
+                    {{ getRoleNameH(currentRole) }}
+                </span>
             </div>
         </div>
 
@@ -781,14 +919,14 @@
                 <div class="stat-icon">💉</div>
                 <div class="stat-info">
                     <div class="stat-num">{{ currentStats.vaccineCount || 0 }}</div>
-                    <div class="stat-label">疫苗记录</div>
+                    <div class="stat-label">💉疫苗记录</div>
                 </div>
             </div>
             <div class="stat-card checkup" style="animation-delay:0.15s">
                 <div class="stat-icon">🩺</div>
                 <div class="stat-info">
                     <div class="stat-num">{{ currentStats.checkupCount || 0 }}</div>
-                    <div class="stat-label">体检记录</div>
+                    <div class="stat-label">🏥体检记录</div>
                 </div>
             </div>
             <div class="stat-card cost" style="animation-delay:0.2s">
@@ -817,7 +955,7 @@
                             <span class="icon">📋</span>
                             健康档案记录
                         </span>
-                        <el-button type="primary" size="small" icon="el-icon-plus" class="btn-gradient" @click="handleAdd">添加记录</el-button>
+                        <el-button type="primary" size="small" icon="el-icon-plus" class="btn-gradient" @click="handleAdd">➕新增档案</el-button>
                     </div>
 
                     <div class="health-table-wrap" style="padding:0;">
@@ -825,7 +963,7 @@
                         <el-table-column prop="title" label="记录标题" min-width="160">
                             <template slot-scope="scope">
                                 <span class="record-type-tag" :class="'type-' + scope.row.recordType">
-                                    {{ getRecordTypeText(scope.row.recordType) }}
+                                    {{ getRecordTypeIcon(scope.row.recordType) }} {{ getRecordTypeText(scope.row.recordType) }}
                                 </span>
                                 <span style="font-weight:600;">{{ scope.row.title }}</span>
                             </template>
@@ -869,7 +1007,7 @@
                     <div class="reminder-item" v-for="r in reminders" :key="r.id">
                         <span>
                             <span class="record-type-tag" :class="'type-' + r.recordType" style="margin-right:6px;">
-                                {{ getRecordTypeText(r.recordType) }}
+                                {{ getRecordTypeIcon(r.recordType) }} {{ getRecordTypeText(r.recordType) }}
                             </span>
                             {{ r.title }}
                         </span>
@@ -890,7 +1028,7 @@
                 <div class="timeline" v-if="timelineRecords.length > 0">
                     <div class="timeline-item" v-for="(r, idx) in timelineRecords" :key="r.id"
                          :style="'animation-delay:' + (0.05 * idx) + 's'">
-                        <div class="timeline-dot" :class="r.recordType"></div>
+                        <div class="timeline-dot" :class="r.recordType"><span class="dot-icon">{{ getRecordTypeIcon(r.recordType) }}</span></div>
                         <div class="timeline-content">
                             <div class="timeline-date">{{ formatDate(r.recordDate) }}</div>
                             <div class="timeline-title">
@@ -909,9 +1047,9 @@
                     </div>
                 </div>
                 <div v-else style="text-align:center;padding:40px 0;color:var(--text-muted);">
-                    <div style="font-size:48px;margin-bottom:12px;animation:float 3s ease-in-out infinite;display:block;">📅</div>
+                    <div style="font-size:48px;margin-bottom:12px;animation:gentleBounce 2.5s ease-in-out infinite;display:block;">💚</div>
                     <div style="font-size:14px;font-weight:600;">暂无健康记录</div>
-                    <div style="font-size:12px;margin-top:4px;">该宠物还没有健康档案，点击上方添加</div>
+                    <div style="font-size:12px;margin-top:4px;">该宠物还没有健康档案，点击上方添加 🏥</div>
                 </div>
             </div>
         </div>
@@ -928,7 +1066,7 @@
                 <el-table-column prop="title" label="标题" min-width="160">
                     <template slot-scope="scope">
                         <span class="record-type-tag" :class="'type-' + scope.row.recordType">
-                            {{ getRecordTypeText(scope.row.recordType) }}
+                            {{ getRecordTypeIcon(scope.row.recordType) }} {{ getRecordTypeText(scope.row.recordType) }}
                         </span>
                         {{ scope.row.title }}
                     </template>
@@ -936,7 +1074,7 @@
                 <el-table-column prop="recordType" label="类型" width="100">
                     <template slot-scope="scope">
                         <span class="record-type-tag" :class="'type-' + scope.row.recordType">
-                            {{ getRecordTypeText(scope.row.recordType) }}
+                            {{ getRecordTypeIcon(scope.row.recordType) }} {{ getRecordTypeText(scope.row.recordType) }}
                         </span>
                     </template>
                 </el-table-column>
@@ -961,128 +1099,173 @@
             </el-pagination>
         </div>
 
-        <!-- 详情对话框 -->
-        <el-dialog title="健康档案详情" :visible.sync="detailDialogVisible" width="600px" top="8vh">
-            <div v-if="currentRecord">
-                <div class="detail-grid">
-                    <div class="detail-item">
-                        <span class="detail-label">记录类型</span>
-                        <span class="detail-value">
-                            <span class="record-type-tag" :class="'type-' + currentRecord.recordType">
-                                {{ getRecordTypeText(currentRecord.recordType) }}
-                            </span>
-                        </span>
+        <!-- 详情对话框（原生遮罩层，替代 el-dialog 避免 Vue 隔离） -->
+        <transition name="modal-fade">
+            <div v-if="detailDialogVisible" class="modal-overlay" @click.self="detailDialogVisible = false">
+                <transition name="modal-slide">
+                    <div v-if="detailDialogVisible" class="modal-panel" @click.stop>
+                        <div class="modal-header">
+                            <h3>📋 健康档案详情</h3>
+                            <span class="modal-close" @click="detailDialogVisible = false">✕</span>
+                        </div>
+                        <div class="modal-body">
+                            <div v-if="currentRecord">
+                                <div class="detail-grid">
+                                    <div class="detail-item">
+                                        <span class="detail-label">记录类型</span>
+                                        <span class="detail-value">
+                                            <span class="record-type-tag" :class="'type-' + currentRecord.recordType">
+                                                {{ getRecordTypeIcon(currentRecord.recordType) }} {{ getRecordTypeText(currentRecord.recordType) }}
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">记录日期</span>
+                                        <span class="detail-value bold">{{ formatDate(currentRecord.recordDate) }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">宠物名称</span>
+                                        <span class="detail-value bold">{{ currentRecord.petName || '未知' }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">执行机构</span>
+                                        <span class="detail-value">{{ currentRecord.institution || '—' }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">兽医</span>
+                                        <span class="detail-value">{{ currentRecord.veterinarian || '—' }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">费用</span>
+                                        <span class="detail-value bold" style="color:var(--amber);">
+                                            {{ currentRecord.cost ? '¥' + currentRecord.cost.toFixed(2) : '—' }}
+                                        </span>
+                                    </div>
+                                    <div class="detail-item" v-if="currentRecord.nextReminderDate">
+                                        <span class="detail-label">下次提醒</span>
+                                        <span class="detail-value bold" style="color:#d98a32;">{{ formatDate(currentRecord.nextReminderDate) }}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">状态</span>
+                                        <span class="detail-value">
+                                            <span class="status-inline" :class="'status-' + currentRecord.status">
+                                                {{ currentRecord.status === 0 ? '正常' : currentRecord.status === 1 ? '已过期' : '已取消' }}
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="detail-section-title">📝 标题</div>
+                                <div class="detail-content-box" style="font-weight:700;font-size:15px;color:var(--text-dark);">
+                                    {{ currentRecord.title }}
+                                </div>
+                                <div class="detail-section-title">📋 记录内容</div>
+                                <div class="detail-content-box">
+                                    {{ currentRecord.content || '无' }}
+                                </div>
+                                <div class="detail-section-title" v-if="currentRecord.remark">💬 备注</div>
+                                <div v-if="currentRecord.remark" class="detail-content-box" style="background:var(--warm-cream);">
+                                    {{ currentRecord.remark }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn-cancel" @click="detailDialogVisible = false">关闭</button>
+                            <button class="btn-primary" @click="detailDialogVisible = false; handleEdit(currentRecord)">编辑</button>
+                        </div>
                     </div>
-                    <div class="detail-item">
-                        <span class="detail-label">记录日期</span>
-                        <span class="detail-value bold">{{ formatDate(currentRecord.recordDate) }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">宠物名称</span>
-                        <span class="detail-value bold">{{ currentRecord.petName || '未知' }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">执行机构</span>
-                        <span class="detail-value">{{ currentRecord.institution || '—' }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">兽医</span>
-                        <span class="detail-value">{{ currentRecord.veterinarian || '—' }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">费用</span>
-                        <span class="detail-value bold" style="color:var(--amber);">
-                            {{ currentRecord.cost ? '¥' + currentRecord.cost.toFixed(2) : '—' }}
-                        </span>
-                    </div>
-                    <div class="detail-item" v-if="currentRecord.nextReminderDate">
-                        <span class="detail-label">下次提醒</span>
-                        <span class="detail-value bold" style="color:#d98a32;">{{ formatDate(currentRecord.nextReminderDate) }}</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">状态</span>
-                        <span class="detail-value">
-                            <el-tag :type="currentRecord.status === 0 ? 'success' : currentRecord.status === 1 ? 'warning' : 'info'" size="mini">
-                                {{ currentRecord.status === 0 ? '正常' : currentRecord.status === 1 ? '已过期' : '已取消' }}
-                            </el-tag>
-                        </span>
-                    </div>
-                </div>
-                <div class="detail-section-title">📝 标题</div>
-                <div class="detail-content-box" style="font-weight:700;font-size:15px;color:var(--text-dark);">
-                    {{ currentRecord.title }}
-                </div>
-                <div class="detail-section-title">📋 记录内容</div>
-                <div class="detail-content-box">
-                    {{ currentRecord.content || '无' }}
-                </div>
-                <div class="detail-section-title" v-if="currentRecord.remark">💬 备注</div>
-                <div v-if="currentRecord.remark" class="detail-content-box" style="background:var(--warm-cream);">
-                    {{ currentRecord.remark }}
-                </div>
+                </transition>
             </div>
-            <div slot="footer">
-                <el-button @click="detailDialogVisible = false">关闭</el-button>
-                <el-button type="primary" icon="el-icon-edit" @click="detailDialogVisible = false; handleEdit(currentRecord)">编辑</el-button>
-            </div>
-        </el-dialog>
+        </transition>
 
-        <!-- 添加/编辑对话框 -->
-        <el-dialog :title="editForm.id ? '编辑健康档案' : '添加健康档案'" :visible.sync="editDialogVisible" width="650px" top="8vh">
-            <el-form :model="editForm" :rules="editRules" ref="editFormRef" label-width="100px">
-                <el-form-item label="选择宠物" prop="petId">
-                    <el-select v-model="editForm.petId" placeholder="请选择宠物" filterable style="width: 100%;">
-                        <el-option v-for="p in petOptions" :key="p.id" :label="p.name + ' · ' + p.breed" :value="p.id"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="记录类型" prop="recordType">
-                    <el-select v-model="editForm.recordType" placeholder="请选择类型" style="width: 100%;">
-                        <el-option label="💉 疫苗接种" value="vaccine"></el-option>
-                        <el-option label="🩺 健康体检" value="checkup"></el-option>
-                        <el-option label="💊 疾病治疗" value="treatment"></el-option>
-                        <el-option label="🏥 手术" value="surgery"></el-option>
-                        <el-option label="🦷 牙齿护理" value="dental"></el-option>
-                        <el-option label="📋 其他" value="other"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="标题" prop="title">
-                    <el-input v-model="editForm.title" placeholder="请输入记录标题"></el-input>
-                </el-form-item>
-                <el-form-item label="记录日期" prop="recordDate">
-                    <el-date-picker v-model="editForm.recordDate" type="date" placeholder="选择日期"
-                        value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
-                </el-form-item>
-                <el-form-item label="执行机构">
-                    <el-input v-model="editForm.institution" placeholder="请输入宠物医院/机构名称"></el-input>
-                </el-form-item>
-                <el-form-item label="兽医">
-                    <el-input v-model="editForm.veterinarian" placeholder="请输入兽医姓名"></el-input>
-                </el-form-item>
-                <el-form-item label="费用（元）">
-                    <el-input-number v-model="editForm.cost" :min="0" :precision="2" :step="10" style="width: 100%;"></el-input-number>
-                </el-form-item>
-                <el-form-item label="下次提醒">
-                    <el-date-picker v-model="editForm.nextReminderDate" type="date" placeholder="选择下次提醒日期"
-                        value-format="yyyy-MM-dd" style="width: 100%;"></el-date-picker>
-                </el-form-item>
-                <el-form-item label="记录内容">
-                    <el-input type="textarea" v-model="editForm.content" :rows="3" placeholder="请输入详细记录内容"></el-input>
-                </el-form-item>
-                <el-form-item label="备注">
-                    <el-input type="textarea" v-model="editForm.remark" :rows="2" placeholder="请输入备注信息"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer">
-                <el-button @click="editDialogVisible = false">取消</el-button>
-                <el-button type="primary" icon="el-icon-check" @click="handleSave" :loading="saveLoading">保存</el-button>
+        <!-- 添加/编辑对话框（原生遮罩层，替代 el-dialog 避免 Vue 隔离） -->
+        <transition name="modal-fade">
+            <div v-if="editDialogVisible" class="modal-overlay" @click.self="editDialogVisible = false">
+                <transition name="modal-slide">
+                    <div v-if="editDialogVisible" class="modal-panel" style="width:650px;" @click.stop>
+                        <div class="modal-header">
+                            <h3>{{ editForm.id ? '编辑健康档案' : '添加健康档案' }}</h3>
+                            <span class="modal-close" @click="editDialogVisible = false">✕</span>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-grid">
+                                <div class="form-row">
+                                    <label>选择宠物 <span class="required">*</span></label>
+                                    <select v-model="editForm.petId" :class="{'input-error': formErrors.petId}">
+                                        <option value="">请选择宠物</option>
+                                        <option v-for="p in petOptions" :key="p.id" :value="p.id">{{ p.name }} · {{ p.breed }}</option>
+                                    </select>
+                                    <span v-if="formErrors.petId" class="error-msg">{{ formErrors.petId }}</span>
+                                </div>
+                                <div class="form-row">
+                                    <label>记录类型 <span class="required">*</span></label>
+                                    <select v-model="editForm.recordType" :class="{'input-error': formErrors.recordType}">
+                                        <option value="">请选择类型</option>
+                                        <option value="vaccine">💉 疫苗接种</option>
+                                        <option value="checkup">🩺 健康体检</option>
+                                        <option value="treatment">💊 疾病治疗</option>
+                                        <option value="surgery">🏥 手术</option>
+                                        <option value="dental">🦷 牙齿护理</option>
+                                        <option value="other">📋 其他</option>
+                                    </select>
+                                    <span v-if="formErrors.recordType" class="error-msg">{{ formErrors.recordType }}</span>
+                                </div>
+                                <div class="form-row">
+                                    <label>标题 <span class="required">*</span></label>
+                                    <input type="text" v-model="editForm.title" placeholder="请输入记录标题" maxlength="100"
+                                        :class="{'input-error': formErrors.title}">
+                                    <span v-if="formErrors.title" class="error-msg">{{ formErrors.title }}</span>
+                                </div>
+                                <div class="form-row">
+                                    <label>记录日期 <span class="required">*</span></label>
+                                    <input type="date" v-model="editForm.recordDate"
+                                        :class="{'input-error': formErrors.recordDate}">
+                                    <span v-if="formErrors.recordDate" class="error-msg">{{ formErrors.recordDate }}</span>
+                                </div>
+                                <div class="form-row">
+                                    <label>执行机构</label>
+                                    <input type="text" v-model="editForm.institution" placeholder="请输入宠物医院/机构名称" maxlength="100">
+                                </div>
+                                <div class="form-row">
+                                    <label>兽医</label>
+                                    <input type="text" v-model="editForm.veterinarian" placeholder="请输入兽医姓名" maxlength="50">
+                                </div>
+                                <div class="form-row">
+                                    <label>费用（元）</label>
+                                    <input type="number" v-model.number="editForm.cost" min="0" step="0.01" placeholder="0.00" style="width:100%;padding:9px 12px;border:1.5px solid var(--warm-gray);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;color:var(--text-dark);background:white;transition:border-color 0.2s,box-shadow 0.2s;box-sizing:border-box;">
+                                </div>
+                                <div class="form-row">
+                                    <label>下次提醒日期</label>
+                                    <input type="date" v-model="editForm.nextReminderDate">
+                                </div>
+                                <div class="form-row">
+                                    <label>记录内容</label>
+                                    <textarea v-model="editForm.content" placeholder="请输入详细记录内容" rows="3" maxlength="1000"
+                                        style="width:100%;padding:9px 12px;border:1.5px solid var(--warm-gray);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;color:var(--text-dark);background:white;transition:border-color 0.2s,box-shadow 0.2s;resize:vertical;box-sizing:border-box;line-height:1.6;"></textarea>
+                                </div>
+                                <div class="form-row">
+                                    <label>备注</label>
+                                    <textarea v-model="editForm.remark" placeholder="请输入备注信息" rows="2" maxlength="500"
+                                        style="width:100%;padding:9px 12px;border:1.5px solid var(--warm-gray);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;color:var(--text-dark);background:white;transition:border-color 0.2s,box-shadow 0.2s;resize:vertical;box-sizing:border-box;line-height:1.6;"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn-cancel" @click="editDialogVisible = false">取消</button>
+                            <button class="btn-primary" @click="handleSave" :disabled="saveLoading">
+                                {{ saveLoading ? '保存中...' : '保存' }}
+                            </button>
+                        </div>
+                    </div>
+                </transition>
             </div>
-        </el-dialog>
+        </transition>
     </div><!-- end #app -->
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
 <script src="https://unpkg.com/element-ui@2.15.13/lib/index.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
+<script src="js/auth.js"></script>
 <script>
     Vue.use(ELEMENT);
 
@@ -1126,6 +1309,7 @@
             currentPage: 1,
             pageSize: 20,
             currentStats: {},
+            formErrors: {},
             detailDialogVisible: false,
             editDialogVisible: false,
             currentRecord: null,
@@ -1175,6 +1359,26 @@
             }
             this.loadPets();
             this.loadRecords();
+            // 处理 URL 参数：从宠物详情页跳转过来时，自动选中该宠物
+            const urlParams = new URLSearchParams(window.location.search);
+            const petIdFromUrl = urlParams.get('petId');
+            if (petIdFromUrl) {
+                this.filters.petId = petIdFromUrl;
+                // 等 petOptions 加载完再设值
+                const checkAndSet = () => {
+                    if (this.petOptions.length > 0) {
+                        const pet = this.petOptions.find(p => String(p.id) === String(petIdFromUrl));
+                        if (pet) {
+                            this.$nextTick(() => {
+                                this.loadRecords();
+                            });
+                        }
+                    } else {
+                        setTimeout(checkAndSet, 100);
+                    }
+                };
+                checkAndSet();
+            }
         },
         methods: {
             onPetChange(val) {
@@ -1246,7 +1450,7 @@
                     institution: '', veterinarian: '', cost: 0,
                     nextReminderDate: '', content: '', remark: ''
                 };
-                this.$nextTick(() => { this.$refs.editFormRef && this.$refs.editFormRef.clearValidate(); });
+                this.formErrors = {};
                 this.editDialogVisible = true;
             },
             handleEdit(row) {
@@ -1259,32 +1463,34 @@
                     nextReminderDate: this.formatDateForEdit(row.nextReminderDate),
                     content: row.content || '', remark: row.remark || ''
                 };
-                this.$nextTick(() => { this.$refs.editFormRef && this.$refs.editFormRef.clearValidate(); });
+                this.formErrors = {};
                 this.editDialogVisible = true;
             },
             handleSave() {
-                this.$refs.editFormRef.validate(valid => {
-                    if (!valid) return;
-                    this.saveLoading = true;
-                    const url = this.editForm.id ? '/api/health-record/update' : '/api/health-record/add';
-                    const method = this.editForm.id ? 'put' : 'post';
-                    axios[method](url, this.editForm)
-                        .then(res => {
-                            this.saveLoading = false;
-                            if (res.data.code === 200) {
-                                this.$message.success(this.editForm.id ? '更新成功' : '添加成功');
-                                this.editDialogVisible = false;
-                                this.loadRecords();
-                                if (this.filters.petId) {
-                                    this.loadStats(this.filters.petId);
-                                    this.loadReminders();
-                                }
-                            } else {
-                                this.$message.error(res.data.message || '操作失败');
+                this.formErrors = {};
+                if (!this.editForm.petId) { this.formErrors.petId = '请选择宠物'; return; }
+                if (!this.editForm.recordType) { this.formErrors.recordType = '请选择记录类型'; return; }
+                if (!this.editForm.title || !this.editForm.title.trim()) { this.formErrors.title = '请输入标题'; return; }
+                if (!this.editForm.recordDate) { this.formErrors.recordDate = '请选择记录日期'; return; }
+                this.saveLoading = true;
+                const url = this.editForm.id ? '/api/health-record/update' : '/api/health-record/add';
+                const method = this.editForm.id ? 'put' : 'post';
+                axios[method](url, this.editForm)
+                    .then(res => {
+                        this.saveLoading = false;
+                        if (res.data.code === 200) {
+                            this.$message.success(this.editForm.id ? '更新成功' : '添加成功');
+                            this.editDialogVisible = false;
+                            this.loadRecords();
+                            if (this.filters.petId) {
+                                this.loadStats(this.filters.petId);
+                                this.loadReminders();
                             }
-                        })
-                        .catch(() => { this.saveLoading = false; });
-                });
+                        } else {
+                            this.$message.error(res.data.message || '操作失败');
+                        }
+                    })
+                    .catch(() => { this.saveLoading = false; });
             },
             handleDetail(row) {
                 this.currentRecord = row;
@@ -1304,6 +1510,10 @@
                                 }
                             });
                     });
+            },
+            getRecordTypeIcon(type) {
+                const map = { vaccine: '💉', checkup: '🏥', treatment: '💊', surgery: '🏥', dental: '🦷', other: '📋' };
+                return map[type] || '📋';
             },
             getRecordTypeText(type) {
                 const map = { vaccine: '疫苗', checkup: '体检', treatment: '治疗', surgery: '手术', dental: '牙科', other: '其他' };
@@ -1337,10 +1547,34 @@
             logout() {
                 localStorage.removeItem('token');
                 localStorage.removeItem('user');
+                localStorage.removeItem('refreshToken');
+                document.cookie = 'PET_JWT=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
                 window.location.href = 'login.html';
             }
         }
     });
+</script>
+<script>
+// 替换分页器箭头图标（‹ ›）
+document.addEventListener('DOMContentLoaded', function() {
+    function fixPaginationIcons() {
+        document.querySelectorAll('.el-pagination .btn-prev .el-icon').forEach(function(el) {
+            el.textContent = '‹';
+            el.style.fontSize = '18px';
+            el.style.fontWeight = '700';
+            el.style.fontFamily = '"Segoe UI Symbol", "Arial Unicode MS", sans-serif';
+        });
+        document.querySelectorAll('.el-pagination .btn-next .el-icon').forEach(function(el) {
+            el.textContent = '›';
+            el.style.fontSize = '18px';
+            el.style.fontWeight = '700';
+            el.style.fontFamily = '"Segoe UI Symbol", "Arial Unicode MS", sans-serif';
+        });
+    }
+    fixPaginationIcons();
+    setTimeout(fixPaginationIcons, 500);
+    setTimeout(fixPaginationIcons, 1000);
+});
 </script>
 </body>
 </html>

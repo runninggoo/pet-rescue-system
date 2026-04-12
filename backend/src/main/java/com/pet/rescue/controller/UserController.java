@@ -10,7 +10,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -32,19 +31,29 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('INSTITUTION_ADMIN')")
     public ResponseResult list(@RequestParam Map<String, Object> params) {
         try {
-            // 简化权限控制
             Long currentUserId = getCurrentUserId();
             String role = getCurrentUserRole();
 
             if ("institution_admin".equals(role)) {
-                // 机构管理员只能查看自己机构的用户
                 params.put("institutionId", currentUserId);
-                params.put("notAdmin", true); // 不能查看管理员
+                params.put("notAdmin", true);
             }
-            // 管理员可以查看所有用户
 
-            List<User> users = userService.findUsersByCondition(params);
-            return ResponseResult.ok().data("users", users);
+            int page = 1;
+            int pageSize = 12;
+            try {
+                if (params.containsKey("page") && params.get("page") != null) {
+                    page = Integer.parseInt(params.get("page").toString());
+                }
+                if (params.containsKey("pageSize") && params.get("pageSize") != null) {
+                    pageSize = Integer.parseInt(params.get("pageSize").toString());
+                }
+            } catch (NumberFormatException ignored) {}
+
+            var pageResult = userService.findUsersByConditionWithPage(params, page, pageSize);
+            return ResponseResult.ok()
+                    .data("users", pageResult.getRecords())
+                    .data("total", pageResult.getTotal());
         } catch (Exception e) {
             return ResponseResult.error("获取用户列表失败：" + e.getMessage());
         }
@@ -120,8 +129,9 @@ public class UserController {
      */
     @PutMapping("/status/{userId}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('INSTITUTION_ADMIN')")
-    public ResponseResult updateStatus(@PathVariable Long userId, @RequestParam Integer status) {
+    public ResponseResult updateStatus(@PathVariable Long userId, @RequestBody Map<String, Integer> body) {
         try {
+            Integer status = body.get("status");
             boolean success = userService.updateUserStatus(userId, status);
             if (success) {
                 return ResponseResult.ok("更新状态成功");

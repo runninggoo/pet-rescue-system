@@ -10,6 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
     <script src="https://unpkg.com/element-ui@2.15.13/lib/index.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
+    <script src="js/auth.js"></script>
     <style>
         :root {
             --primary: #E07A5F;
@@ -19,14 +20,39 @@
             --sage: #81B29A;
             --sage-light: #a8cdb8;
             --amber: #F4A261;
+            --sky: #87CEEB;
+            --sky-light: #B0E2FF;
+            --sky-bg: rgba(135, 206, 235, 0.12);
+            --lavender: #B8A9C9;
+            --lavender-light: #D8CCE8;
+            --lavender-bg: rgba(184, 169, 201, 0.12);
+            --mint: #98D8C8;
+            --mint-light: #B8EBE0;
+            --mint-bg: rgba(152, 216, 200, 0.12);
+            --success: #52c788;
+            --danger: #e05d5d;
+            --info: #5b8dee;
             --warm-white: #FDF6F0;
-            --warm-cream: #FAEEE7;
+            --warm-cream: #EDD5C8;
             --warm-gray: #f0ebe7;
             --warm-gray2: #ede6df;
             --text-dark: #3D405B;
             --text-muted: #8A8EA0;
             --card-shadow: 0 4px 20px rgba(224, 122, 95, 0.1);
             --card-shadow-hover: 0 12px 40px rgba(224, 122, 95, 0.2);
+            /* 各区域卡片独立色调 */
+            --card-side-bg: #f0f7f4;   /* 侧边栏：薄荷绿底 */
+            --card-side-border: rgba(129, 178, 154, 0.3);
+            --card-side-shadow: 0 4px 24px rgba(129, 178, 154, 0.12), 0 1px 4px rgba(0,0,0,0.06);
+            --card-section-bg: #ffffff; /* 主内容区：纯白 */
+            --card-section-border: rgba(224, 122, 95, 0.45);
+            --card-section-shadow: 0 4px 24px rgba(224, 122, 95, 0.12), 0 1px 4px rgba(0,0,0,0.06);
+            --card-stat-bg: #f5f0f8;    /* 统计卡片：淡紫底 */
+            --card-stat-border: rgba(184, 169, 201, 0.35);
+            --card-info-bg: #edd5c8;     /* 信息项：珊瑚暖底 */
+            --card-info-border: rgba(224, 122, 95, 0.3);
+            --card-quick-bg: #fff9f5;   /* 快捷入口：淡橙白 */
+            --card-quick-border: rgba(244, 162, 97, 0.35);
             --transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             --radius: 20px;
             --radius-sm: 12px;
@@ -48,11 +74,17 @@
         ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
         /* Element UI overrides */
-        .el-button--primary { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; }
-        .el-button--primary:hover { background-color: var(--primary-dark) !important; border-color: var(--primary-dark) !important; }
-        .el-button--success { background-color: var(--sage) !important; border-color: var(--sage) !important; border-radius: var(--radius-sm) !important; }
-        .el-button--warning { background-color: var(--amber) !important; border-color: var(--amber) !important; border-radius: var(--radius-sm) !important; }
-        .el-button { border-radius: var(--radius-sm) !important; }
+        .el-button--primary { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+        .el-button--primary:hover { background-color: var(--primary-dark) !important; border-color: var(--primary-dark) !important; transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(224,122,95,0.35) !important; }
+        .el-button--primary:active { transform: translateY(0px) scale(0.97) !important; box-shadow: 0 2px 8px rgba(224,122,95,0.2) !important; }
+        .el-button--success { background-color: var(--sage) !important; border-color: var(--sage) !important; border-radius: var(--radius-sm) !important; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+        .el-button--success:hover { transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(129,178,154,0.35) !important; }
+        .el-button--success:active { transform: translateY(0px) scale(0.97) !important; }
+        .el-button--warning { background-color: var(--amber) !important; border-color: var(--amber) !important; border-radius: var(--radius-sm) !important; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+        .el-button--warning:hover { transform: translateY(-2px) !important; box-shadow: 0 6px 20px rgba(244,162,97,0.35) !important; }
+        .el-button--warning:active { transform: translateY(0px) scale(0.97) !important; }
+        .el-button { border-radius: var(--radius-sm) !important; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+        .el-button:focus { box-shadow: 0 0 0 3px rgba(224,122,95,0.15) !important; }
         .el-input__inner:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(224,122,95,0.12) !important; }
         .el-input__prefix { color: var(--text-muted); }
         .el-tabs__item.is-active { color: var(--primary) !important; font-weight: 700; }
@@ -88,7 +120,7 @@
         }
         .page-content {
             position: relative; z-index: 1;
-            max-width: 1100px; margin: 0 auto;
+            max-width: 1600px; margin: 0 auto;
             padding: 0 24px 48px;
         }
 
@@ -145,6 +177,7 @@
             margin: 28px 0 24px;
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 60%, #b85a45 100%);
             border-radius: var(--radius);
+            border-top: 4px solid var(--amber);
             padding: 36px 40px;
             color: white;
             position: relative; overflow: hidden;
@@ -182,17 +215,26 @@
 
         /* ========== 侧边卡片 ========== */
         .side-card {
-            background: white;
+            background: var(--card-side-bg);
             border-radius: var(--radius);
-            box-shadow: var(--card-shadow);
+            box-shadow: var(--card-side-shadow);
+            border: 1.5px solid var(--card-side-border);
             overflow: hidden;
             animation: fadeSlideUp 0.5s ease 0.1s both;
+            position: relative;
+        }
+        /* 顶部三色彩条 — 像图钉书签一样鲜明 */
+        .side-card::before {
+            content: '';
+            display: block;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--sage) 50%, var(--lavender) 100%);
         }
         .side-card-header {
-            padding: 28px 24px 20px;
+            padding: 24px 24px 18px;
             text-align: center;
-            background: linear-gradient(180deg, var(--warm-cream) 0%, white 100%);
-            border-bottom: 1px solid var(--warm-gray);
+            background: rgba(129, 178, 154, 0.12);
+            border-bottom: 1.5px solid var(--card-side-border);
         }
         .profile-avatar {
             width: 88px; height: 88px; border-radius: 50%;
@@ -228,14 +270,21 @@
         .side-card-body { padding: 16px 24px 24px; }
         .profile-menu-item {
             display: flex; align-items: center; gap: 12px;
-            padding: 12px 14px; border-radius: var(--radius-sm);
+            padding: 11px 14px; border-radius: var(--radius-sm);
             cursor: pointer; transition: var(--transition);
             color: var(--text-dark); font-size: 14px; font-weight: 600;
-            border-bottom: 1px solid var(--warm-gray);
+            border: 1.5px solid rgba(129, 178, 154, 0.2);
+            background: rgba(255,255,255,0.5);
+            margin-bottom: 6px;
         }
-        .profile-menu-item:last-child { border-bottom: none; }
-        .profile-menu-item:hover { background: var(--warm-cream); }
-        .profile-menu-item.active { background: var(--primary-bg); color: var(--primary); }
+        .profile-menu-item:last-child { border-bottom: 1.5px solid rgba(129, 178, 154, 0.2); margin-bottom: 0; }
+        .profile-menu-item:hover { background: rgba(129, 178, 154, 0.12); border-color: rgba(129, 178, 154, 0.4); }
+        .profile-menu-item.active { background: linear-gradient(135deg, rgba(129, 178, 154, 0.2) 0%, rgba(129, 178, 154, 0.1) 100%); border-color: var(--sage); color: var(--sage); font-weight: 800; box-shadow: 0 0 0 1px var(--sage), 0 2px 8px rgba(129, 178, 154, 0.2); }
+        .profile-menu-item.active::before {
+            content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+            width: 4px; height: 60%; background: var(--sage); border-radius: 0 4px 4px 0;
+        }
+        .profile-menu-item.active { position: relative; }
         .profile-menu-icon { font-size: 18px; width: 20px; text-align: center; }
         .profile-menu-arrow { margin-left: auto; color: var(--text-muted); font-size: 12px; }
 
@@ -244,8 +293,9 @@
             display: flex; flex-direction: column; gap: 20px;
         }
         .section-card {
-            background: white; border-radius: var(--radius);
-            box-shadow: var(--card-shadow);
+            background: var(--card-section-bg); border-radius: var(--radius);
+            box-shadow: var(--card-section-shadow);
+            border: 1.5px solid var(--card-section-border);
             overflow: hidden;
             animation: fadeSlideUp 0.5s ease both;
         }
@@ -254,7 +304,7 @@
         .section-card:nth-child(3) { animation-delay: 0.35s; }
         .section-header {
             padding: 20px 24px 16px;
-            border-bottom: 1px solid var(--warm-gray);
+            border-bottom: 2px solid var(--warm-gray2);
             display: flex; align-items: center; justify-content: space-between;
         }
         .section-title {
@@ -269,13 +319,14 @@
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
         }
         .info-item {
-            padding: 14px 16px; background: var(--warm-cream);
+            padding: 14px 16px; background: var(--card-info-bg);
             border-radius: var(--radius-sm);
+            border: 1.5px solid var(--card-info-border);
             transition: var(--transition);
         }
-        .info-item:hover { background: var(--warm-gray); }
-        .info-label { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; }
-        .info-value { font-size: 14px; color: var(--text-dark); font-weight: 600; }
+        .info-item:hover { background: var(--warm-gray); border-color: rgba(224, 122, 95, 0.35); }
+        .info-label { font-size: 12px; color: var(--text-muted); margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; }
+        .info-value { font-size: 14px; color: var(--text-dark); font-weight: 700; line-height: 1.4; }
 
         /* ========== 申请状态标签 ========== */
         .status-tag {
@@ -321,7 +372,7 @@
         .empty-state {
             text-align: center; padding: 40px 20px;
         }
-        .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.4; }
+        .empty-icon { font-size: 52px; margin-bottom: 12px; animation: gentleBounce 2.5s ease-in-out infinite; display: block; }
         .empty-text { font-size: 14px; color: var(--text-muted); }
 
         /* ========== 统计数字 ========== */
@@ -330,43 +381,69 @@
         }
         .stat-box {
             flex: 1; min-width: 100px; text-align: center;
-            padding: 16px 12px; background: var(--warm-cream);
+            padding: 16px 12px; background: var(--card-stat-bg);
             border-radius: var(--radius-sm);
+            border: 1.5px solid var(--card-stat-border);
         }
         .stat-num { font-size: 24px; font-weight: 800; color: var(--primary); line-height: 1; }
         .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 600; }
 
         /* ========== 加载动画 ========== */
         .skeleton-block {
-            background: linear-gradient(90deg, var(--warm-gray) 25%, var(--warm-cream) 50%, var(--warm-gray) 75%);
-            background-size: 200% 100%;
-            animation: shimmerBg 1.5s infinite;
+            background: linear-gradient(90deg,
+                rgba(224,122,95,0.08) 0%,
+                rgba(129,178,154,0.1) 33%,
+                rgba(244,162,97,0.08) 66%,
+                rgba(224,122,95,0.08) 100%);
+            background-size: 300% 100%;
+            animation: warmShimmer 2s ease infinite;
             border-radius: var(--radius-sm);
         }
-        @keyframes shimmerBg {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
+        @keyframes warmShimmer {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+        @keyframes gentleBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
         }
 
-        /* ========== 移动端 ========== */
-        @media (max-width: 768px) {
+        /* ========== P2-2 移动端 ========== */
+        @media (max-width: 900px) {
             .content-grid { grid-template-columns: 1fr; }
             .side-card { order: -1; }
             .info-grid { grid-template-columns: 1fr; }
             .welcome-banner { padding: 24px 20px; }
             .welcome-title { font-size: 22px; }
             .nav-brand-text { display: none; }
+            .hero-banner { padding: 20px 24px; }
+        }
+        @media (max-width: 600px) {
+            .page-content { padding: 12px 12px 32px; }
+            .welcome-banner { padding: 16px; }
+            .welcome-title { font-size: 20px; }
+            .welcome-subtitle { font-size: 13px; }
+            .quick-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .quick-card { padding: 14px 12px; }
+            .quick-icon { width: 40px; height: 40px; font-size: 20px; border-radius: 10px; }
+            .quick-label { font-size: 13px; }
+            /* 触摸友好 */
+            .el-button, button { min-height: 36px; padding: 8px 14px; }
+        }
+        @media (max-width: 375px) {
+            .welcome-title { font-size: 18px; }
+            .quick-grid { grid-template-columns: 1fr; }
         }
 
         /* ========== 快速入口卡片网格 ========== */
         .quick-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 14px;
         }
         .quick-card {
-            background: white;
-            border: 1.5px solid var(--warm-gray);
+            background: var(--card-quick-bg);
+            border: 1.5px solid var(--card-quick-border);
             border-radius: var(--radius);
             padding: 20px 16px;
             cursor: pointer;
@@ -377,10 +454,12 @@
         }
         .quick-card::before {
             content: '';
+            display: block;
             position: absolute;
             top: 0; left: 0; right: 0;
-            height: 3px;
-            background: var(--primary);
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--amber));
+            border-radius: var(--radius) var(--radius) 0 0;
             transform: scaleX(0);
             transition: transform 0.3s ease;
             transform-origin: left;
@@ -447,11 +526,17 @@
             display: flex; align-items: center; justify-content: center;
             font-size: 16px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            animation: badgeGlow 2s ease-in-out infinite;
+        }
+        @keyframes badgeGlow {
+            0%, 100% { box-shadow: 0 2px 8px rgba(224,122,95,0.2); }
+            50% { box-shadow: 0 2px 12px rgba(224,122,95,0.4); }
         }
         .growth-level-info { flex: 1; }
         .growth-level-title {
             display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
         }
+        .growth-level-icon { font-size: 20px; }
         .growth-level-name {
             font-size: 20px; font-weight: 800; color: var(--text-dark);
         }
@@ -510,9 +595,13 @@
             background: white; border-radius: 14px; padding: 16px;
             box-shadow: 0 2px 12px rgba(0,0,0,0.05);
             position: relative; transition: var(--transition);
+            overflow: hidden;
+        }
+        .level-rule-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
         }
         .level-rule-card:hover { transform: translateY(-2px); box-shadow: var(--card-shadow-hover); }
-        .level-rule-badge { font-size: 28px; margin-bottom: 6px; }
+        .level-rule-badge { font-size: 32px; margin-bottom: 6px; }
         .level-rule-name { font-size: 15px; font-weight: 800; color: var(--text-dark); margin-bottom: 4px; }
         .level-rule-range { font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
         .level-rule-desc { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
@@ -527,9 +616,9 @@
         }
         .point-history-item:last-child { border-bottom: none; }
         .ph-icon {
-            width: 36px; height: 36px; border-radius: 50%;
+            width: 40px; height: 40px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 16px; flex-shrink: 0;
+            font-size: 18px; flex-shrink: 0;
         }
         .ph-info { flex: 1; }
         .ph-desc { font-size: 13px; font-weight: 600; color: var(--text-dark); margin-bottom: 2px; }
@@ -539,16 +628,20 @@
 
         .rank-item {
             display: flex; align-items: center; gap: 12px;
-            padding: 12px 14px; border-radius: 12px;
+            padding: 14px 16px; border-radius: 14px;
             margin-bottom: 8px;
-            background: white; border: 1px solid var(--warm-gray);
+            background: white; border: 1.5px solid var(--warm-gray);
             transition: var(--transition);
         }
-        .rank-item:hover { border-color: var(--primary-light); box-shadow: var(--card-shadow); }
-        .rank-1 { background: linear-gradient(135deg, #fffef5, #fffbe6); border-color: #f0c060; }
+        .rank-item:hover { border-color: var(--primary-light); box-shadow: var(--card-shadow); transform: translateX(3px); }
+        .rank-1 { background: linear-gradient(135deg, #fffef5, #fffbe6); border-color: #f0c060; animation: rank1Glow 3s ease-in-out infinite; }
+        @keyframes rank1Glow {
+            0%, 100% { box-shadow: 0 0 0 rgba(240,192,96,0); }
+            50% { box-shadow: 0 4px 16px rgba(240,192,96,0.25); }
+        }
         .rank-2 { background: linear-gradient(135deg, #f8f8f8, #f0f0f0); border-color: #c0c0c0; }
         .rank-3 { background: linear-gradient(135deg, #fff8f5, #fff0e8); border-color: #d4a070; }
-        .rank-medal { font-size: 22px; width: 32px; text-align: center; flex-shrink: 0; }
+        .rank-medal { font-size: 26px; width: 36px; text-align: center; flex-shrink: 0; }
         .rank-level-badge {
             padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: 700;
             flex-shrink: 0;
@@ -557,9 +650,10 @@
         .rank-user-name { font-size: 13px; font-weight: 700; color: var(--text-dark); margin-bottom: 2px; }
         .rank-user-detail { font-size: 11px; color: var(--text-muted); }
         .rank-points {
-            font-size: 18px; font-weight: 800; color: var(--amber);
+            font-size: 20px; font-weight: 800; color: var(--amber);
             display: flex; align-items: baseline; gap: 2px;
         }
+        .rank-points::before { content: '⭐ '; font-size: 12px; }
 
         @media (max-width: 768px) {
             .growth-stats-row { grid-template-columns: repeat(2, 1fr); }
@@ -567,6 +661,144 @@
             .growth-level-header { flex-wrap: wrap; }
             .growth-sign-btn-wrap { width: 100%; }
             .growth-sign-btn-wrap .el-button { width: 100%; }
+        }
+
+        .el-pagination .btn-prev,
+        .el-pagination .btn-next {
+            font-family: "Segoe UI", sans-serif !important;
+        }
+        .el-pagination .btn-prev .el-icon,
+        .el-pagination .btn-next .el-icon {
+            display: none !important;
+        }
+        .el-pagination .btn-prev::after {
+            content: "‹" !important;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            font-family: "Segoe UI", sans-serif !important;
+            display: inline-block;
+            line-height: 1;
+        }
+        .el-pagination .btn-next::after {
+            content: "›" !important;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+            font-family: "Segoe UI", sans-serif !important;
+            display: inline-block;
+            line-height: 1;
+        }
+        /* ===== 我的收藏 ===== */
+        .favorite-pet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 12px;
+        }
+        .favorite-pet-card {
+            background: var(--warm-white);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+        .favorite-pet-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--card-shadow-hover);
+        }
+        .favorite-pet-img-wrap {
+            position: relative;
+            height: 140px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .favorite-pet-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+        .favorite-pet-card:hover .favorite-pet-img {
+            transform: scale(1.05);
+        }
+        .favorite-pet-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(61, 64, 91, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .favorite-pet-img-wrap:hover .favorite-pet-overlay {
+            opacity: 1;
+        }
+        .favorite-pet-overlay span {
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            background: rgba(224, 122, 95, 0.9);
+            padding: 6px 16px;
+            border-radius: 20px;
+        }
+        .favorite-pet-status {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .favorite-pet-status.status-available {
+            background: var(--sage);
+            color: white;
+        }
+        .favorite-pet-status.status-adopted {
+            background: var(--text-muted);
+            color: white;
+        }
+        .favorite-pet-info {
+            padding: 12px;
+        }
+        .favorite-pet-name {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+        }
+        .favorite-pet-breed {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        .favorite-pet-actions {
+            display: flex;
+            gap: 6px;
+        }
+        .favorite-pet-actions .el-button {
+            flex: 1;
+            font-size: 12px;
+            padding: 4px 8px;
+        }
+        .favorites-count {
+            margin-left: auto;
+        }
+        .skeleton-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 12px;
+        }
+        @media (max-width: 600px) {
+            .favorite-pet-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .skeleton-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
@@ -587,7 +819,7 @@
         </a>
         <div class="nav-links">
             <a href="pet-list.html" class="nav-link" :class="{active: currentTab === 'overview'}">首页</a>
-            <a href="profile.html" class="nav-link active">个人中心</a>
+            <a href="profile.html" class="nav-link active">👤 个人中心</a>
             <a v-if="role === 'admin'" href="user-management.html" class="nav-link">用户管理</a>
             <a v-if="role === 'admin' || role === 'institution_admin'" href="adoption-list.html" class="nav-link">领养审核</a>
             <a v-if="role === 'volunteer'" href="volunteer-task.html" class="nav-link">任务中心</a>
@@ -636,14 +868,35 @@
                     </div>
                 </div>
                 <div class="side-card-body">
-                    <div class="profile-menu-item" :class="{active: currentTab === 'overview'}" @click="currentTab = 'overview'">
-                        <span class="profile-menu-icon">👤</span>
-                        <span>基本信息</span>
-                        <span class="profile-menu-arrow">›</span>
-                    </div>
+                    <!-- 管理员/机构管理员侧边栏 -->
+                    <template v-if="role === 'admin' || role === 'institution_admin'">
+                        <div class="profile-menu-item" :class="{active: currentTab === 'overview'}" @click="currentTab = 'overview'">
+                            <span class="profile-menu-icon">📌</span>
+                            <span>系统公告</span>
+                            <span class="profile-menu-arrow">›</span>
+                        </div>
+                        <div class="profile-menu-item" :class="{active: currentTab === 'profile'}" @click="currentTab = 'profile'">
+                            <span class="profile-menu-icon">👤</span>
+                            <span>个人信息</span>
+                            <span class="profile-menu-arrow">›</span>
+                        </div>
+                    </template>
+                    <!-- 普通用户侧边栏 -->
+                    <template v-else>
+                        <div class="profile-menu-item" :class="{active: currentTab === 'overview'}" @click="currentTab = 'overview'">
+                            <span class="profile-menu-icon">👤</span>
+                            <span>基本信息</span>
+                            <span class="profile-menu-arrow">›</span>
+                        </div>
+                    </template>
                     <div class="profile-menu-item" :class="{active: currentTab === 'security'}" @click="currentTab = 'security'">
                         <span class="profile-menu-icon">🔒</span>
                         <span>修改密码</span>
+                        <span class="profile-menu-arrow">›</span>
+                    </div>
+                    <div v-if="role" class="profile-menu-item" :class="{active: currentTab === 'favorites'}" @click="currentTab = 'favorites'; loadMyFavorites()">
+                        <span class="profile-menu-icon">❤️</span>
+                        <span>我的收藏</span>
                         <span class="profile-menu-arrow">›</span>
                     </div>
                     <div v-if="role === 'adopter'" class="profile-menu-item" :class="{active: currentTab === 'applications'}" @click="currentTab = 'applications'; loadMyApplications()">
@@ -681,12 +934,142 @@
 
             <!-- ===== 右侧：主内容 ===== -->
             <div class="main-content">
-                <!-- 基本信息 -->
+                <!-- 基本信息 / 系统公告（管理员显示系统公告，普通用户显示个人信息） -->
                 <div class="section-card" v-show="currentTab === 'overview'">
+                    <!-- 管理员视角：系统公告 -->
+                    <template v-if="role === 'admin' || role === 'institution_admin'">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <span class="section-icon">📌</span>
+                                系统公告
+                            </div>
+                        </div>
+                        <div class="section-body">
+                            <div class="info-grid" style="grid-template-columns:1fr;">
+                                <div class="info-item" style="border-left:3px solid var(--primary);">
+                                    <div class="info-label">欢迎回来，{{ user.name || '管理员' }}！</div>
+                                    <div class="info-value" style="font-size:15px;line-height:1.8;color:var(--text-dark);">
+                                        您当前以 <strong>{{ roleName }}</strong> 身份登录系统。<br>
+                                        您拥有系统全部管理权限，可以管理用户、审核领养申请、管理志愿者任务、查看数据统计等。<br>
+                                        如需查看个人资料，请通过左侧菜单切换至「个人信息」标签。
+                                    </div>
+                                </div>
+                                <div class="info-item" style="border-left:3px solid var(--sage);">
+                                    <div class="info-label">快捷操作</div>
+                                    <div class="info-value" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+                                        <a href="user-management.html" class="el-button el-button--small el-button--primary" style="border-radius:var(--radius-sm);text-decoration:none;">👥 用户管理</a>
+                                        <a href="adoption-list.html" class="el-button el-button--small el-button--warning" style="border-radius:var(--radius-sm);text-decoration:none;">📋 领养审核</a>
+                                        <a href="volunteer-task.html" class="el-button el-button--small el-button--success" style="border-radius:var(--radius-sm);text-decoration:none;">🤝 任务管理</a>
+                                        <a href="stats.html" class="el-button el-button--small" style="border-radius:var(--radius-sm);text-decoration:none;">📊 数据统计</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                    <!-- 普通用户视角：个人信息 -->
+                    <template v-else>
+                        <div class="section-header">
+                            <div class="section-title">
+                                <span class="section-icon">👤</span>
+                                个人资料
+                            </div>
+                            <el-button v-if="!isEditing" size="small" type="primary" @click="startEdit">编辑资料</el-button>
+                            <div v-else>
+                                <el-button size="small" @click="cancelEdit">取消</el-button>
+                                <el-button size="small" type="primary" :loading="saveLoading" @click="saveProfile">保存</el-button>
+                            </div>
+                        </div>
+                        <div class="section-body">
+                            <div v-if="isEditing">
+                                <el-form :model="editForm" label-width="90px" style="max-width:540px">
+                                    <el-form-item label="姓名">
+                                        <el-input v-model="editForm.name" placeholder="请输入姓名"></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="性别">
+                                        <el-radio-group v-model="editForm.gender">
+                                            <el-radio :label="1">男</el-radio>
+                                            <el-radio :label="2">女</el-radio>
+                                            <el-radio :label="0">未知</el-radio>
+                                        </el-radio-group>
+                                    </el-form-item>
+                                    <el-form-item label="年龄">
+                                        <el-input-number v-model="editForm.age" :min="0" :max="120" placeholder="年龄（岁）" style="width:100%"></el-input-number>
+                                    </el-form-item>
+                                    <el-form-item label="生日">
+                                        <el-date-picker v-model="editForm.birthday" type="date" placeholder="选择出生日期"
+                                            value-format="yyyy-MM-dd" style="width:100%"></el-date-picker>
+                                    </el-form-item>
+                                    <el-form-item label="手机号" label-width="90px">
+                                        <el-input :value="user.phone" disabled placeholder="手机号不可修改"></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="邮箱">
+                                        <el-input v-model="editForm.email" placeholder="请输入邮箱"></el-input>
+                                    </el-form-item>
+                                    <el-form-item label="地址">
+                                        <el-input v-model="editForm.address" placeholder="请输入地址"></el-input>
+                                    </el-form-item>
+                                </el-form>
+                            </div>
+                            <div v-else>
+                                <div class="info-grid" style="grid-template-columns:repeat(3,1fr);">
+                                    <div class="info-item">
+                                        <div class="info-label">姓名</div>
+                                        <div class="info-value">{{ user.name || '未设置' }}</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">性别</div>
+                                        <div class="info-value">{{ genderText(user.gender) }}</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">年龄</div>
+                                        <div class="info-value">{{ user.age ? user.age + '岁' : '未设置' }}</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">生日</div>
+                                        <div class="info-value">{{ user.birthday || '未设置' }}</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">手机号</div>
+                                        <div class="info-value">{{ user.phone || '未设置' }}</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">邮箱</div>
+                                        <div class="info-value">{{ user.email || '未设置' }}</div>
+                                    </div>
+                                    <div class="info-item" style="grid-column:1/-1">
+                                        <div class="info-label">地址</div>
+                                        <div class="info-value">{{ user.address || '未设置' }}</div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">账户角色</div>
+                                        <div class="info-value">
+                                            <span class="profile-role-tag" :class="'role-tag-' + role" style="font-size:11px">{{ roleName }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">账户状态</div>
+                                        <div class="info-value">
+                                            <el-tag :type="user.status === 1 ? 'success' : 'danger'" size="small">
+                                                {{ user.status === 1 ? '正常' : '已禁用' }}
+                                            </el-tag>
+                                        </div>
+                                    </div>
+                                    <div class="info-item">
+                                        <div class="info-label">注册时间</div>
+                                        <div class="info-value">{{ formatTime(user.createdTime) }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- 管理员：个人信息（通过侧边栏"个人信息"切换） -->
+                <div class="section-card" v-show="currentTab === 'profile' && (role === 'admin' || role === 'institution_admin')">
                     <div class="section-header">
                         <div class="section-title">
                             <span class="section-icon">👤</span>
-                            基本信息
+                            个人信息
                         </div>
                         <el-button v-if="!isEditing" size="small" type="primary" @click="startEdit">编辑资料</el-button>
                         <div v-else>
@@ -806,14 +1189,14 @@
                     <div class="section-header">
                         <div class="section-title">
                             <span class="section-icon">📋</span>
-                            我的领养申请
+                            📋我的申请
                         </div>
                         <el-tag type="info">{{ applications.length }} 条申请</el-tag>
                     </div>
                     <div class="section-body">
                         <div v-if="loadingApplications" v-loading="true"></div>
                         <div v-else-if="applications.length === 0" class="empty-state">
-                            <div class="empty-icon">📋</div>
+                            <div class="empty-icon">🏠</div>
                             <div class="empty-text">暂无领养申请，快去领养一只可爱的宠物吧！</div>
                             <el-button type="primary" size="small" style="margin-top:12px" @click="goPetList">浏览宠物</el-button>
                         </div>
@@ -838,7 +1221,7 @@
                     <div class="section-header">
                         <div class="section-title">
                             <span class="section-icon">🤝</span>
-                            我的志愿服务
+                            🤝志愿服务
                         </div>
                         <el-button type="text" @click="goTaskCenter">前往任务中心 ›</el-button>
                     </div>
@@ -894,8 +1277,8 @@
                 <div class="section-card" v-show="currentTab === 'growth' && role === 'volunteer'">
                     <div class="section-header">
                         <div class="section-title">
-                            <span class="section-icon">🏆</span>
-                            成长中心
+                            <span class="section-icon">⭐</span>
+                            ⭐成长中心
                         </div>
                     </div>
                     <div class="section-body">
@@ -908,6 +1291,7 @@
                                 </div>
                                 <div class="growth-level-info">
                                     <div class="growth-level-title">
+                                        <span class="growth-level-icon">{{ growthProfile.currentLevelInfo ? growthProfile.currentLevelInfo.badge : '🌱' }}</span>
                                         <span class="growth-level-name">{{ growthProfile.currentLevelInfo ? growthProfile.currentLevelInfo.levelName : '新手上路' }}</span>
                                         <span class="growth-level-num">Lv.{{ growthProfile.currentLevelInfo ? growthProfile.currentLevelInfo.level : 1 }}</span>
                                     </div>
@@ -917,7 +1301,7 @@
                                         <span class="growth-points-unit">分</span>
                                     </div>
                                     <div class="growth-available-row">
-                                        <span style="color:var(--text-muted);font-size:12px">可用积分：</span>
+                                        <span style="color:var(--text-muted);font-size:12px">💰可用积分：</span>
                                         <span style="color:var(--amber);font-weight:800;font-size:14px">{{ growthProfile.profile ? growthProfile.profile.availablePoints : 0 }}</span>
                                     </div>
                                 </div>
@@ -964,11 +1348,11 @@
                                 </div>
                                 <div class="growth-stat-item">
                                     <div class="growth-stat-num" style="color:var(--amber)">{{ growthProfile.profile ? growthProfile.profile.continuousSignDays : 0 }}</div>
-                                    <div class="growth-stat-label">连续签到</div>
+                                    <div class="growth-stat-label">📅连续签到</div>
                                 </div>
                                 <div class="growth-stat-item">
                                     <div class="growth-stat-num" style="color:var(--text-dark)">{{ growthProfile.profile ? growthProfile.profile.title || '-' : '-' }}</div>
-                                    <div class="growth-stat-label">专属称号</div>
+                                    <div class="growth-stat-label">🏅专属称号</div>
                                 </div>
                             </div>
                         </div>
@@ -981,7 +1365,7 @@
 
                         <!-- 成长中心子标签页 -->
                         <el-tabs v-if="growthProfile" style="margin-top:20px" v-model="growthTab">
-                            <el-tab-pane label="等级规则" name="levels">
+                            <el-tab-pane label="💰积分规则" name="levels">
                                 <div class="level-rules-grid">
                                     <div v-for="rule in levelRules" :key="rule.level"
                                          class="level-rule-card"
@@ -994,10 +1378,10 @@
                                     </div>
                                 </div>
                             </el-tab-pane>
-                            <el-tab-pane label="积分历史" name="history">
+                            <el-tab-pane label="💰积分历史" name="history">
                                 <div v-if="loadingHistory" v-loading="true" style="min-height:120px"></div>
                                 <div v-else-if="pointHistory.length === 0" class="empty-state" style="padding:30px">
-                                    <div class="empty-icon">📜</div>
+                                    <div class="empty-icon">🌟</div>
                                     <div class="empty-text">暂无积分记录，开始做任务赚积分吧！</div>
                                 </div>
                                 <div v-else>
@@ -1026,7 +1410,7 @@
                                     </el-pagination>
                                 </div>
                             </el-tab-pane>
-                            <el-tab-pane label="排行榜" name="rank">
+                            <el-tab-pane label="🏅排行榜" name="rank">
                                 <div v-if="loadingLeaderboard" v-loading="true" style="min-height:120px"></div>
                                 <div v-else-if="leaderboard.length === 0" class="empty-state" style="padding:30px">
                                     <div class="empty-icon">🏅</div>
@@ -1144,13 +1528,6 @@
                                 <div class="quick-card-title">救助站推荐</div>
                                 <div class="quick-card-desc">智能匹配救助机构</div>
                             </div>
-                            <div v-if="role === 'admin'" class="quick-card" @click="goPage('pet-list.html?tab=category')">
-                                <div class="quick-card-icon" style="background:linear-gradient(135deg,#fce4ec,#f8bbd0)">
-                                    <span style="font-size:28px">🏷️</span>
-                                </div>
-                                <div class="quick-card-title">宠物分类</div>
-                                <div class="quick-card-desc">管理宠物分类体系</div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -1160,7 +1537,7 @@
                     <div class="section-header">
                         <div class="section-title">
                             <span class="section-icon">🏥</span>
-                            健康档案管理
+                            🏥健康档案管理
                         </div>
                         <el-button size="small" type="primary" @click="goPage('health-record.html')">前往健康档案</el-button>
                     </div>
@@ -1178,6 +1555,67 @@
                                 </el-button-group>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- 我的收藏 -->
+                <div class="section-card" v-show="currentTab === 'favorites'">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <span class="section-icon">❤️</span>
+                            我的收藏
+                        </div>
+                        <div class="favorites-count" v-if="favoriteTotal > 0" style="font-size:14px;color:var(--text-muted)">
+                            共 {{ favoriteTotal }} 只收藏宠物
+                        </div>
+                    </div>
+                    <div class="section-body">
+                        <!-- 加载中 -->
+                        <div v-if="loadingFavorites" class="skeleton-grid">
+                            <div class="skeleton-block" style="height:220px;border-radius:16px"></div>
+                            <div class="skeleton-block" style="height:220px;border-radius:16px"></div>
+                            <div class="skeleton-block" style="height:220px;border-radius:16px"></div>
+                        </div>
+                        <!-- 空状态 -->
+                        <div v-else-if="favoriteList.length === 0" class="empty-state" style="padding:50px 20px">
+                            <div class="empty-icon">🐾</div>
+                            <div class="empty-text">还没有收藏任何宠物</div>
+                            <div style="color:var(--text-muted);font-size:14px;margin-top:6px">去宠物列表看看有没有心仪的毛孩子吧</div>
+                            <el-button type="primary" style="margin-top:16px" @click="goPage('pet-list.html')">浏览宠物</el-button>
+                        </div>
+                        <!-- 收藏列表 -->
+                        <div v-else class="favorite-pet-grid">
+                            <div v-for="item in favoriteList" :key="item.id" class="favorite-pet-card">
+                                <div class="favorite-pet-img-wrap" @click="goPage('pet-detail.html?id=' + item.petId)">
+                                    <img :src="item.petImageUrl || 'https://via.placeholder.com/300x200?text=No+Image'" :alt="item.petName" class="favorite-pet-img" />
+                                    <div class="favorite-pet-status" :class="'status-' + (item.petStatus === 0 ? 'available' : 'adopted')">
+                                        {{ item.petStatus === 0 ? '待领养' : '已领养' }}
+                                    </div>
+                                    <div class="favorite-pet-overlay">
+                                        <span>查看详情</span>
+                                    </div>
+                                </div>
+                                <div class="favorite-pet-info">
+                                    <div class="favorite-pet-name">{{ item.petName }}</div>
+                                    <div class="favorite-pet-breed">{{ item.petBreed || '未知品种' }}</div>
+                                    <div class="favorite-pet-actions">
+                                        <el-button size="mini" type="primary" @click="goPage('pet-detail.html?id=' + item.petId)">查看详情</el-button>
+                                        <el-button size="mini" @click="removeFavorite(item.petId)" style="color:var(--primary)">取消收藏</el-button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 分页 -->
+                        <el-pagination
+                            v-if="favoriteTotal > favoritePageSize"
+                            style="margin-top:20px;text-align:center"
+                            background
+                            @current-change="handleFavoritePage"
+                            :current-page="favoritePage"
+                            :page-size="favoritePageSize"
+                            layout="prev, pager, next"
+                            :total="favoriteTotal">
+                        </el-pagination>
                     </div>
                 </div>
             </div>
@@ -1279,6 +1717,13 @@ const app = new Vue({
             leaderboard: [],
             loadingLeaderboard: false,
 
+            // 我的收藏
+            favoriteList: [],
+            favoritePage: 1,
+            favoritePageSize: 6,
+            favoriteTotal: 0,
+            loadingFavorites: false,
+
             // 管理员统计
             adminStats: {},
             loadingAdminStats: false,
@@ -1295,11 +1740,11 @@ const app = new Vue({
             return name.substring(0, 1).toUpperCase();
         },
         roleEmoji() {
-            const map = { admin: '👑', adopter: '🏠', volunteer: '🌟', institution_admin: '🏢', hospital: '🏥' };
+            const map = { admin: '👑', adopter: '🏠', volunteer: '🌟', institution_admin: '🏢', pet_hospital: '🏥' };
             return map[this.role] || '👤';
         },
         roleIcon() {
-            const map = { admin: '👑', adopter: '🏠', volunteer: '🌟', institution_admin: '🏢', hospital: '🏥' };
+            const map = { admin: '👑', adopter: '🏠', volunteer: '🌟', institution_admin: '🏢', pet_hospital: '🏥' };
             return map[this.role] || '👤';
         },
         roleName() {
@@ -1385,6 +1830,11 @@ const app = new Vue({
             try {
                 this.user = JSON.parse(userStr);
                 this.role = this.user.role || '';
+                // 管理员/机构管理员默认显示管理概览，其他角色默认显示个人信息
+                if (this.role === 'admin' || this.role === 'institution_admin') {
+                    this.currentTab = 'admin';
+                    this.loadAdminStats();
+                }
             } catch (e) {
                 window.location.href = 'login.html';
                 return;
@@ -1601,14 +2051,18 @@ const app = new Vue({
             if (this.loadingAdminStats) return;
             this.loadingAdminStats = true;
             try {
+                const isAdmin = this.role === 'admin' || this.role === 'institution_admin';
                 const [adoptionRes, taskRes, petRes] = await Promise.allSettled([
                     axios.get('/api/adoption/stats/counts'),
-                    axios.get('/api/volunteer-task/stats'),
+                    // 管理员使用全系统统计接口，志愿者使用个人统计接口
+                    axios.get(isAdmin ? '/api/volunteer-task/system-stats' : '/api/volunteer-task/stats'),
                     axios.get('/api/pet/list', { params: { page: 1, pageSize: 1 } })
                 ]);
+                // 领养统计：兼容 Integer 和 String 两种 key
                 const adoptionCounts = adoptionRes.status === 'fulfilled' && adoptionRes.value.data.code === 200
                     ? adoptionRes.value.data.data.counts || {}
                     : {};
+                const pending0 = adoptionCounts[0] || adoptionCounts['0'] || 0;
                 const taskStatsData = taskRes.status === 'fulfilled' && taskRes.value.data.code === 200
                     ? taskRes.value.data.data.stats || {}
                     : {};
@@ -1616,8 +2070,8 @@ const app = new Vue({
                     ? petRes.value.data.data.total || 0
                     : 0;
                 this.adminStats = {
-                    pendingApplications: adoptionCounts['0'] || 0,
-                    totalAdoptions: Object.values(adoptionCounts).reduce((a, b) => a + b, 0),
+                    pendingApplications: pending0,
+                    totalAdoptions: Object.values(adoptionCounts).reduce((a, b) => a + (Number(b) || 0), 0),
                     totalTasks: taskStatsData.total || 0,
                     completedTasks: taskStatsData.completed || 0,
                     totalPets: petTotal
@@ -1652,12 +2106,71 @@ const app = new Vue({
         goTaskCenter() {
             window.location.href = 'volunteer-task.html';
         },
+        async loadMyFavorites() {
+            this.loadingFavorites = true;
+            try {
+                const res = await axios.get('/api/favorite/list', {
+                    params: { page: this.favoritePage, pageSize: this.favoritePageSize }
+                });
+                if (res.data.code === 200 || res.data.code === 0) {
+                    const data = res.data.data || {};
+                    this.favoriteList = data.favorites || [];
+                    this.favoriteTotal = data.total || 0;
+                }
+            } catch (err) {
+                console.error('Load favorites error:', err);
+                this.favoriteList = [];
+            } finally {
+                this.loadingFavorites = false;
+            }
+        },
+        async removeFavorite(petId) {
+            try {
+                const res = await axios.delete('/api/favorite/remove', { params: { petId: petId } });
+                if (res.data.code === 200) {
+                    this.$message.success('已取消收藏');
+                    this.loadMyFavorites();
+                } else {
+                    this.$message.error(res.data.message || '取消收藏失败');
+                }
+            } catch (err) {
+                this.$message.error(err.response?.data?.message || '取消收藏失败');
+            }
+        },
+        handleFavoritePage(page) {
+            this.favoritePage = page;
+            this.loadMyFavorites();
+        },
         logout() {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
+            localStorage.removeItem('refreshToken');
+            document.cookie = 'PET_JWT=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
             window.location.href = 'login.html';
         }
     }
+});
+</script>
+<script>
+// 替换分页器箭头图标（‹ ›）
+document.addEventListener('DOMContentLoaded', function() {
+    function fixPaginationIcons() {
+        document.querySelectorAll('.el-pagination .btn-prev .el-icon').forEach(function(el) {
+            el.textContent = '‹';
+            el.style.fontSize = '18px';
+            el.style.fontWeight = '700';
+            el.style.fontFamily = '"Segoe UI Symbol", "Arial Unicode MS", sans-serif';
+        });
+        document.querySelectorAll('.el-pagination .btn-next .el-icon').forEach(function(el) {
+            el.textContent = '›';
+            el.style.fontSize = '18px';
+            el.style.fontWeight = '700';
+            el.style.fontFamily = '"Segoe UI Symbol", "Arial Unicode MS", sans-serif';
+        });
+    }
+    fixPaginationIcons();
+    setTimeout(fixPaginationIcons, 500);
+    setTimeout(fixPaginationIcons, 1000);
 });
 </script>
 </body>
