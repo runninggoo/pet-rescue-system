@@ -213,7 +213,41 @@
             color: white;
         }
 
-        /* Main Content: 左图右文 */
+        /* ========== 管理下拉菜单 ========== */
+        .dropdown-wrap { position: relative; }
+        .banner-dropdown-btn {
+            color: rgba(255,255,255,0.9); font-size: 14px; padding: 8px 14px; border-radius: 6px;
+            border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.1);
+            cursor: pointer; font-family: inherit; font-weight: 600;
+            transition: var(--transition); display: flex; align-items: center; gap: 4px;
+        }
+        .banner-dropdown-btn:hover { background: rgba(255,255,255,0.25); border-color: white; }
+        .dropdown-menu {
+            position: fixed; z-index: 9999;
+            background: white; border-radius: var(--radius-sm); box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            min-width: 150px; overflow: visible; border: 1px solid var(--warm-gray);
+        }
+        .dropdown-item {
+            display: block; padding: 10px 16px; font-size: 13px; color: var(--text-dark);
+            text-decoration: none; transition: background 0.15s, color 0.15s;
+            border-bottom: 1px solid var(--warm-gray);
+        }
+        .dropdown-item:last-child { border-bottom: none; }
+        .dropdown-item:hover { background: var(--primary-bg); color: var(--primary); }
+        .banner-sep { color: rgba(255,255,255,0.4); }
+        .banner-link {
+            color: rgba(255,255,255,0.9); text-decoration: none;
+            padding: 8px 12px; border-radius: 6px; font-size: 14px;
+            background: rgba(255,255,255,0.1); transition: var(--transition);
+        }
+        .banner-link:hover { background: rgba(255,255,255,0.2); color: white; }
+        .role-badge {
+            display: inline-block; padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 700;
+            background: rgba(255,255,255,0.25); color: white; border: 1px solid rgba(255,255,255,0.4);
+        }
+        .header-nav-right {
+            display: flex; gap: 10px; align-items: center;
+        }
         .main-content {
             display: grid;
             grid-template-columns: 380px 1fr;
@@ -1134,22 +1168,32 @@
                     </button>
                     <h1 class="header-title">🐾 宠物详情</h1>
                 </div>
-                <nav class="header-nav">
-                    <a href="pet-list.html" class="nav-link">宠物列表</a>
-                    <a href="shelter-recommendation.html" class="nav-link">救助站</a>
-                    <a href="help.html" class="nav-link">帮助中心</a>
-                    <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="health-record.html" class="nav-link">健康档案</a>
-                    <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="volunteer-task.html" class="nav-link">任务管理</a>
-                    <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="adoption-list.html" class="nav-link">领养审核</a>
-                    <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="stats.html" class="nav-link">数据统计</a>
-                    <a v-if="currentRole === 'admin'" href="user-management.html" class="nav-link">用户管理</a>
-                    <a v-if="isLoggedIn" href="profile.html" class="nav-link" style="background:rgba(255,255,255,0.2);">
-                        👤 {{ currentUser.name || '用户' }}
-                        <span style="margin-left:6px;padding:1px 7px;border-radius:8px;font-size:11px;font-weight:700;background:rgba(255,255,255,0.3)">{{ getRoleName(currentRole) }}</span>
-                    </a>
-                    <a v-if="isLoggedIn" @click="logout" class="nav-link" style="cursor:pointer;">退出</a>
-                    <a v-else href="login.html" class="nav-link">登录</a>
-                </nav>
+                <div class="header-nav-right">
+                    <!-- 常驻导航 -->
+                    <a href="pet-list.html" class="banner-link">宠物列表</a>
+                    <a href="shelter-recommendation.html" class="banner-link">救助站</a>
+                    <a href="help.html" class="banner-link">帮助中心</a>
+                    <!-- 管理下拉（admin/institution_admin/volunteer 可见） -->
+                    <div class="dropdown-wrap" v-if="currentRole === 'admin' || currentRole === 'institution_admin' || currentRole === 'volunteer'">
+                        <button class="banner-dropdown-btn" @click="toggleAdminMenu">
+                            管理 <span style="font-size:10px;">▼</span>
+                        </button>
+                        <div class="dropdown-menu" v-if="showAdminMenu" @click.stop>
+                            <a v-if="currentRole === 'admin'" href="user-management.html" class="dropdown-item" @click="showAdminMenu=false">👤 用户管理</a>
+                            <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="adoption-list.html" class="dropdown-item" @click="showAdminMenu=false">📋 领养审核</a>
+                            <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="stats.html" class="dropdown-item" @click="showAdminMenu=false">📊 数据统计</a>
+                            <a v-if="currentRole === 'admin' || currentRole === 'institution_admin'" href="health-record.html" class="dropdown-item" @click="showAdminMenu=false">💊 健康档案</a>
+                            <a v-if="currentRole === 'admin' || currentRole === 'institution_admin' || currentRole === 'volunteer'" href="volunteer-task.html" class="dropdown-item" @click="showAdminMenu=false">🤝 任务管理</a>
+                        </div>
+                    </div>
+                    <span class="banner-sep">|</span>
+                    <!-- 用户信息 -->
+                    <span v-if="isLoggedIn" class="role-badge">
+                        {{ currentUser.name || '用户' }} · {{ getRoleName(currentRole) }}
+                    </span>
+                    <a v-if="isLoggedIn" @click="logout" class="banner-link" style="cursor:pointer;">退出</a>
+                    <a v-else href="login.html" class="banner-link">登录</a>
+                </div>
             </header>
 
             <!-- Main Content: 左图右文 -->
@@ -1495,6 +1539,7 @@
                     currentRole: '',
                     currentUser: {},
                     isFavorited: false,
+                    showAdminMenu: false,
                     adoptionDialogVisible: false,
                     submitting: false,
                     showSuccess: false,
@@ -1516,11 +1561,14 @@
                 if (this.petId) {
                     this.loadPetDetail();
                 } else {
-                    // 没有 petId 时也隐藏加载状态，显示空提示
                     this.loading = false;
                     this.error = true;
                     this.errorMessage = '未提供宠物ID，请从宠物列表进入详情页';
                 }
+                document.addEventListener('click', () => { this.showAdminMenu = false; });
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') this.adoptionDialogVisible = false;
+                });
             },
             methods: {
                 initAxios() {
@@ -1839,13 +1887,17 @@
                     const map = { admin: '管理员', adopter: '领养人', volunteer: '志愿者', institution_admin: '机构管理员', hospital: '宠物医院' };
                     return map[role] || role || '用户';
                 },
-            logout() {
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                localStorage.removeItem('refreshToken');
-                document.cookie = 'PET_JWT=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
-                window.location.href = 'login.html';
-            }
+                toggleAdminMenu(e) {
+                    e.stopPropagation();
+                    this.showAdminMenu = !this.showAdminMenu;
+                },
+                logout() {
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('user');
+                    localStorage.removeItem('refreshToken');
+                    document.cookie = 'PET_JWT=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+                    window.location.href = 'login.html';
+                }
             }
         });
 </script>

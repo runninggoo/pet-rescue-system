@@ -31,43 +31,34 @@ public class PetFavoriteServiceImpl extends ServiceImpl<PetFavoriteMapper, PetFa
 
     @Override
     public boolean addFavorite(Long userId, Long petId) {
-        // 检查是否已收藏
-        if (isFavorited(userId, petId)) {
-            return false;
-        }
         // 检查宠物是否存在
         Pet pet = petMapper.selectById(petId);
         if (pet == null) {
             throw new RuntimeException("宠物不存在");
         }
-        PetFavorite favorite = new PetFavorite();
-        favorite.setUserId(userId);
-        favorite.setPetId(petId);
-        favorite.setDeleted(0);
-        return petFavoriteMapper.insert(favorite) > 0;
+        // 使用 INSERT ... ON DUPLICATE KEY UPDATE，数据库层自动处理重复键冲突
+        int rows = petFavoriteMapper.insertOrReactivate(userId, petId);
+        return rows > 0;
     }
 
     @Override
     public boolean removeFavorite(Long userId, Long petId) {
+        // 用 MP 的 deleteById 做逻辑删除（配合 @TableLogic）
         LambdaQueryWrapper<PetFavorite> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(PetFavorite::getUserId, userId)
-               .eq(PetFavorite::getPetId, petId)
-               .eq(PetFavorite::getDeleted, 0);
+               .eq(PetFavorite::getPetId, petId);
         PetFavorite favorite = petFavoriteMapper.selectOne(wrapper);
         if (favorite == null) {
             return false;
         }
-        // 逻辑删除
-        favorite.setDeleted(1);
-        return petFavoriteMapper.updateById(favorite) > 0;
+        return petFavoriteMapper.deleteById(favorite.getId()) > 0;
     }
 
     @Override
     public boolean isFavorited(Long userId, Long petId) {
         LambdaQueryWrapper<PetFavorite> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(PetFavorite::getUserId, userId)
-               .eq(PetFavorite::getPetId, petId)
-               .eq(PetFavorite::getDeleted, 0);
+               .eq(PetFavorite::getPetId, petId);
         return petFavoriteMapper.selectCount(wrapper) > 0;
     }
 

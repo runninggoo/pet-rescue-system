@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.pet.rescue.mapper.PetFavoriteMapper">
+
+    <!--
+        插入或重新激活收藏记录。
+        使用 MySQL ON DUPLICATE KEY UPDATE 处理唯一键冲突：
+        - 如果 (user_id, pet_id) 唯一键不存在 → INSERT
+        - 如果已存在（无论 deleted=0 还是 deleted=1）→ UPDATE deleted=0, created_at=NOW()
+        这样无论记录是否已存在，都能保证添加收藏成功。
+    -->
+    <insert id="insertOrReactivate">
+        INSERT INTO pet_favorite (user_id, pet_id, deleted, created_at)
+        VALUES (#{userId}, #{petId}, 0, NOW())
+        ON DUPLICATE KEY UPDATE deleted = 0, created_at = NOW()
+    </insert>
+
+</mapper>

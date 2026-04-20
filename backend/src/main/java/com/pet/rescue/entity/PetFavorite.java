@@ -47,6 +47,7 @@ public class PetFavorite {
      * 逻辑删除标志：0-未删除，1-已删除
      */
     @TableField("deleted")
+    @com.baomidou.mybatisplus.annotation.TableLogic
     private Integer deleted;
 
     // ===== 以下为非数据库字段，通过 enrichWithDetails 填充 =====

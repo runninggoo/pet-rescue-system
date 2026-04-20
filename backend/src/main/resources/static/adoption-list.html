@@ -821,68 +821,108 @@
             </div>
         </div>
 
-        <!-- 申请列表（待审核视图：分组显示） -->
-        <template v-if="currentStatus === 0 && currentRole !== 'adopter' && applications.length > 0 && getPendingGroups() && getPendingGroups().length > 0">
-            <div
-                v-for="(group, gIdx) in getPendingGroups()"
-                :key="'group-' + group.petId"
-                style="margin-bottom: 20px;">
-                <!-- 分组头 -->
-                <div class="compare-group-header" :style="'animation-delay:' + (gIdx * 0.08) + 's'">
-                    <div class="compare-group-pet">
-                        <div class="compare-group-thumb">
-                            <img v-if="group.petImage" :src="group.petImage" :alt="group.petName" @error="e => e.target.style.display='none'">
-                            <span v-else style="font-size:24px;">🐾</span>
+        <!-- 待审核申请：列表 + 多申请人分组提示 -->
+        <template v-if="currentStatus === 0 && currentRole !== 'adopter' && applications.length > 0">
+            <!-- 全部待审核申请（标准列表视图） -->
+            <div class="app-list">
+                <div
+                    v-for="(app, index) in applications"
+                    :key="app.id"
+                    class="app-card"
+                    :data-status="app.status"
+                    :style="'animation-delay:' + (index * 0.05) + 's'"
+                    @click.stop="openDetail(app)">
+                    <div class="app-pet-image">
+                        <img v-if="app.petImage" :src="app.petImage" :alt="app.petName || '宠物'" @error="e => e.target.style.display='none'">
+                        <span v-else style="font-size:36px;">🐾</span>
+                    </div>
+                    <div class="app-content">
+                        <div class="app-header">
+                            <span class="app-pet-name">{{ app.petName || '宠物 #' + app.petId }}</span>
+                            <el-tag type="warning" size="small" style="font-weight:700;">待审核</el-tag>
+                            <span v-if="getPetApplicantCount(app.petId) > 1" style="font-size:11px;color:var(--amber);font-weight:700;margin-left:4px;">
+                                🏆 {{ getPetApplicantCount(app.petId) }}人竞争
+                            </span>
+                            <span v-if="app.urgencyLevel && app.urgencyLevel > 0" class="urgency-inline-tag">🚨 紧急</span>
                         </div>
-                        <div>
-                            <div class="compare-group-name">{{ group.petName }}</div>
-                            <div style="font-size:12px;color:var(--text-muted);font-weight:600;">{{ group.count }} 位申请人</div>
+                        <div class="app-meta">
+                            <span class="app-meta-item">👤 {{ app.applicantName || '申请人 #' + app.applicantId }}</span>
+                            <span class="app-meta-item">📅 {{ formatDate(app.applyDate) }}</span>
+                            <span class="app-meta-item" v-if="app.familyMembers">👨‍👩‍👧 {{ app.familyMembers }}</span>
+                        </div>
+                        <div class="app-reason" v-if="app.reason">💬 {{ app.reason }}</div>
+                        <div class="app-actions" @click.stop>
+                            <el-button type="text" size="small" style="color:var(--primary);font-weight:700;" @click.stop="openDetail(app)">详情</el-button>
+                            <el-button type="success" size="small" @click.stop="handleApprove(app)">通过</el-button>
+                            <el-button type="warning" size="small" @click.stop="handleNeedMore(app)">待补充</el-button>
+                            <el-button type="danger" size="small" @click.stop="handleReject(app)">拒绝</el-button>
                         </div>
                     </div>
-                    <el-button type="primary" size="small" @click.stop="openCompare(group.petId)" style="border-radius:var(--radius-sm);">
-                        🔍 对比筛选
-                    </el-button>
                 </div>
-                <!-- 分组内申请卡片（简版） -->
-                <div class="app-list" style="margin-top:10px;">
+            </div>
+
+            <!-- 多申请人宠物：单独分组展示，便于对比 -->
+            <template v-if="getPendingGroups() && getPendingGroups().length > 0">
+                <div style="margin-top:32px;">
+                    <div style="font-size:15px;font-weight:700;color:var(--text-dark);margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+                        🏆 以下宠物有多位申请人，请点击「对比筛选」横向对比
+                    </div>
                     <div
-                        v-for="(app, aIdx) in group.apps"
-                        :key="app.id"
-                        class="app-card"
-                        :data-status="app.status"
-                        :style="'animation-delay:' + ((gIdx * 3 + aIdx) * 0.05 + 0.1) + 's'"
-                        @click.stop="openDetail(app)">
-                        <div class="app-pet-image">
-                            <span style="font-size:28px;">👤</span>
+                        v-for="(group, gIdx) in getPendingGroups()"
+                        :key="'group-' + group.petId"
+                        style="margin-bottom:20px;">
+                        <div class="compare-group-header" :style="'animation-delay:' + (gIdx * 0.08) + 's'">
+                            <div class="compare-group-pet">
+                                <div class="compare-group-thumb">
+                                    <img v-if="group.petImage" :src="group.petImage" :alt="group.petName" @error="e => e.target.style.display='none'">
+                                    <span v-else style="font-size:24px;">🐾</span>
+                                </div>
+                                <div>
+                                    <div class="compare-group-name">{{ group.petName }}</div>
+                                    <div style="font-size:12px;color:var(--amber);font-weight:700;">{{ group.count }} 位申请人竞争</div>
+                                </div>
+                            </div>
+                            <el-button type="primary" size="small" @click.stop="openCompare(group.petId)" style="border-radius:var(--radius-sm);">
+                                🔍 对比筛选
+                            </el-button>
                         </div>
-                        <div class="app-content">
-                            <div class="app-header">
-                                <span class="app-pet-name">{{ app.applicantName || '申请人 #' + app.applicantId }}</span>
-                                <el-tag type="warning" size="small" style="font-weight:700;">待审核</el-tag>
-                            </div>
-                            <div class="app-meta">
-                                <span class="app-meta-item">📅 {{ formatDate(app.applyDate) }}</span>
-                                <span class="app-meta-item" v-if="app.familyMembers">👨‍👩‍👧 {{ app.familyMembers }}</span>
-                            </div>
-                            <div class="app-reason" v-if="app.reason">💬 {{ app.reason }}</div>
-                            <div class="app-actions" @click.stop>
-                                <el-button type="text" size="small" style="color:var(--primary);font-weight:700;" @click.stop="openDetail(app)">详情</el-button>
-                                <el-button type="success" size="small" @click.stop="handleApprove(app)">通过</el-button>
-                                <el-button type="warning" size="small" @click.stop="handleNeedMore(app)">待补充</el-button>
-                                <el-button type="danger" size="small" @click.stop="handleReject(app)">拒绝</el-button>
+                        <div class="app-list" style="margin-top:10px;">
+                            <div
+                                v-for="(app, aIdx) in group.apps"
+                                :key="app.id"
+                                class="app-card"
+                                :data-status="app.status"
+                                :style="'animation-delay:' + ((gIdx * 3 + aIdx) * 0.05 + 0.1) + 's'"
+                                @click.stop="openDetail(app)">
+                                <div class="app-pet-image">
+                                    <span style="font-size:28px;">👤</span>
+                                </div>
+                                <div class="app-content">
+                                    <div class="app-header">
+                                        <span class="app-pet-name">{{ app.applicantName || '申请人 #' + app.applicantId }}</span>
+                                        <el-tag type="warning" size="small" style="font-weight:700;">待审核</el-tag>
+                                    </div>
+                                    <div class="app-meta">
+                                        <span class="app-meta-item">📅 {{ formatDate(app.applyDate) }}</span>
+                                        <span class="app-meta-item" v-if="app.familyMembers">👨‍👩‍👧 {{ app.familyMembers }}</span>
+                                    </div>
+                                    <div class="app-reason" v-if="app.reason">💬 {{ app.reason }}</div>
+                                    <div class="app-actions" @click.stop>
+                                        <el-button type="text" size="small" style="color:var(--primary);font-weight:700;" @click.stop="openDetail(app)">详情</el-button>
+                                        <el-button type="success" size="small" @click.stop="handleApprove(app)">通过</el-button>
+                                        <el-button type="warning" size="small" @click.stop="handleNeedMore(app)">待补充</el-button>
+                                        <el-button type="danger" size="small" @click.stop="handleReject(app)">拒绝</el-button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <!-- 提示 -->
-            <div v-if="getPendingGroups().length > 0" style="text-align:center;padding:16px 0;font-size:13px;color:var(--text-muted);">
-                以上为有多位申请人的宠物，点击「对比筛选」可横向对比申请人信息
-            </div>
+            </template>
         </template>
 
-        <!-- 申请列表（其他状态：原有视图） -->
-        <div class="app-list" v-if="applications.length > 0 && !(currentStatus === 0 && currentRole !== 'adopter' && getPendingGroups() && getPendingGroups().length > 0)">
+        <!-- 申请列表（非待审核状态：标准视图） -->
+        <div class="app-list" v-if="currentStatus !== 0 && applications.length > 0">
             <div
                 v-for="(app, index) in applications"
                 :key="app.id"
@@ -890,18 +930,16 @@
                 :data-status="app.status"
                 :style="'animation-delay:' + (index * 0.05) + 's'"
                 @click="openDetail(app)">
-
                 <div class="app-pet-image">
                     <img v-if="app.petImage" :src="app.petImage" :alt="app.petName || '宠物'" @error="e => e.target.style.display='none'">
                     <span v-else style="font-size:36px;">🐾</span>
                 </div>
-
                 <div class="app-content">
                     <div class="app-header">
                         <span class="app-pet-name">{{ app.petName || '宠物 #' + app.petId }}</span>
-                    <span class="adoption-status-badge" :class="'status-' + app.status">
-                        {{ getStatusIcon(app.status) }} {{ getStatusText(app.status) }}
-                    </span>
+                        <span class="adoption-status-badge" :class="'status-' + app.status">
+                            {{ getStatusIcon(app.status) }} {{ getStatusText(app.status) }}
+                        </span>
                         <span v-if="app.urgencyLevel && app.urgencyLevel > 0" class="urgency-inline-tag">🚨 紧急</span>
                     </div>
                     <div class="app-meta">
@@ -1551,6 +1589,9 @@
                 window.location.href = 'login.html';
             },
             // ========== 多申请人对比 ==========
+            getPetApplicantCount(petId) {
+                return this.applications.filter(a => a.petId === petId).length;
+            },
             getPendingGroups() {
                 if (this.currentStatus !== 0 || this.currentRole === 'adopter') return null;
                 const groups = {};

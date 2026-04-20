@@ -7,7 +7,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/pet_rescue?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:CHANGE_ME}
+    password: ${DB_PASSWORD:123456}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 10
@@ -21,6 +21,7 @@ spring:
     time-zone: GMT+8
 
 mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
@@ -29,7 +30,7 @@ mybatis-plus:
       id-type: auto
 
 jwt:
-  secret: ${JWT_SECRET:CHANGE_ME}
+  secret: ${JWT_SECRET:PetRescueSystemJWTSecretKeyForGraduationProject2024MustBeLongEnough}
   expiration: 86400000       # Access Token 有效期：24小时
   refresh-expiration: 604800000  # Refresh Token 有效期：7天
 

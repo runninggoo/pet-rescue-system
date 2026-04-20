@@ -334,10 +334,10 @@
 
   如有任何问题，欢迎提交Issue或联系项目维护者。
 
----最后更新：2026-04-12（v1.2.1 宠物收藏功能开发 + GitHub v1.2推送 + 文档全面更新）
-版本：1.2.1
-状态：v1.2.0 UI优化全部完成 ✅ | 宠物收藏功能 ✅ | GitHub v1.2推送 ✅ | 文档全面更新 ✅
-新增：v1.2.1 宠物收藏功能（Entity/Mapper/Service/Controller）；截图管理文档v1.2.0（44张）；论文素材保存文档v1.3（JWT双Token/成长体系）
+---最后更新：2026-04-20（v1.2.2 宠物收藏唯一键冲突修复 + GitHub v1.3推送）
+版本：1.2.2
+状态：宠物收藏功能 ✅ | 唯一键冲突修复 ✅ | 浏览器验证 ✅ | 文档全面更新 ✅
+新增：v1.2.2 PetFavoriteMapper.xml（INSERT ON DUPLICATE KEY UPDATE）；application.yml mapper-locations
 
   ## 🎨 前端 UI 设计规范（2026-04-02 新增）
 
@@ -838,6 +838,58 @@
 - 修复仅影响文字描述字段，不影响关联关系
 
 ## 🎯 更新完成（v1.1.6）
+
+---
+
+## 📌 v1.2.2 更新（2026-04-20）宠物收藏功能唯一键冲突修复
+
+### 问题现象
+
+管理员在宠物详情页点击「收藏宠物」按钮时报错：
+
+```
+java.sql.SQLIntegrityConstraintViolationException:
+Duplicate entry '1-20' for key 'pet_favorite.uk_user_pet'
+```
+
+### 问题根因
+
+数据库唯一键 `uk_user_pet (user_id, pet_id)` 与软删除字段 `deleted` 是**独立的两套机制**：
+- `deleted=0` → 正常收藏记录，唯一键生效
+- `deleted=1` → 软删除记录，**唯一键仍然生效**（唯一键不看 deleted 字段）
+
+用户先收藏再取消（软删除）后，再次收藏时：`isFavorited()` 查到 `deleted=0` 无记录 → 返回 `false` → `addFavorite()` 尝试 `INSERT` → 唯一键冲突。
+
+### 修复方案
+
+在 `PetFavoriteMapper.xml` 中使用 MySQL 原生 `INSERT ... ON DUPLICATE KEY UPDATE`，数据库层面原子处理：
+
+```xml
+<insert id="insertOrReactivate">
+    INSERT INTO pet_favorite (user_id, pet_id, deleted, created_at)
+    VALUES (#{userId}, #{petId}, 0, NOW())
+    ON DUPLICATE KEY UPDATE deleted = 0, created_at = NOW()
+</insert>
+```
+
+### 涉及文件
+
+| 文件 | 修改 |
+|------|------|
+| `PetFavoriteMapper.java` | 新增 `insertOrReactivate(userId, petId)` 方法签名 |
+| `PetFavoriteMapper.xml`（新建） | MyBatis XML Mapper，`INSERT ... ON DUPLICATE KEY UPDATE` SQL |
+| `PetFavoriteServiceImpl.java` | `addFavorite()` 改为调用 `insertOrReactivate()` |
+| `application.yml` | 添加 `mybatis-plus.mapper-locations: classpath:mapper/*.xml` |
+
+### 浏览器验证
+
+收藏 → 取消 → 再次收藏，完整流程无错误 ✅
+
+### 重要经验
+
+**MySQL 唯一键与软删除独立**：软删除不等于释放唯一键。用软删除实现"收藏/取消"时，务必用数据库原子操作（方案A），不要先查后写（方案B有并发竞态）。
+
+## 🎯 更新完成（v1.2.2）
 
 ---
 

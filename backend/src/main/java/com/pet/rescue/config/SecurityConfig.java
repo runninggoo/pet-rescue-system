@@ -62,6 +62,8 @@ public class SecurityConfig {
                 .antMatchers("/category/**").permitAll()
                 // 救助站推荐API允许所有人访问（便于搜索功能）
                 .antMatchers("/shelter-recommendation/**").permitAll()
+                // 宠物详情API：宠物详情页是公开页面，API也应允许匿名访问
+                .antMatchers("/pet/detail/**").permitAll()
                 // 静态资源（图片、JS、CSS等）
                 .antMatchers("/static/**", "/css/**", "/js/**", "/images/**").permitAll()
                 // 公开页面：宠物列表/详情、救助站推荐页、登录、注册
