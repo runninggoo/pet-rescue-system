@@ -42,7 +42,7 @@
             --radius-sm: 12px;
         }
         * { box-sizing: border-box; }
-        *:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; }
+        *:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
         body {
             margin: 0; padding: 0;
             background: var(--bg);
@@ -53,31 +53,48 @@
         }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: var(--warm-gray); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb { background: var(--sky-light); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--sky); }
+        ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
         /* Element UI 覆盖 */
-        .el-button--primary { background-color: var(--sky) !important; border-color: var(--sky) !important; border-radius: var(--radius-sm) !important; color: var(--text-dark) !important; font-weight: 700 !important; }
-        .el-button--primary:hover { background-color: var(--sky-light) !important; border-color: var(--sky-light) !important; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(135,206,235,0.3); }
+        .el-button--primary { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; color: white !important; font-weight: 700 !important; }
+        .el-button--primary:hover { background-color: var(--primary-dark) !important; border-color: var(--primary-dark) !important; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(224,122,95,0.3); }
         .el-button--success { background-color: var(--sage) !important; border-color: var(--sage) !important; border-radius: var(--radius-sm) !important; }
         .el-button--warning { background-color: var(--amber) !important; border-color: var(--amber) !important; border-radius: var(--radius-sm) !important; }
         .el-button--danger { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; }
         .el-button { border-radius: var(--radius-sm) !important; }
-        .el-input__inner:focus, .el-textarea__inner:focus { border-color: var(--sky) !important; box-shadow: 0 0 0 3px rgba(135,206,235,0.15) !important; }
-        .el-pager li.active { background-color: var(--sky) !important; color: white !important; border-radius: 50% !important; }
-        .el-pager li:hover { color: var(--sky) !important; }
-        .el-table th { background: var(--sky-bg) !important; color: var(--text-dark); font-weight: 700; }
+        .el-input__inner:focus, .el-textarea__inner:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(224,122,95,0.15) !important; }
+        .el-pager li.active { background-color: var(--primary) !important; color: white !important; border-radius: 50% !important; }
+        .el-pager li:hover { color: var(--primary) !important; }
+        .el-table th { background: var(--primary-bg) !important; color: var(--text-dark); font-weight: 700; }
         .el-table td { border-color: var(--warm-gray) !important; }
         .el-form-item__label { color: var(--text-dark); font-weight: 600; }
-        .el-select .el-input__inner:focus { border-color: var(--sky) !important; }
+        .el-select .el-input__inner:focus { border-color: var(--primary) !important; }
         .el-pagination .el-pager li { border-radius: 50% !important; }
         .el-loading-mask { background: rgba(253,246,240,0.9) !important; }
 
         /* 页面背景 */
         .page-bg {
             position: fixed; inset: 0; pointer-events: none; z-index: 0;
-            background: linear-gradient(160deg, var(--sky-bg) 0%, var(--warm-white) 50%, var(--warm-cream) 100%);
-            opacity: 0.6;
+            background: linear-gradient(160deg, var(--warm-white) 0%, var(--warm-cream) 50%, #f5e8df 100%);
+            opacity: 0.7;
+        }
+
+        /* 多层装饰背景 */
+        body::before {
+            content: '';
+            position: fixed; inset: 0; pointer-events: none; z-index: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 15% 15%, rgba(224,122,95,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 85% 80%, rgba(129,178,154,0.06) 0%, transparent 55%),
+                radial-gradient(ellipse 50% 40% at 50% 50%, rgba(244,162,97,0.04) 0%, transparent 50%);
+        }
+        body::after {
+            content: '';
+            position: fixed; inset: 0; pointer-events: none; z-index: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='rgba(224,122,95,0.04)'%3E%3Cpath d='M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4C18 6 18 6 18 6s0 0-1.5 1.5S15 9 15 9s0 0-1.5 1.5S12 12 12 12s0 0-1.5-1.5S9 9 9 9s0 0-1.5 1.5S6 12 6 12c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-4c0-1.1-.9-2-2-2z'/%3E%3C/svg%3E");
+            background-size: 180px 180px;
+            background-position: 30px 60px, 120px 20px, 200px 100px, 350px 40px, 480px 80px, 600px 30px, 700px 120px, 80px 200px, 250px 180px, 420px 160px, 560px 200px, 680px 150px;
         }
 
         #app {
@@ -87,9 +104,9 @@
 
         /* 横幅 */
         .hero-banner {
-            background: linear-gradient(135deg, var(--sky) 0%, #5bb5d4 60%, var(--sage) 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 60%, var(--amber) 100%);
             border-radius: var(--radius); padding: 20px 28px; margin-bottom: 20px;
-            box-shadow: 0 8px 32px rgba(135, 206, 235, 0.3);
+            box-shadow: 0 8px 32px rgba(224, 122, 95, 0.25);
             display: flex; justify-content: space-between; align-items: center;
             flex-wrap: wrap; gap: 16px;
             animation: fadeSlideDown 0.5s ease-out;
@@ -118,7 +135,7 @@
         /* 筛选卡片 */
         .filter-card {
             background: white; border-radius: var(--radius); padding: 20px 24px; margin-bottom: 16px;
-            box-shadow: var(--card-shadow); border: 1px solid rgba(135,206,235,0.15);
+            box-shadow: var(--card-shadow); border: 1px solid rgba(224,122,95,0.15);
             animation: cardEnter 0.5s ease-out 0.1s both;
         }
         @keyframes cardEnter {
@@ -136,7 +153,7 @@
         .stat-card {
             background: white; border-radius: var(--radius); padding: 20px; box-shadow: var(--card-shadow);
             display: flex; align-items: center; gap: 16px;
-            border: 1px solid rgba(135,206,235,0.1);
+            border: 1px solid rgba(224,122,95,0.1);
             transition: var(--transition); animation: cardEnter 0.5s ease-out 0.15s both;
         }
         .stat-card:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-2px); }
@@ -147,7 +164,7 @@
         /* 内容卡片 */
         .content-card {
             background: white; border-radius: var(--radius); padding: 24px; margin-bottom: 16px;
-            box-shadow: var(--card-shadow); border: 1px solid rgba(135,206,235,0.1);
+            box-shadow: var(--card-shadow); border: 1px solid rgba(224,122,95,0.1);
             animation: cardEnter 0.5s ease-out 0.2s both;
         }
         .content-card-header {
@@ -161,7 +178,7 @@
         /* 表格 */
         .table-wrap { border-radius: var(--radius-sm); overflow: hidden; }
         .record-type-tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .record-type-tag.vaccine { background: var(--sky-bg); color: #2e7d9a; }
+        .record-type-tag.vaccine { background: var(--primary-bg); color: var(--primary-dark); }
         .record-type-tag.checkup { background: var(--sage); background: rgba(129,178,154,0.15); color: #4a8a6e; }
         .record-type-tag.treatment { background: var(--lavender-bg); color: #6b5a8a; }
         .record-type-tag.surgery { background: rgba(244,162,97,0.15); color: #b06a2a; }
@@ -192,7 +209,7 @@
         .modal-header {
             display: flex; justify-content: space-between; align-items: center;
             padding: 18px 24px; border-bottom: 1px solid var(--warm-gray);
-            background: linear-gradient(135deg, var(--sky) 0%, var(--primary) 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
         }
         .modal-header h3 { margin: 0; font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
@@ -203,8 +220,8 @@
         .modal-footer { display: flex; gap: 10px; justify-content: flex-end; padding: 16px 24px; border-top: 1px solid var(--warm-gray); }
         .modal-footer .btn-cancel { background: var(--warm-gray2) !important; color: var(--text-dark) !important; border: 1px solid var(--warm-gray) !important; border-radius: var(--radius-sm) !important; padding: 8px 20px; cursor: pointer; font-weight: 600; transition: var(--transition); }
         .modal-footer .btn-cancel:hover { background: var(--warm-gray) !important; }
-        .modal-footer .btn-submit { background: var(--sky) !important; color: var(--text-dark) !important; border: none !important; border-radius: var(--radius-sm) !important; padding: 8px 24px; cursor: pointer; font-weight: 700; transition: var(--transition); }
-        .modal-footer .btn-submit:hover { background: var(--sky-light) !important; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(135,206,235,0.3); }
+        .modal-footer .btn-submit { background: var(--primary) !important; color: white !important; border: none !important; border-radius: var(--radius-sm) !important; padding: 8px 24px; cursor: pointer; font-weight: 700; transition: var(--transition); }
+        .modal-footer .btn-submit:hover { background: var(--primary-dark) !important; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(224,122,95,0.3); }
 
         /* 表单 */
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -218,7 +235,7 @@
             transition: var(--transition); background: white;
         }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            outline: none; border-color: var(--sky); box-shadow: 0 0 0 3px rgba(135,206,235,0.12);
+            outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(224,122,95,0.12);
         }
         .form-group textarea { resize: vertical; min-height: 80px; }
 
@@ -226,22 +243,22 @@
         .timeline { position: relative; padding-left: 24px; }
         .timeline::before {
             content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px;
-            width: 2px; background: linear-gradient(to bottom, var(--sky), var(--sage));
+            width: 2px; background: linear-gradient(to bottom, var(--primary), var(--sage));
             border-radius: 2px;
         }
         .timeline-item { position: relative; margin-bottom: 24px; }
         .timeline-item::before {
             content: ''; position: absolute; left: -21px; top: 8px;
             width: 12px; height: 12px; border-radius: 50%;
-            background: white; border: 3px solid var(--sky);
+            background: white; border: 3px solid var(--primary);
         }
         .timeline-card {
             background: white; border-radius: var(--radius-sm); padding: 16px 20px;
-            box-shadow: 0 2px 12px rgba(135,206,235,0.12);
-            border: 1px solid rgba(135,206,235,0.15);
+            box-shadow: 0 2px 12px rgba(224,122,95,0.1);
+            border: 1px solid rgba(224,122,95,0.12);
             transition: var(--transition);
         }
-        .timeline-card:hover { box-shadow: 0 4px 20px rgba(135,206,235,0.2); transform: translateX(4px); }
+        .timeline-card:hover { box-shadow: 0 4px 20px rgba(224,122,95,0.18); transform: translateX(4px); }
         .timeline-date { font-size: 12px; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
         .timeline-title { font-size: 15px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
         .timeline-title .icon { font-size: 18px; }
@@ -257,7 +274,7 @@
         /* 加载动画 */
         .loading-overlay {
             position: fixed; inset: 0; z-index: 9999;
-            background: linear-gradient(160deg, var(--sky-bg) 0%, var(--warm-white) 100%);
+            background: linear-gradient(160deg, var(--primary-bg) 0%, var(--warm-white) 100%);
             display: flex; align-items: center; justify-content: center;
         }
         .loading-overlay.hidden { opacity: 0; pointer-events: none; transition: opacity 0.5s; }
@@ -324,7 +341,7 @@
                     </el-select>
                 </div>
                 <div style="display:flex;gap:8px;align-items:flex-end;padding-top:18px;">
-                    <button class="btn-primary" @click="loadRecords" style="background:var(--sky)!important;border-color:var(--sky)!important;color:var(--text-dark)!important;border-radius:12px!important;padding:10px 20px;font-weight:700;cursor:pointer;border:none;">🔍 查询</button>
+                    <button class="btn-primary" @click="loadRecords" style="background:var(--primary)!important;border-color:var(--primary)!important;color:white!important;border-radius:12px!important;padding:10px 20px;font-weight:700;cursor:pointer;border:none;">🔍 查询</button>
                     <button @click="handleReset" style="background:var(--warm-gray2)!important;border:1px solid var(--warm-gray)!important;color:var(--text-dark)!important;border-radius:12px!important;padding:10px 20px;font-weight:600;cursor:pointer;">🔄 重置</button>
                     <button @click="handleAdd" style="background:var(--sage)!important;border:none!important;color:white!important;border-radius:12px!important;padding:10px 20px;font-weight:700;cursor:pointer;">➕ 录入档案</button>
                 </div>
@@ -367,12 +384,12 @@
         <div class="content-card" v-if="filters.petId">
             <div class="content-card-header">
                 <span class="content-card-title"><span class="icon">📋</span>医疗档案记录</span>
-                <button @click="handleAdd" style="background:var(--sky)!important;border:none!important;color:var(--text-dark)!important;border-radius:12px!important;padding:8px 16px;font-weight:700;cursor:pointer;">➕ 录入新档案</button>
+                <button @click="handleAdd" style="background:var(--primary)!important;border:none!important;color:white!important;border-radius:12px!important;padding:8px 16px;font-weight:700;cursor:pointer;">➕ 录入新档案</button>
             </div>
             <div class="table-wrap">
                 <table style="width:100%;border-collapse:collapse;">
                     <thead>
-                        <tr style="background:var(--sky-bg);">
+                        <tr style="background:var(--primary-bg);">
                             <th style="padding:12px 16px;text-align:left;font-size:13px;font-weight:700;color:var(--text-dark);border-bottom:2px solid var(--warm-gray);">记录类型</th>
                             <th style="padding:12px 16px;text-align:left;font-size:13px;font-weight:700;color:var(--text-dark);border-bottom:2px solid var(--warm-gray);">记录标题</th>
                             <th style="padding:12px 16px;text-align:left;font-size:13px;font-weight:700;color:var(--text-dark);border-bottom:2px solid var(--warm-gray);">记录日期</th>
@@ -383,7 +400,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="r in records" :key="r.id" style="border-bottom:1px solid var(--warm-gray);transition:var(--transition);" onmouseover="this.style.background='var(--sky-bg)'" onmouseout="this.style.background=''">
+                        <tr v-for="r in records" :key="r.id" style="border-bottom:1px solid var(--warm-gray);transition:var(--transition);" onmouseover="this.style.background='var(--primary-bg)'" onmouseout="this.style.background=''">
                             <td style="padding:12px 16px;font-size:13px;"><span class="record-type-tag" :class="r.recordType">{{ typeLabel(r.recordType) }}</span></td>
                             <td style="padding:12px 16px;font-size:13px;font-weight:600;color:var(--text-dark);">{{ r.title }}</td>
                             <td style="padding:12px 16px;font-size:13px;color:var(--text-muted);">{{ r.recordDate }}</td>
@@ -391,7 +408,7 @@
                             <td style="padding:12px 16px;font-size:13px;color:var(--text-dark);font-weight:600;">¥{{ r.cost || 0 }}</td>
                             <td style="padding:12px 16px;font-size:13px;"><span class="status-badge" :class="r.status===0?'normal':'expired'">{{ r.status===0?'✅ 正常':'⚠️ 已过期' }}</span></td>
                             <td style="padding:12px 16px;font-size:13px;">
-                                <button @click="handleView(r)" style="background:var(--sky-bg)!important;border:1px solid var(--sky)!important;color:var(--text-dark)!important;border-radius:8px!important;padding:4px 12px;font-size:12px;font-weight:600;cursor:pointer;">👁 查看</button>
+                                <button @click="handleView(r)" style="background:var(--primary-bg)!important;border:1px solid var(--primary)!important;color:var(--primary-dark)!important;border-radius:8px!important;padding:4px 12px;font-size:12px;font-weight:600;cursor:pointer;">👁 查看</button>
                                 <button @click="handleEdit(r)" style="background:rgba(129,178,154,0.12)!important;border:1px solid var(--sage)!important;color:var(--sage)!important;border-radius:8px!important;padding:4px 12px;font-size:12px;font-weight:600;cursor:pointer;">✏️ 编辑</button>
                             </td>
                         </tr>
@@ -496,7 +513,7 @@
                     <div><label style="font-size:12px;color:var(--text-muted);font-weight:700;">记录状态</label><div style="margin-top:4px;"><span class="status-badge" :class="detailRecord.status===0?'normal':'expired'">{{ detailRecord.status===0?'✅ 正常':'⚠️ 已过期' }}</span></div></div>
                 </div>
                 <div style="margin-bottom:16px;"><label style="font-size:12px;color:var(--text-muted);font-weight:700;">记录标题</label><div style="margin-top:4px;font-size:16px;font-weight:700;">{{ detailRecord.title }}</div></div>
-                <div><label style="font-size:12px;color:var(--text-muted);font-weight:700;">详细说明</label><div style="margin-top:8px;padding:16px;background:var(--sky-bg);border-radius:12px;font-size:14px;line-height:1.8;color:var(--text-dark);">{{ detailRecord.description || '无详细说明' }}</div></div>
+                <div><label style="font-size:12px;color:var(--text-muted);font-weight:700;">详细说明</label><div style="margin-top:8px;padding:16px;background:var(--primary-bg);border-radius:12px;font-size:14px;line-height:1.8;color:var(--text-dark);">{{ detailRecord.description || '无详细说明' }}</div></div>
             </div>
             <div class="modal-footer">
                 <button class="btn-cancel" @click="showDetail=false">关闭</button>
@@ -506,9 +523,12 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui@2.15.13/lib/index.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios@0.27.2/dist/axios.min.js"></script>
     <script src="js/auth.js"></script>
     <script>
+        Vue.use(ELEMENT);
+
         // 安全 localStorage 封装
         const $ls = {
             get: (k) => { try { return localStorage.getItem(k); } catch(e) { return null; } },
@@ -536,7 +556,7 @@
                 showDetail: false,
                 detailRecord: null,
                 searchingPet: false,
-                form: this._formDefaults()
+                form: { id: null, petId: '', recordType: '', title: '', recordDate: '', vetName: '', cost: '', institution: '', description: '' },
             },
             methods: {
                 _formDefaults() {

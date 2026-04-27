@@ -485,6 +485,124 @@
         .breed-empty { text-align: center; color: var(--text-muted); font-size: 13px; padding: 40px 0; }
         .inline-edit { display: flex; gap: 4px; margin-top: 6px; }
 
+        /* ========== 推荐模块 ========== */
+        .recommend-section {
+            margin-bottom: 28px;
+            background: linear-gradient(160deg, rgba(224,122,95,0.04) 0%, rgba(244,162,97,0.03) 100%);
+            border-radius: var(--radius);
+            border: 1.5px solid rgba(224,122,95,0.12);
+            overflow: hidden;
+            box-shadow: 0 2px 16px rgba(224,122,95,0.08);
+        }
+        /* 推荐区标题栏 */
+        .recommend-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 20px 10px;
+            border-bottom: 1px solid rgba(224,122,95,0.08);
+        }
+        .recommend-left { display: flex; align-items: center; gap: 12px; }
+        .recommend-title {
+            font-size: 17px; font-weight: 800; color: var(--text-dark);
+            display: flex; align-items: center; gap: 6px;
+        }
+        .recommend-sub { font-size: 13px; color: var(--text-muted); }
+
+        /* 横向轮播容器 */
+        .recommend-carousel-wrapper {
+            padding: 16px 20px 18px;
+        }
+        .recommend-carousel {
+            display: flex; gap: 16px;
+            overflow-x: auto; scroll-snap-type: x mandatory;
+            scrollbar-width: none; -ms-overflow-style: none;
+            padding-bottom: 4px;
+        }
+        .recommend-carousel::-webkit-scrollbar { display: none; }
+
+        /* 推荐卡片（横排小卡片） */
+        .recommend-card {
+            flex: 0 0 230px; scroll-snap-align: start;
+            background: white; border-radius: var(--radius-sm);
+            box-shadow: 0 3px 12px rgba(224,122,95,0.10);
+            border: 1px solid rgba(224,122,95,0.08);
+            overflow: hidden; cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .recommend-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 10px 30px rgba(224,122,95,0.18);
+        }
+        .recommend-card-image {
+            width: 100%; height: 155px; background: linear-gradient(135deg, #FAEEE7 0%, #E8D5C4 100%);
+            position: relative; overflow: hidden;
+        }
+        .recommend-card-image img {
+            width: 100%; height: 100%; object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+        .recommend-card:hover .recommend-card-image img { transform: scale(1.06); }
+        .recommend-card-image .placeholder {
+            font-size: 40px; opacity: 0.4; display: flex;
+            align-items: center; justify-content: center; height: 100%;
+        }
+        /* 角标 */
+        .status-badge-sm {
+            padding: 3px 8px; border-radius: 6px; font-size: 10px; font-weight: 700; color: white;
+        }
+        .status-sm-0 { background: linear-gradient(135deg, #81B29A, #6a9b82); }
+        .status-sm-1 { background: linear-gradient(135deg, #F4A261, #e0933e); }
+        .urgency-badge-sm {
+            padding: 3px 6px; border-radius: 6px; font-size: 10px; font-weight: 700; color: white;
+        }
+        .urgency-sm-2 { background: linear-gradient(135deg, #E07A5F, #b85440); }
+        .urgency-sm-1 { background: linear-gradient(135deg, #F4A261, #e0933e); }
+        /* 宠物类型角标 */
+        .recommend-type-badge {
+            position: absolute; bottom: 8px; right: 8px;
+            width: 30px; height: 30px; border-radius: 50%;
+            background: rgba(255,255,255,0.9); border: 1.5px solid rgba(255,255,255,0.9);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            backdrop-filter: blur(4px);
+        }
+        /* 推荐卡片信息区 */
+        .recommend-card-body { padding: 12px 14px 14px; }
+        .recommend-card-name {
+            font-size: 15px; font-weight: 700; color: var(--text-dark);
+            margin-bottom: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .recommend-card-meta { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
+        .recommend-meta-tag {
+            background: var(--warm-cream); color: var(--text-muted);
+            padding: 1px 7px; border-radius: 4px; font-size: 11px;
+        }
+        .recommend-card-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+        /* 空状态 */
+        .recommend-empty {
+            text-align: center; padding: 28px 20px;
+            color: var(--text-muted); font-size: 14px;
+        }
+        /* 骨架屏 */
+        .recommend-card-image.skeleton {
+            background: linear-gradient(90deg, rgba(224,122,95,0.06) 0%, rgba(129,178,154,0.08) 50%, rgba(224,122,95,0.06) 100%);
+            background-size: 200% 100%;
+            animation: warmShimmer 2s ease infinite;
+        }
+
+        /* 列表区与推荐区的视觉分隔 */
+        .section-divider {
+            display: flex; align-items: center; gap: 16px;
+            margin: 8px 0 18px;
+        }
+        .section-divider-line {
+            flex: 1; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--warm-gray2), transparent);
+        }
+        .section-divider-text {
+            font-size: 14px; font-weight: 700; color: var(--text-muted);
+            white-space: nowrap; letter-spacing: 0.5px;
+        }
+
         /* ========== 移动端适配 ========== */
         @media (max-width: 768px) {
             .container { padding: 14px; }
@@ -677,7 +795,65 @@
         </div>
     </div>
 
-    <!-- 宠物网格 -->
+    <!-- 为你推荐（仅登录用户可见） -->
+    <div v-if="currentRole && currentRole !== ''" class="recommend-section">
+        <div class="recommend-header">
+            <div class="recommend-left">
+                <span class="recommend-title">✨ 为你推荐</span>
+                <span class="recommend-sub">根据您的浏览和收藏偏好精选</span>
+            </div>
+        </div>
+
+        <!-- 横向轮播区域 -->
+        <div class="recommend-carousel-wrapper">
+            <div v-if="recommendLoading" class="recommend-carousel">
+                <div v-for="n in 4" :key="n" class="recommend-card">
+                    <div class="recommend-card-image skeleton"></div>
+                    <div class="recommend-card-body">
+                        <div class="skeleton-line" style="width:55%;height:14px;margin-bottom:8px;"></div>
+                        <div class="skeleton-line" style="width:75%;height:12px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div v-else-if="recommendations.length > 0" class="recommend-carousel" ref="recommendCarousel">
+                <div v-for="pet in recommendations" :key="pet.id" class="recommend-card" @click="handlePetDetail(pet.id)">
+                    <div class="recommend-card-image">
+                        <img v-if="pet.imageUrl" :src="pet.imageUrl" @error="handleImgError" :alt="pet.name">
+                        <span v-else class="placeholder">🐾</span>
+                        <div class="corner-badges">
+                            <span class="status-badge-sm" :class="'status-sm-' + (pet.status || 0)">
+                                {{ pet.status === 0 ? '待领养' : '已领养' }}
+                            </span>
+                            <span v-if="pet.urgencyLevel >= 2" class="urgency-badge-sm urgency-sm-2">🚨</span>
+                            <span v-else-if="pet.urgencyLevel >= 1" class="urgency-badge-sm urgency-sm-1">⚠️</span>
+                        </div>
+                        <div class="recommend-type-badge">{{ getPetTypeEmoji(pet.categoryType) }}</div>
+                    </div>
+                    <div class="recommend-card-body">
+                        <div class="recommend-card-name">{{ pet.name }}</div>
+                        <div class="recommend-card-meta">
+                            <span class="recommend-meta-tag">{{ pet.gender === 1 ? '♂' : pet.gender === 2 ? '♀' : '?' }} {{ pet.breed || '未知' }}</span>
+                            <span v-if="pet.age" class="recommend-meta-tag">{{ pet.age }}月</span>
+                        </div>
+                        <div class="recommend-card-tags">
+                            <el-tag v-if="pet.healthStatus" size="mini" :type="pet.healthStatus === '良好' ? 'success' : pet.healthStatus === '伤病中' ? 'danger' : 'warning'" style="border-radius:4px;font-size:11px;padding:0 6px;">{{ pet.healthStatus }}</el-tag>
+                            <el-tag v-if="pet.personality" size="mini" type="info" style="border-radius:4px;font-size:11px;padding:0 6px;">{{ pet.personality }}</el-tag>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div v-else class="recommend-empty">
+                <span>暂无推荐，去浏览更多宠物吧~</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 筛选区域 -->
+    <div class="section-divider">
+        <span class="section-divider-line"></span>
+        <span class="section-divider-text">🐾 待领养宠物</span>
+        <span class="section-divider-line"></span>
+    </div>
     <div v-if="loading" class="pet-grid">
         <div v-for="n in pageSize" :key="n" class="skeleton-card">
             <div class="skeleton-image"></div>
@@ -756,81 +932,91 @@
     </div>
 
     <!-- 管理员：新增/编辑宠物弹窗 -->
-    <el-dialog
-        :title="dialogMode === 'add' ? '新增宠物' : '编辑宠物信息'"
-        :visible.sync="showPetDialog"
-        width="580px"
-        :close-on-click-modal="false"
-        center>
-        <el-form :model="petForm" :rules="petRules" ref="petFormRef" label-width="90px" size="small">
-        <el-form-item label="宠物名称" prop="name">
-            <el-input v-model="petForm.name" placeholder="如：小黄、小黑" maxlength="20" clearable></el-input>
-        </el-form-item>
-        <el-form-item label="宠物类型" prop="categoryType">
-            <el-select v-model="petForm.categoryType" placeholder="选择类型" clearable style="width:100%" @change="onFormCategoryChange">
-                <el-option v-for="cat in categoryList" :key="cat.id" :label="cat.name" :value="cat.type"></el-option>
-            </el-select>
-        </el-form-item>
-        <el-form-item label="品种" prop="breed">
-            <el-select v-model="petForm.breed" placeholder="先选择类型再选品种" clearable style="width:100%" :disabled="!petForm.categoryType">
-                <el-option v-for="sub in formBreedChildren" :key="sub.id" :label="sub.name" :value="sub.name"></el-option>
-            </el-select>
-        </el-form-item>
-        <el-form-item label="性别" prop="gender">
-            <el-radio-group v-model="petForm.gender">
-                <el-radio :label="1">♂ 公</el-radio>
-                <el-radio :label="2">♀ 母</el-radio>
-                <el-radio :label="0">未知</el-radio>
-            </el-radio-group>
-        </el-form-item>
-        <el-row :gutter="12">
-            <el-col :span="12"><el-form-item label="年龄(月)"><el-input-number v-model="petForm.age" :min="0" :max="240" controls-position="right" style="width:100%"></el-input-number></el-form-item></el-col>
-            <el-col :span="12"><el-form-item label="体重(kg)"><el-input-number v-model="petForm.weight" :min="0" :max="200" :precision="1" controls-position="right" style="width:100%"></el-input-number></el-form-item></el-col>
-        </el-row>
-        <el-form-item label="颜色"><el-input v-model="petForm.color" placeholder="如：黄色、黑白相间" maxlength="20" clearable></el-input></el-form-item>
-        <el-form-item label="健康状况">
-            <el-select v-model="petForm.healthStatus" placeholder="请选择" clearable style="width:100%">
-                <el-option label="良好" value="良好"></el-option>
-                <el-option label="一般" value="一般"></el-option>
-                <el-option label="需特殊护理" value="需特殊护理"></el-option>
-                <el-option label="伤病中" value="伤病中"></el-option>
-            </el-select>
-        </el-form-item>
-        <el-form-item label="性格特点"><el-input v-model="petForm.personality" placeholder="如：活泼、亲人、安静" maxlength="50" clearable></el-input></el-form-item>
-        <el-form-item label="紧急程度">
-            <el-select v-model="petForm.urgencyLevel" placeholder="请选择" clearable style="width:100%">
-                <el-option :label="'一般'" :value="0"></el-option>
-                <el-option :label="'紧急'" :value="1"></el-option>
-                <el-option :label="'非常紧急'" :value="2"></el-option>
-            </el-select>
-        </el-form-item>
-        <el-form-item label="领养状态">
-            <el-select v-model="petForm.status" placeholder="请选择" style="width:100%">
-                <el-option :label="'待领养'" :value="0"></el-option>
-                <el-option :label="'已领养'" :value="1"></el-option>
-            </el-select>
-        </el-form-item>
-        <el-form-item label="图片URL"><el-input v-model="petForm.imageUrl" placeholder="输入宠物图片链接（可选）" clearable></el-input></el-form-item>
-        <el-form-item label="描述"><el-input v-model="petForm.description" type="textarea" :rows="3" placeholder="宠物描述、救助经历等" maxlength="500" show-word-limit></el-input></el-form-item>
-        </el-form>
-        <span slot="footer">
-            <el-button @click="showPetDialog = false" size="medium">取消</el-button>
-            <el-button type="primary" :loading="dialogLoading" @click="handleSavePet" size="medium">{{ dialogLoading ? '保存中...' : '保存' }}</el-button>
-        </span>
-    </el-dialog>
-
-    <!-- 管理员：删除确认弹窗 -->
-    <el-dialog title="确认删除" :visible.sync="showDeleteDialog" width="420px" center>
-        <div style="text-align:center; padding: 12px 0;">
-            <div style="font-size:48px; margin-bottom:12px;">⚠️</div>
-            <p style="font-size:16px; color:#3D405B; margin:0 0 8px;">确定要删除宠物 <strong style="color:#E07A5F;">{{ deleteTarget.name }}</strong> 吗？</p>
-            <p style="font-size:13px; color:#8A8EA0; margin:0;">此操作不可恢复，请谨慎操作。</p>
+    <!-- 新增/编辑宠物弹窗（原生覆盖层，避免 el-dialog Vue 隔离问题） -->
+    <div v-if="showPetDialog" class="cat-overlay" @click.self="showPetDialog = false">
+        <div class="cat-panel" style="width:620px;">
+            <div class="cat-panel-header" style="background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);color:white;">
+                <h3 style="color:white;">{{ dialogMode === 'add' ? '➕ 新增宠物' : '✏️ 编辑宠物信息' }}</h3>
+                <span class="cat-panel-close" style="color:white;" @click="showPetDialog = false">✕</span>
+            </div>
+            <div class="cat-panel-body" style="padding:20px 24px;">
+                <el-form :model="petForm" :rules="petRules" ref="petFormRef" label-width="90px" size="small">
+                <el-form-item label="宠物名称" prop="name">
+                    <el-input v-model="petForm.name" placeholder="如：小黄、小黑" maxlength="20" clearable></el-input>
+                </el-form-item>
+                <el-form-item label="宠物类型" prop="categoryType">
+                    <el-select v-model="petForm.categoryType" placeholder="选择类型" clearable style="width:100%" @change="onFormCategoryChange">
+                        <el-option v-for="cat in categoryList" :key="cat.id" :label="cat.name" :value="cat.type"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="品种" prop="breed">
+                    <el-select v-model="petForm.breed" placeholder="先选择类型再选品种" clearable style="width:100%" :disabled="!petForm.categoryType">
+                        <el-option v-for="sub in formBreedChildren" :key="sub.id" :label="sub.name" :value="sub.name"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="性别" prop="gender">
+                    <el-radio-group v-model="petForm.gender">
+                        <el-radio :label="1">♂ 公</el-radio>
+                        <el-radio :label="2">♀ 母</el-radio>
+                        <el-radio :label="0">未知</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-row :gutter="12">
+                    <el-col :span="12"><el-form-item label="年龄(月)"><el-input-number v-model="petForm.age" :min="0" :max="240" controls-position="right" style="width:100%"></el-input-number></el-form-item></el-col>
+                    <el-col :span="12"><el-form-item label="体重(kg)"><el-input-number v-model="petForm.weight" :min="0" :max="200" :precision="1" controls-position="right" style="width:100%"></el-input-number></el-form-item></el-col>
+                </el-row>
+                <el-form-item label="颜色"><el-input v-model="petForm.color" placeholder="如：黄色、黑白相间" maxlength="20" clearable></el-input></el-form-item>
+                <el-form-item label="健康状况">
+                    <el-select v-model="petForm.healthStatus" placeholder="请选择" clearable style="width:100%">
+                        <el-option label="良好" value="良好"></el-option>
+                        <el-option label="一般" value="一般"></el-option>
+                        <el-option label="需特殊护理" value="需特殊护理"></el-option>
+                        <el-option label="伤病中" value="伤病中"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="性格特点"><el-input v-model="petForm.personality" placeholder="如：活泼、亲人、安静" maxlength="50" clearable></el-input></el-form-item>
+                <el-form-item label="紧急程度">
+                    <el-select v-model="petForm.urgencyLevel" placeholder="请选择" clearable style="width:100%">
+                        <el-option :label="'一般'" :value="0"></el-option>
+                        <el-option :label="'紧急'" :value="1"></el-option>
+                        <el-option :label="'非常紧急'" :value="2"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="领养状态">
+                    <el-select v-model="petForm.status" placeholder="请选择" style="width:100%">
+                        <el-option :label="'待领养'" :value="0"></el-option>
+                        <el-option :label="'已领养'" :value="1"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="图片URL"><el-input v-model="petForm.imageUrl" placeholder="输入宠物图片链接（可选）" clearable></el-input></el-form-item>
+                <el-form-item label="描述"><el-input v-model="petForm.description" type="textarea" :rows="3" placeholder="宠物描述、救助经历等" maxlength="500" show-word-limit></el-input></el-form-item>
+                </el-form>
+            </div>
+            <div class="cat-panel-footer" style="display:flex;gap:10px;justify-content:flex-end;padding:16px 24px;border-top:1px solid var(--warm-gray);">
+                <button @click="showPetDialog = false" style="background:var(--warm-gray2);color:var(--text-dark);border:1px solid var(--warm-gray);border-radius:var(--radius-sm);padding:8px 20px;cursor:pointer;font-weight:600;transition:var(--transition);" onmouseover="this.style.background='var(--warm-gray)'" onmouseout="this.style.background='var(--warm-gray2)'">取消</button>
+                <button @click="handleSavePet" style="background:var(--primary);color:white;border:none;border-radius:var(--radius-sm);padding:8px 24px;cursor:pointer;font-weight:700;transition:var(--transition);" onmouseover="this.style.background='var(--primary-dark)';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='var(--primary)';this.style.transform=''">{{ dialogLoading ? '保存中...' : '💾 保存' }}</button>
+            </div>
         </div>
-        <span slot="footer">
-            <el-button @click="showDeleteDialog = false" size="medium">取消</el-button>
-            <el-button type="danger" :loading="dialogLoading" @click="handleConfirmDelete" size="medium">{{ dialogLoading ? '删除中...' : '确认删除' }}</el-button>
-        </span>
-    </el-dialog>
+    </div>
+
+    <!-- 管理员：删除确认弹窗（原生覆盖层，避免 el-dialog Vue 隔离问题） -->
+    <div v-if="showDeleteDialog" class="cat-overlay" @click.self="showDeleteDialog = false">
+        <div class="cat-panel" style="width:420px;">
+            <div class="cat-panel-header" style="background:linear-gradient(135deg,#e05d5d 0%,#c94a4a 100%);color:white;">
+                <h3 style="color:white;">⚠️ 确认删除</h3>
+                <span class="cat-panel-close" style="color:white;" @click="showDeleteDialog = false">✕</span>
+            </div>
+            <div class="cat-panel-body" style="padding:32px 24px;text-align:center;">
+                <div style="font-size:48px;margin-bottom:16px;">🐾</div>
+                <p style="font-size:16px;color:var(--text-dark);margin:0 0 8px;">确定要删除宠物 <strong style="color:var(--primary);">{{ deleteTarget.name }}</strong> 吗？</p>
+                <p style="font-size:13px;color:var(--text-muted);margin:0;">此操作不可恢复，请谨慎操作。</p>
+            </div>
+            <div style="display:flex;gap:10px;justify-content:flex-end;padding:16px 24px;border-top:1px solid var(--warm-gray);">
+                <button @click="showDeleteDialog = false" style="background:var(--warm-gray2);color:var(--text-dark);border:1px solid var(--warm-gray);border-radius:var(--radius-sm);padding:8px 20px;cursor:pointer;font-weight:600;transition:var(--transition);" onmouseover="this.style.background='var(--warm-gray)'" onmouseout="this.style.background='var(--warm-gray2)'">取消</button>
+                <button @click="handleConfirmDelete" style="background:#e05d5d;color:white;border:none;border-radius:var(--radius-sm);padding:8px 24px;cursor:pointer;font-weight:700;transition:var(--transition);" onmouseover="this.style.background='#c94a4a'" onmouseout="this.style.background='#e05d5d'">{{ dialogLoading ? '删除中...' : '🗑️ 确认删除' }}</button>
+            </div>
+        </div>
+    </div>
 
     <!-- 管理员：品种管理弹窗（原生覆盖层，不依赖 el-dialog） -->
     <div v-if="showCatDialog" class="cat-overlay" @click.self="showCatDialog = false">
@@ -988,6 +1174,9 @@
                 gender: [{ required: true, message: '请选择性别', trigger: 'change' }]
             },
             hasSearched: false,
+            // 推荐模块
+            recommendations: [],
+            recommendLoading: false,
             // 品种管理
             showCatDialog: false,
             selectedCat: null,
@@ -1028,6 +1217,7 @@
             }
             this.loadPets();
             this.loadCategories();
+            this.loadRecommendations();
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('.dropdown-wrap')) {
                     this.showAdminMenu = false;
@@ -1097,6 +1287,23 @@
                         }
                     })
                     .catch(() => { this.breedChildren = []; });
+            },
+
+            loadRecommendations() {
+                this.recommendLoading = true;
+                axios.get('/api/recommendation/personalized', { params: { limit: 4 } })
+                    .then(res => {
+                        this.recommendLoading = false;
+                        if (res.data.code === 200) {
+                            this.recommendations = res.data.data || [];
+                        } else {
+                            this.recommendations = [];
+                        }
+                    })
+                    .catch(() => {
+                        this.recommendLoading = false;
+                        this.recommendations = [];
+                    });
             },
 
             onCategoryTypeChange(type) {

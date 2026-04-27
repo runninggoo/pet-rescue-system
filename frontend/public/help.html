@@ -32,6 +32,7 @@
             --warm-cream: #FAEEE7;
             --warm-gray: #f0ebe7;
             --warm-gray2: #ede6df;
+            --bg: linear-gradient(160deg, var(--warm-white) 0%, var(--warm-cream) 60%, #f5e8df 100%);
             --text-dark: #3D405B;
             --text-muted: #8A8EA0;
             --card-shadow: 0 4px 20px rgba(224, 122, 95, 0.1);
@@ -43,7 +44,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         *:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
         body {
-            background: linear-gradient(160deg, var(--warm-white) 0%, var(--warm-cream) 60%, #f5e8df 100%);
+            background: var(--bg);
             font-family: "Nunito", "PingFang SC", "Microsoft YaHei", sans-serif;
             -webkit-font-smoothing: antialiased;
             color: var(--text-dark);
@@ -54,8 +55,8 @@
         ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
-        .el-button--primary { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; }
-        .el-button--primary:hover { background-color: var(--primary-dark) !important; border-color: var(--primary-dark) !important; }
+        .el-button--primary { background-color: var(--primary) !important; border-color: var(--primary) !important; border-radius: var(--radius-sm) !important; transition: var(--transition) !important; }
+        .el-button--primary:hover { background-color: var(--primary-dark) !important; border-color: var(--primary-dark) !important; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(224,122,95,0.3); }
         .el-button--success { background-color: var(--sage) !important; border-color: var(--sage) !important; border-radius: var(--radius-sm) !important; }
         .el-button--warning { background-color: var(--amber) !important; border-color: var(--amber) !important; border-radius: var(--radius-sm) !important; }
         .el-button { border-radius: var(--radius-sm) !important; }

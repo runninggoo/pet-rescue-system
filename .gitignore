@@ -1,5 +1,11 @@
 # ============================================================
-# Gitignore for 宠物救助收养系统
+# 宠物救助收养系统 - .gitignore 规则
+# ============================================================
+#
+# 使用说明：
+# - 本文件配置了需要被 Git 忽略的文件/目录
+# - "不忽略"规则（!前缀）表示强制跟踪某些文件
+#
 # ============================================================
 
 # IDE配置文件
@@ -15,7 +21,7 @@ build/
 out/
 *.class
 
-# 依赖目录
+# 依赖目录（全部忽略，由 !frontend/node_modules/ 覆盖）
 node_modules/
 frontend/node_modules/
 
@@ -41,21 +47,10 @@ uploads/
 test-output/
 reports/
 
-# Maven本地仓库
-.mvn/
-.mvn/*
-
-# 前端构建输出
-frontend/dist/
-frontend/build/
-
-# 环境变量文件
+# 环境变量文件（可能含敏感信息）
 .env
 .env.local
-
-# IDEA工作空间配置
-.idea/workspace.xml
-.idea/tasks.xml
+.env.*.local
 
 # JAR包（大文件）
 *.jar
@@ -69,7 +64,7 @@ frontend/build/
 *.pdf
 *.caj
 
-# 图片（大文件）
+# 图片（大文件，不纳入版本控制）
 *.jpg
 *.jpeg
 *.png
@@ -78,40 +73,58 @@ frontend/build/
 *.ico
 
 # ============================================================
-# ⚠️ 重要：不忽略以下文件
-# （因为它们仅含占位符或模板，无真实敏感信息）
+# 强制跟踪的文件（!前缀）
 # ============================================================
 
 # SQL建表脚本（仅结构+虚构测试数据，必须保留）
 !sql/
 
-# 配置文件模板（仅占位符，已移除真实密码）
-# application.yml 使用 ${DB_PASSWORD:CHANGE_ME} 环境变量占位符
-# application-example.yml 是模板，pom.xml 和 vite.config.js 无敏感信息
-
 # 保留项目文档
 !README.md
-!RUNNING_GUIDE.md
-!TESTING_GUIDE.md
 !CLAUDE.md
-!毕业设计开发计划V3.md
-!开发进展汇报文档.md
 !项目状态保存文档.md
+!论文素材保存文档.md
 !截图管理文档.md
 
+# 配置文件模板（仅占位符，已移除真实密码）
+!backend/src/main/resources/application-example.yml
+!backend/src/main/resources/pom.xml
+!frontend/package.json
+!frontend/vite.config.js
+!frontend/index.html
+
 # ============================================================
-# ⚠️ 不发布的文件
+# 敏感文件（明确不上传）
 # ============================================================
 
-# 交接备忘（可能含内部信息）
-HANDOVER.md
+# 配置文件（含数据库密码/JWT密钥明文）
+# 使用时复制 application-example.yml 并配置环境变量
+backend/src/main/resources/application.yml
+application.yml
 
-# 截图目录（本地截图，可能含个人标注）
+# 截图目录
 screenshots/
 
-# 前端node_modules和锁文件（让clone者自己npm install）
+# 内部交接备忘
+HANDOVER.md
+
+# Claude AI 工具配置
+.claude/
+
+# 临时调试脚本（以下划线开头，不参与项目构建）
+_analyze_*.py
+_list_*.py
+_insert_*.py
+sql/_*.py
+sql/_*.sql
+sql/*.ps1
+sql/*.json
+
+# 前端锁文件（让 clone 者自己 npm install）
 frontend/package-lock.json
 
-# 临时脚本和笔记文档（不参与构建）
-*.ps1
-临时*.md
+# 论文相关文件（不纳入版本控制）
+thesis-*.md
+thesis-outline.md
+thesis-template/
+毕业设计*.md

@@ -56,6 +56,27 @@
             line-height: 1.6;
         }
 
+        /* 多层装饰背景 */
+        body::before {
+            content: '';
+            position: fixed; inset: 0; pointer-events: none; z-index: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 10% 10%, rgba(224,122,95,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 90% 85%, rgba(129,178,154,0.06) 0%, transparent 55%),
+                radial-gradient(ellipse 50% 40% at 55% 50%, rgba(244,162,97,0.04) 0%, transparent 50%);
+        }
+        body::after {
+            content: '';
+            position: fixed; inset: 0; pointer-events: none; z-index: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='rgba(224,122,95,0.04)'%3E%3Cpath d='M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6-4C18 6 18 6 18 6s0 0-1.5 1.5S15 9 15 9s0 0-1.5 1.5S12 12 12 12s0 0-1.5-1.5S9 9 9 9s0 0-1.5 1.5S6 12 6 12c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-4c0-1.1-.9-2-2-2z'/%3E%3C/svg%3E");
+            background-size: 180px 180px;
+            background-position: 40px 80px, 150px 30px, 280px 120px, 450px 50px, 600px 100px, 750px 40px, 100px 220px, 320px 200px, 520px 180px, 700px 220px, 200px 380px, 420px 350px, 600px 400px;
+        }
+
+        .page-wrapper {
+            position: relative; z-index: 1;
+        }
+
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: var(--warm-gray); border-radius: 3px; }
         ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 3px; }
@@ -1655,9 +1676,11 @@
                         const response = await axios.get(`/api/pet/detail/${this.petId}`);
                         if (response.data.code === 200 || response.data.code === 0) {
                             const resultData = response.data.data || {};
-                            // 后端 data 可能直接是 pet 对象，也可能是 {pet: pet} 包装
                             this.pet = resultData.pet || resultData || {};
-                            
+
+                            // Silent behavior recording: notify backend that user viewed this pet
+                            this.recordBehavior(this.petId, 'view');
+
                             // Load shelter info if available
                             if (this.pet.shelterId) {
                                 this.loadShelterInfo(this.pet.shelterId);
@@ -1814,6 +1837,7 @@
                             this.adoptionDialogVisible = false;
                             this.showSuccess = true;
                             this.$message.success('申请提交成功！');
+                            this.recordBehavior(this.petId, 'apply');
 
                             setTimeout(() => {
                                 window.location.href = 'adoption-list.html';
@@ -1850,6 +1874,7 @@
                                 if (res.data.code === 200) {
                                     this.isFavorited = true;
                                     this.$message.success('收藏成功');
+                                    this.recordBehavior(this.petId, 'favorite');
                                 } else {
                                     this.$message.error(res.data.message || '收藏失败');
                                 }
@@ -1897,6 +1922,13 @@
                     localStorage.removeItem('refreshToken');
                     document.cookie = 'PET_JWT=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
                     window.location.href = 'login.html';
+                },
+                recordBehavior(petId, behaviorType) {
+                    if (!petId || !behaviorType) return;
+                    axios.post('/api/recommendation/record', {
+                        petId: petId,
+                        behaviorType: behaviorType
+                    }).catch(function() {});
                 }
             }
         });
