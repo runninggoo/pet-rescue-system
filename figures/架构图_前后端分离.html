@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>图3.2 前后端分离整体架构图</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background: #f5f5f5; padding: 20px; }
+  .container { max-width: 900px; margin: 0 auto; }
+  .figure-card { background: white; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); overflow: hidden; margin-bottom: 20px; }
+  .figure-header { background: #2c3e50; color: white; padding: 10px 16px; display: flex; justify-content: space-between; }
+  .figure-header h1 { font-size: 14px; font-weight: 600; }
+  .figure-number { font-size: 11px; opacity: 0.85; }
+  .figure-body { padding: 16px; min-height: 240px; display: flex; justify-content: center; align-items: center; }
+  .mermaid { width: 100%; max-width: 800px; }
+  .caption { padding: 10px 16px; font-size: 12px; color: #555; background: #fafbfc; border-top: 1px solid #eee; line-height: 1.6; }
+  .caption strong { color: #2c3e50; }
+  .mermaid svg { max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="figure-card">
+    <div class="figure-header">
+      <h1>图3.2 前后端分离整体架构图</h1>
+      <span class="figure-number">图 3-2</span>
+    </div>
+    <div class="figure-body">
+      <div class="mermaid">
+flowchart TB
+    FE["前端层<br/>Vue.js + Element UI<br/>端口 5173"] -->|"HTTP JSON"| BE
+    BE["后端层<br/>Spring Boot + MyBatis Plus<br/>端口 8081"] -->|"JDBC"| DB
+    FE2["Axios 通信层<br/>Token 自动携带<br/>401 自动刷新"] --> BE2["接口层<br/>Spring Security + JWT<br/>CORS 跨域"]
+    style FE fill:#e8f4f8,stroke:#3498db,stroke-width:2px
+    style FE2 fill:#fef9e7,stroke:#f39c12,stroke-width:1px
+    style BE fill:#eafaf1,stroke:#27ae60,stroke-width:2px
+    style BE2 fill:#fef9e7,stroke:#f39c12,stroke-width:1px
+    style DB fill:#f5eef8,stroke:#9b59b6,stroke-width:2px
+      </div>
+    </div>
+    <div class="caption">
+      <strong>说明：</strong>系统采用<strong>前后端分离架构</strong>。前端基于 Vue.js + Element UI 运行于 <code>5173</code> 端口，通过 Axios 与后端通信；后端基于 Spring Boot + MyBatis Plus 运行于 <code>8081</code> 端口，采用 Spring Security + JWT 认证授权，数据持久层使用 MySQL 8.0。
+    </div>
+  </div>
+</div>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      primaryColor: '#e8f4f8',
+      primaryTextColor: '#2c3e50',
+      primaryBorderColor: '#3498db',
+      lineColor: '#95a5a6',
+      fontFamily: '"PingFang SC", "Microsoft YaHei", sans-serif',
+      fontSize: '12px',
+    },
+    flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis', nodeSpacing: 20, rankSpacing: 30, padding: 8 }
+  });
+</script>
+</body>
+</html>

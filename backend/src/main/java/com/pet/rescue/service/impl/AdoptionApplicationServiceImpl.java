@@ -285,11 +285,8 @@ public class AdoptionApplicationServiceImpl extends ServiceImpl<AdoptionApplicat
      * 当申请被批准时，拒绝同一宠物的其他待审核申请
      */
     private void rejectOtherPendingApplications(Long petId, Long approvedApplicationId) {
-        List<AdoptionApplication> pendingApps = applicationMapper.selectList(
-                lambdaQuery()
-                        .eq(AdoptionApplication::getPetId, petId)
-                        .eq(AdoptionApplication::getStatus, STATUS_PENDING)
-                        .ne(AdoptionApplication::getId, approvedApplicationId));
+        // 使用原生SQL查询，绕过PaginationInnerInterceptor避免sqlFirst解析异常
+        List<AdoptionApplication> pendingApps = applicationMapper.selectPendingByPetIdExcluding(petId, approvedApplicationId);
 
         for (AdoptionApplication app : pendingApps) {
             app.setStatus(STATUS_REJECTED);

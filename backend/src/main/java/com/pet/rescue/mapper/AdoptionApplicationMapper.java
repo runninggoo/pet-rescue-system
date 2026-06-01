@@ -52,4 +52,12 @@ public interface AdoptionApplicationMapper extends BaseMapper<AdoptionApplicatio
     @InterceptorIgnore(tenantLine = "true")
     @Select("SELECT * FROM adoption_application WHERE pet_id = #{petId} AND status = 0 ORDER BY apply_date ASC")
     List<AdoptionApplication> selectPendingByPetId(@Param("petId") Long petId);
+
+    /**
+     * 查询某宠物的待审核申请，排除指定申请ID（用于审核通过后拒绝其他申请人）
+     * 使用原生SQL绕过MP拦截链，避免PaginationInnerInterceptor的sqlFirst解析异常
+     */
+    @InterceptorIgnore(tenantLine = "true")
+    @Select("SELECT * FROM adoption_application WHERE pet_id = #{petId} AND status = 0 AND id != #{excludeId}")
+    List<AdoptionApplication> selectPendingByPetIdExcluding(@Param("petId") Long petId, @Param("excludeId") Long excludeId);
 }

@@ -955,7 +955,7 @@
                             <el-button type="warning" size="small" @click.stop="handleNeedMore(app)">待补充</el-button>
                             <el-button type="danger" size="small" @click.stop="handleReject(app)">拒绝</el-button>
                         </template>
-                        <el-button v-if="app.status === 4" type="primary" size="small" @click.stop="handleSignContract(app)">签署协议</el-button>
+                        <el-button v-if="app.status === 4 && currentRole === 'adopter' && app.applicantId === currentUser.id" type="primary" size="small" @click.stop="handleSignContract(app)">签署协议</el-button>
                         <el-tag v-if="app.status === 5" type="success" size="small" style="font-weight:700;">🎉已完成</el-tag>
                     </div>
                 </div>
@@ -1040,8 +1040,8 @@
                                     </el-form>
                                 </template>
 
-                                <!-- 待签署：领养人签署协议 -->
-                                <template v-if="currentApp.status === 4 && currentRole === 'adopter'">
+                                <!-- 待签署：领养人本人签署协议 -->
+                                <template v-if="currentApp.status === 4 && currentRole === 'adopter' && currentApp.applicantId === currentUser.id">
                                     <div style="background:linear-gradient(135deg,rgba(224,122,95,0.06),rgba(244,162,97,0.06));border-radius:var(--radius-sm);padding:20px;margin-bottom:16px;border:1px solid var(--primary-light);">
                                         <div style="font-size:16px;font-weight:700;color:var(--primary);margin-bottom:12px;">📝 领养协议签署</div>
                                         <div style="font-size:13px;color:#606266;line-height:1.8;margin-bottom:16px;">
@@ -1523,14 +1523,20 @@
                 return '选填，可补充审核说明';
             },
             handleReview() {
+                // 防御性检查：ref 不存在时提示用户刷新重试
                 if (!this.$refs.reviewFormRef) {
-                    this.$message.error('表单加载异常，请刷新页面重试');
+                    this.$message.error('表单加载异常，请尝试刷新页面后重试');
                     return;
                 }
-                this.$refs.reviewFormRef.validate(valid => {
-                    if (!valid) { this.commentShake = true; setTimeout(() => { this.commentShake = false; }, 400); return; }
-                    this.submitReview(this.currentApp.id);
-                });
+                // 简化前端验证：拒绝/待补充状态必须填写意见
+                if ((this.reviewForm.status === 2 || this.reviewForm.status === 3)
+                    && (!this.reviewForm.reviewComment || !this.reviewForm.reviewComment.trim())) {
+                    this.commentShake = true;
+                    setTimeout(() => { this.commentShake = false; }, 400);
+                    this.$message.warning(this.getCommentPlaceholder());
+                    return;
+                }
+                this.submitReview(this.currentApp.id);
             },
             submitReview(appId) {
                 this.reviewLoading = true;

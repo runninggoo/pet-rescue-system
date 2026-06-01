@@ -82,9 +82,8 @@ reports/
 # 保留项目文档
 !README.md
 !CLAUDE.md
-!项目状态保存文档.md
-!论文素材保存文档.md
-!截图管理文档.md
+!SETUP_GUIDE.md
+!LICENSE
 
 # 配置文件模板（仅占位符，已移除真实密码）
 !backend/src/main/resources/application-example.yml
@@ -96,6 +95,9 @@ reports/
 # ============================================================
 # 敏感文件（明确不上传）
 # ============================================================
+
+# 私有目录（含敏感信息和内部文档）
+_private/
 
 # 配置文件（含数据库密码/JWT密钥明文）
 # 使用时复制 application-example.yml 并配置环境变量
@@ -128,3 +130,6 @@ thesis-*.md
 thesis-outline.md
 thesis-template/
 毕业设计*.md
+
+# 答辩PPT目录
+答辩PPT/

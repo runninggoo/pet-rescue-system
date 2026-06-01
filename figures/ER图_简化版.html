@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>图3.1 系统整体E-R关系图</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background: #f5f5f5; padding: 20px; }
+  .container { max-width: 900px; margin: 0 auto; }
+  .figure-card { background: white; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); overflow: hidden; margin-bottom: 20px; }
+  .figure-header { background: #2c3e50; color: white; padding: 10px 16px; display: flex; justify-content: space-between; }
+  .figure-header h1 { font-size: 14px; font-weight: 600; }
+  .figure-number { font-size: 11px; opacity: 0.85; }
+  .figure-body { padding: 16px; min-height: 320px; display: flex; justify-content: center; align-items: center; }
+  .mermaid { width: 100%; max-width: 800px; }
+  .caption { padding: 10px 16px; font-size: 12px; color: #555; background: #fafbfc; border-top: 1px solid #eee; line-height: 1.6; }
+  .caption strong { color: #2c3e50; }
+  .mermaid svg { max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="figure-card">
+    <div class="figure-header">
+      <h1>图3.1 系统整体E-R关系图</h1>
+      <span class="figure-number">图 3-1</span>
+    </div>
+    <div class="figure-body">
+      <div class="mermaid">
+erDiagram
+    USER ||--o{ PET : "发布"
+    USER ||--o{ ADOPTION : "申请"
+    USER ||--o{ TASK : "任务"
+    USER ||--o| PROFILE : "成长"
+    PET ||--o{ ADOPTION : "被申请"
+    PET ||--o{ HEALTH : "健康"
+    PET }o--|| SHELTER : "入住"
+    SHELTER ||--o{ TASK : "发布"
+    ADOPTION ||--o{ FOLLOW : "回访"
+    CATEGORY ||--o{ PET : "分类"
+
+    USER {
+        int id
+        string name
+        string phone
+        string role
+    }
+    PET {
+        int id
+        string name
+        string breed
+        int shelter_id
+    }
+    SHELTER {
+        int id
+        string name
+        float lat
+        float lon
+    }
+    ADOPTION {
+        int id
+        int user_id
+        int pet_id
+        int status
+    }
+    HEALTH {
+        int id
+        int pet_id
+        string type
+    }
+    TASK {
+        int id
+        string title
+        int user_id
+    }
+    PROFILE {
+        int id
+        int user_id
+        int points
+        int level
+    }
+    FOLLOW {
+        int id
+        int adoption_id
+        string content
+    }
+    CATEGORY {
+        int id
+        string name
+        int parent_id
+    }
+      </div>
+    </div>
+    <div class="caption">
+      <strong>说明：</strong>系统以<strong>用户（USER）</strong>为核心，关联宠物、领养申请、志愿者任务等业务表。用户与志愿者档案为<strong>1:1</strong>关系，品种分类为<strong>树形自关联</strong>结构。
+    </div>
+  </div>
+</div>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      primaryColor: '#e8f4f8',
+      primaryTextColor: '#2c3e50',
+      primaryBorderColor: '#3498db',
+      lineColor: '#95a5a6',
+      fontFamily: '"PingFang SC", "Microsoft YaHei", sans-serif',
+      fontSize: '12px',
+    },
+    er: { entityPadding: 8, useMaxWidth: true, diagramPadding: 10 }
+  });
+</script>
+</body>
+</html>

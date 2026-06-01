@@ -800,6 +800,118 @@
                 grid-template-columns: repeat(2, 1fr);
             }
         }
+
+        /* ========== 签署协议弹窗 ========== */
+        .sign-modal-overlay {
+            position: fixed; inset: 0; z-index: 3000;
+            background: rgba(61, 64, 91, 0.6);
+            backdrop-filter: blur(6px);
+            display: flex; align-items: flex-start; justify-content: center;
+            padding: 60px 20px 20px;
+            overflow-y: auto;
+        }
+        .sign-modal-box {
+            background: white;
+            border-radius: var(--radius);
+            width: 620px;
+            max-width: 100%;
+            box-shadow: 0 24px 80px rgba(61, 64, 91, 0.4);
+            display: flex; flex-direction: column;
+            overflow: hidden;
+            max-height: calc(100vh - 40px);
+        }
+        .sign-modal-header {
+            display: flex; align-items: flex-start; justify-content: space-between;
+            padding: 22px 28px 18px;
+            background: linear-gradient(135deg, var(--warm-cream) 0%, var(--warm-white) 100%);
+            border-bottom: 2px solid var(--primary-light);
+            flex-shrink: 0;
+        }
+        .sign-modal-title {
+            font-size: 18px; font-weight: 800; color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+        .sign-modal-sub {
+            font-size: 13px; color: var(--text-muted); font-weight: 600;
+        }
+        .sign-modal-close {
+            font-size: 28px; line-height: 1; color: var(--text-muted);
+            cursor: pointer; padding: 2px 6px; border-radius: 8px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .sign-modal-close:hover { color: var(--primary); background: var(--primary-bg); }
+        .sign-modal-body {
+            flex: 1; overflow-y: auto; padding: 20px 28px;
+        }
+        .sign-pet-info {
+            display: flex; align-items: center; gap: 14px;
+            background: var(--warm-cream);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px; margin-bottom: 16px;
+        }
+        .sign-pet-img {
+            width: 64px; height: 64px; border-radius: var(--radius-sm);
+            object-fit: cover; flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(224,122,95,0.15);
+        }
+        .sign-pet-name { font-size: 16px; font-weight: 800; color: var(--text-dark); margin-bottom: 4px; }
+        .sign-pet-breed { font-size: 13px; color: var(--text-muted); }
+        .sign-contract-text {
+            background: var(--warm-cream);
+            border-radius: var(--radius-sm);
+            padding: 18px 20px;
+            font-size: 13px; color: #606266; line-height: 1.9;
+            border: 1px solid var(--warm-gray2);
+            max-height: 360px; overflow-y: auto;
+        }
+        .sign-contract-title {
+            text-align: center; font-size: 16px; font-weight: 800;
+            color: var(--text-dark); margin-bottom: 14px;
+        }
+        .sign-contract-text p { margin: 0 0 6px 0; }
+        .sign-divider { height: 1px; background: var(--warm-gray2); margin: 10px 0; }
+        .sign-date { text-align: right; font-weight: 700; color: var(--text-dark); margin-top: 8px; }
+        .sign-commitment {
+            margin-top: 16px;
+            background: rgba(224,122,95,0.05);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            border: 1px solid var(--primary-light);
+        }
+        .sign-modal-footer {
+            display: flex; gap: 10px; justify-content: flex-end;
+            padding: 16px 28px 20px;
+            border-top: 1px solid var(--warm-gray);
+            background: var(--warm-white);
+            flex-shrink: 0;
+        }
+        .btn-sign-confirm {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%) !important;
+            border: none !important; color: white !important;
+            font-weight: 700 !important; border-radius: var(--radius-sm) !important;
+            box-shadow: 0 4px 16px rgba(224,122,95,0.3) !important;
+            transition: all 0.3s !important;
+        }
+        .btn-sign-confirm:hover:not(:disabled) {
+            box-shadow: 0 8px 28px rgba(224,122,95,0.45) !important;
+            transform: translateY(-2px) !important;
+        }
+        .btn-sign-confirm:disabled {
+            background: var(--warm-gray) !important;
+            color: var(--text-muted) !important;
+            box-shadow: none !important;
+        }
+
+        /* 弹窗过渡动画 */
+        .fade-overlay-enter-active { transition: opacity 0.25s ease; }
+        .fade-overlay-leave-active { transition: opacity 0.2s ease; }
+        .fade-overlay-enter, .fade-overlay-leave-to { opacity: 0; }
+
+        @media (max-width: 640px) {
+            .sign-modal-box { width: 100%; }
+            .sign-modal-header, .sign-modal-body, .sign-modal-footer { padding-left: 18px; padding-right: 18px; }
+        }
     </style>
 </head>
 <body>
@@ -1201,7 +1313,7 @@
                             <el-button type="primary" size="small" style="margin-top:12px" @click="goPetList">浏览宠物</el-button>
                         </div>
                         <div v-else>
-                            <div class="pet-card-inline" v-for="app in applications" :key="app.id" @click="goPetDetail(app.petId)">
+                            <div class="pet-card-inline" v-for="app in applications" :key="app.id" @click.stop="app.status === 4 ? openSignContract(app) : goPetDetail(app.petId)">
                                 <img class="pet-thumb" :src="app.petImage || 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=200'" @error="e => e.target.src='https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=200'">
                                 <div class="pet-card-info">
                                     <div class="pet-card-name">{{ app.petName || '宠物 #' + app.petId }}</div>
@@ -1210,6 +1322,9 @@
                                         {{ statusNames[app.status] || '未知' }}
                                     </span>
                                     <span style="font-size:11px;color:var(--text-muted);margin-left:8px">{{ formatTime(app.createdTime) }}</span>
+                                    <el-button v-if="app.status === 4" type="primary" size="mini" style="margin-left:8px" @click.stop="openSignContract(app)">
+                                        📝 签署协议
+                                    </el-button>
                                 </div>
                             </div>
                         </div>
@@ -1618,6 +1733,79 @@
                         </el-pagination>
                     </div>
                 </div>
+
+                <!-- ========== 签署协议弹窗 ========== -->
+                <transition name="fade-overlay">
+                    <div v-if="signModalVisible" class="sign-modal-overlay" @click.self="closeSignModal">
+                        <div class="sign-modal-box">
+                            <!-- 头部 -->
+                            <div class="sign-modal-header">
+                                <div>
+                                    <div class="sign-modal-title">📝 领养协议签署</div>
+                                    <div class="sign-modal-sub">请仔细阅读以下协议内容，确认无误后签署</div>
+                                </div>
+                                <span class="sign-modal-close" @click="closeSignModal">&times;</span>
+                            </div>
+                            <!-- 协议内容 -->
+                            <div class="sign-modal-body">
+                                <!-- 宠物信息 -->
+                                <div class="sign-pet-info">
+                                    <img class="sign-pet-img" :src="signingApp?.petImage || 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=200'" @error="e => e.target.src='https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=200'">
+                                    <div class="sign-pet-detail">
+                                        <div class="sign-pet-name">{{ signingApp?.petName || '宠物' }}</div>
+                                        <div class="sign-pet-breed">{{ signingApp?.breed || '' }}</div>
+                                    </div>
+                                </div>
+                                <!-- 协议正文 -->
+                                <div class="sign-contract-text">
+                                    <div class="sign-contract-title">《宠物领养协议》</div>
+                                    <p><strong>甲方（救助机构）：</strong>上海宠物救助站</p>
+                                    <p><strong>乙方（领养人）：</strong>{{ user.name || '领养人' }}（手机号：{{ user.phone || '' }}）</p>
+                                    <p><strong>丙方（宠物）：</strong>{{ signingApp?.petName || '宠物' }}（品种：{{ signingApp?.breed || '' }}）</p>
+                                    <div class="sign-divider"></div>
+                                    <p><strong>一、领养承诺</strong></p>
+                                    <p>1.1 乙方承诺为丙方提供安全、舒适、干净的居住环境，不得将丙方长期关在狭小空间内。</p>
+                                    <p>1.2 乙方承诺为丙方提供营养均衡的食品和清洁的饮用水，不得喂食对宠物有害的食物。</p>
+                                    <p>1.3 乙方承诺定期（每年至少一次）为丙方进行健康检查和疫苗接种，并保存相关记录。</p>
+                                    <p><strong>二、禁止事项</strong></p>
+                                    <p>2.1 乙方不得遗弃、虐待、伤害丙方，不得将丙方转卖、转赠他人。</p>
+                                    <p>2.2 乙方不得将丙方用于商业繁殖、动物实验或其他非正当目的。</p>
+                                    <p>2.3 乙方不得在未经甲方同意的情况下带丙方离开本市超过30天。</p>
+                                    <p><strong>三、回访配合</strong></p>
+                                    <p>3.1 乙方同意甲方在领养后进行定期回访（每季度一次），并如实反映丙方的生活状况。</p>
+                                    <p>3.2 如丙方出现健康问题或乙方无法继续抚养的情况，乙方应及时通知甲方。</p>
+                                    <p><strong>四、违约责任</strong></p>
+                                    <p>4.1 如乙方违反本协议，甲方有权取消乙方的领养资格并要求乙方将丙方归还救助站。</p>
+                                    <p>4.2 如因乙方原因导致丙方受伤或死亡，乙方应承担相应的法律责任。</p>
+                                    <p><strong>五、协议生效</strong></p>
+                                    <p>5.1 本协议自乙方点击"确认签署"之日起生效。</p>
+                                    <p>5.2 本协议一式两份，甲乙双方各执一份，具有同等法律效力。</p>
+                                    <div class="sign-divider"></div>
+                                    <p class="sign-date">签署日期：{{ new Date().toISOString().substring(0, 10) }}</p>
+                                </div>
+                                <!-- 承诺确认 -->
+                                <div class="sign-commitment">
+                                    <el-checkbox v-model="signCommitChecked" size="small">
+                                        <span style="font-size:13px;color:#606266;">
+                                            我已仔细阅读并充分理解上述协议内容，承诺遵守协议各项条款
+                                        </span>
+                                    </el-checkbox>
+                                </div>
+                            </div>
+                            <!-- 底部操作 -->
+                            <div class="sign-modal-footer">
+                                <el-button @click="closeSignModal" style="border-radius:var(--radius-sm);">暂不签署</el-button>
+                                <el-button
+                                    class="btn-sign-confirm"
+                                    :disabled="!signCommitChecked"
+                                    :loading="signLoading"
+                                    @click="confirmSign">
+                                    ✍️ 确认签署
+                                </el-button>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
             </div>
         </div>
     </div>
@@ -1696,6 +1884,9 @@ const app = new Vue({
             // 领养申请
             applications: [],
             loadingApplications: false,
+            signModalVisible: false,  // 签署协议弹窗
+            signingApp: null,           // 当前待签署的申请
+            signCommitChecked: false,   // 承诺勾选状态
 
             // 志愿者任务
             myTasks: [],
@@ -1934,6 +2125,39 @@ const app = new Vue({
                 console.error('加载申请失败', e);
             } finally {
                 this.loadingApplications = false;
+            }
+        },
+
+        // ============ 签署协议（领养人） ============
+        openSignContract(app) {
+            this.signingApp = app;
+            this.signCommitChecked = false;
+            this.signModalVisible = true;
+        },
+        closeSignModal() {
+            this.signModalVisible = false;
+            this.signCommitChecked = false;
+            this.signingApp = null;
+        },
+        confirmSign() {
+            if (!this.signCommitChecked) return;
+            this.handleSignContract(this.signingApp.id);
+        },
+        async handleSignContract(appId) {
+            this.signLoading = true;
+            try {
+                const res = await axios.put('/api/adoption/sign/' + appId);
+                if (res.data.code === 200) {
+                    this.$message.success(res.data.message || '签署成功！');
+                    this.closeSignModal();
+                    this.loadMyApplications();
+                } else {
+                    this.$message.error(res.data.message || '签署失败');
+                }
+            } catch (e) {
+                this.$message.error(e.response?.data?.message || '签署失败，请稍后重试');
+            } finally {
+                this.signLoading = false;
             }
         },
 
